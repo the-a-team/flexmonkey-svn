@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aggro:CollapsableTitleWindow title="Flex Monkey!" xmlns:flexui="flexunit.flexui.*" xmlns:aggro="de.aggro.components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="{.33*Application.application.width}" height="{.33*Application.application.height}" creationComplete="create()" >
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.flexspy.FlexSpy;
+			import mx.collections.ArrayCollection;
+		]]>
+	</mx:Script>
+
+
+	
+<mx:Script>
+	<![CDATA[
+		import com.gorillalogic.flexmonkey.MonkeyEvent;
+		import flexunit.framework.TestSuite;
+		import mx.controls.Alert;
+		import mx.messaging.FlexClient;
+		import mx.controls.Image;
+		import mx.events.FlexEvent;
+		import com.gorillalogic.aqadaptor.AQAdapter;
+		import mx.core.UIComponent;
+		import mx.automation.Automation;
+		import mx.automation.AutomationManager;
+		import mx.automation.events.AutomationRecordEvent;
+		import mx.collections.ArrayCollection;
+		import mx.binding.utils.BindingUtils;
+	
+	    import mx.automation.IAutomationManager;
+	    import mx.automation.IAutomationObject;
+	    import mx.automation.AutomationID;
+	    
+	    [Event(name="success", type="com.gorillalogic.MonkeyEvent")]
+	    
+	    [Bindable]
+		public var commands:ArrayCollection = new ArrayCollection();
+		
+		private static var testSuite:TestSuite = new TestSuite();
+		
+		/**
+		 * Time to pause between command executions, in milliseconds. Defaults to 500.
+		 */ 
+		 [Bindable]
+		public var thinkTime:int = 500;
+
+		
+		public static var theMonkey:FlexMonkey;
+	
+		private function create():void {
+			theMonkey = this;
+		}
+	
+		private function startRecording():void
+		{
+			
+			Automation.automationManager.addEventListener(AutomationRecordEvent.RECORD, recordHandler, false, 0, true);
+                                            
+			AQAdapter.aqAdapter.beginRecording();
+
+		}
+		
+		private function recordHandler(event:AutomationRecordEvent):void {
+			var id:String;
+			var idProp:String;
+			var obj:IAutomationObject = event.automationObject;
+			if (obj.automationName != null && obj.automationName != "") {
+				idProp = "automationName"
+				id = obj.automationName;
+			} else if (obj is UIComponent && UIComponent(obj).id != null && UIComponent(obj).id != "") {
+				idProp = "id";
+				id = UIComponent(obj).id;
+			} else {
+				idProp = "automationID";
+				id = Automation.automationManager.createID(obj).toString();
+			}
+			
+       		commands.addItem(new FlexCommand(id, event.name, event.args, idProp));
+
+        }
+
+		private function stopRecording():void
+		{
+			AQAdapter.aqAdapter.endRecording();
+			//output.text = AQAdapter.aqAdapter.getRecords();
+			invalidateSize();
+			validateNow();
+			btnRecord.enabled = true;
+			//btnReplay.enabled = true;
+		}
+		
+		private function showSource(event:FlexEvent):void {
+			var cmds:Array = cmdGrid.selectedItems.reverse();
+			if (cmds.length == 0) {
+				cmds = ArrayCollection(cmdGrid.dataProvider).toArray();
+			}
+			
+			source.text =
+				"// FlexUnit test method\n" +
+				"public function testSomething():void {\n" +
+		  		"  FlexMonkey.theMonkey.addEventListener(MonkeyEvent.READY_FOR_VALIDATION, addAsync(verifySomething, 10000));\n" +
+				"  FlexMonkey.runCommands([\n";
+			var first:Boolean = true;	
+			for each (var cmd:FlexCommand in cmds) {
+				if (first) {
+					first = false;
+				} else {
+					source.text+=",\n";
+				}
+			
+				source.text+=
+				 	"      new FlexCommand(\"" + cmd.value + "\", \"" + cmd.command + "\"";
+				 	source.text+=", [";
+
+			 		source.text+=quote(cmd.args[0]);
+			 		for each (var arg:String in cmd.args.slice(1)) {
+			 			source.text+=", " + quote(arg); 
+			 		}
+ 
+				 	source.text+="]";
+				 	
+			 		if (cmd.prop) {
+			 			source.text +=", \"" + cmd.prop + "\""
+			 			if (cmd.containerValue) {
+			 				source.text+=", \"" + cmd.containerValue + "\"";
+			 				if (cmd.containerProp) {
+			 					source.text+=", \"" + cmd.containerProp + "\"";
+			 				}
+			 			}
+			 		}
+			 		source.text+=")"
+
+			}
+			source.text+="   ]);\n" +
+				"   }\n\n";
+			source.text+=
+				"// Called after commands have been run\n" +
+				"private function verifySomething(event:MonkeyEvent):void {\n" +
+				"   var comp:UIComponent = MonkeyUtils.findComponentWith(\"someAutomationName\")\n" +
+				"   Assert.assertEquals(\"value\",comp.prop);\n" +
+				"}"
+				
+				
+		} 
+		
+		private static function quote(arg:Object):String {
+			return !(arg is Boolean) ? "\"" + String(arg) + "\"" : String(arg);
+		}
+		
+
+		/**
+		 * 
+		 * Executes the supplied Commands.
+		 * 
+		 * In addition to running FlexCommands, you can also run PauseCommands and CallCommands. For example:
+		 * 
+		 * FlexMonkey.runCommands([
+		 * 		new FlexCommand("SomeButton", "Click", [0], "automationName"),
+		 * 		// Wait an additional 5 seconds
+		 * 		new PauseCommand(5000),
+		 * 		// Check something
+		 * 		new CallCommand(function(Assert.assertTrue(something))
+		 * 		// Run more commands....
+		 * 		new FlexCommand("AnotherButton", "Click", [0], "automationName")
+		 * 		]);
+		 */ 
+		public static function runCommands(cmds:Array, validator:Function=null):void {	
+				
+
+			var runTimer:Timer = new Timer(theMonkey.thinkTime, 1);		
+			var nextCmdIndex:int = 0;	
+
+			runTimer.addEventListener(TimerEvent.TIMER_COMPLETE, function():void {
+				runTimer.delay = theMonkey.thinkTime;
+				if (nextCmdIndex == cmds.length) {
+					theMonkey.dispatchEvent(new MonkeyEvent(MonkeyEvent.READY_FOR_VALIDATION));
+					return;
+				}
+				
+				var c:Object = cmds[nextCmdIndex];
+				if (c is PauseCommand) {
+					runTimer.delay = PauseCommand(c).delay;
+					runTimer.start();
+					nextCmdIndex++;
+					return;
+				}
+				
+				if (c is CallCommand) {
+					CallCommand(c).func();
+					nextCmdIndex++;
+					runTimer.start();
+					return;
+				}
+				
+				var cmd:FlexCommand = c as FlexCommand;
+				
+				try {
+					if (runCommand(cmd.value, cmd.command, cmd.args, cmd.prop, cmd.containerValue, cmd.containerProp)) {
+						nextCmdIndex++;
+					}
+				} catch (error:Error) {
+					Alert.show(error.message);
+					nextCmdIndex++
+				}
+				runTimer.start();
+				
+			});
+			runTimer.start();
+		}
+		
+		private function runSelected(event:MouseEvent):void {
+			var selectedCommands:Array = cmdGrid.selectedItems.reverse();
+			if (selectedCommands.length == 0) {
+				selectedCommands = ArrayCollection(cmdGrid.dataProvider).toArray();
+			}	
+			runCommands(selectedCommands);
+		}
+		
+		private static function runCommand(value:String, command:String, args:Array, prop=null, containerValue:String=null, containerProp:String=null):Boolean {
+			    var am:IAutomationManager = AQAdapter.aqAdapter.automationManager;
+        	
+				if (!am.isSynchronized(null)) {
+					return false;
+				}
+
+				var container:UIComponent = null;
+				if (containerValue != null) {
+					container = MonkeyUtils.findComponentWith(containerValue, containerProp); 
+				}
+
+				var target:IAutomationObject = MonkeyUtils.findComponentWith(value, prop, container);
+				if (!target) {
+					throw new AssertionFailed("Unable to find component having " + prop + " = " + value);
+				}
+
+		        if (!target || !am.isSynchronized(target))
+					return false;
+
+	            if (!am.isVisible(target as DisplayObject))
+					return false;
+
+        	
+	        	AQAdapter.aqAdapter.run(target, 
+		        						command, 
+		        						args);
+//		        if (recordEnabled()) {					
+//		        	ArrayCollection(theMonkey.cmdGrid.dataProvider).addItem(new FlexCommand(value, command, args, prop, containerValue, containerProp));
+//		        }
+				return true;
+		}
+		
+		
+		private static function recordEnabled():Boolean {
+			return !theMonkey.btnRecord.enabled;
+		}
+		
+		public static function findComponentWith(value:String, prop:String="automationName", container:UIComponent=null):UIComponent {
+			return MonkeyUtils.findComponentWith(value, prop, container);
+		}
+
+		
+		public static function addTestSuite(suite:Class):void {
+			testSuite.addTestSuite(suite);
+		}
+		
+		public function run():void {
+			testRunner.test = testSuite;
+			testRunner.startTest();
+		}
+		
+		
+		public function removeCommand(img:Image):void {
+			commands.removeItemAt(img.listData.rowIndex);
+		}
+		
+		
+	]]>
+</mx:Script>
+	<mx:HRule width="100%"/>
+	<mx:VBox>
+	<mx:ControlBar width="100%">
+		<mx:Button label="Record" mouseDown="if (btnRecord.selected) stopRecording()" click="if (btnRecord.selected) startRecording()" toggle="true" id="btnRecord" />
+	</mx:ControlBar>
+	<mx:TabNavigator id="tabs" width="{.9*width}" height="{.8*height}" creationPolicy="all">
+
+		<mx:VBox label="Command List" width="100%" height="100%">
+			<mx:ControlBar width="100%">
+				<mx:Button label="Run" click="runSelected(event)"/>
+				<mx:Button label="Clear" click="commands.removeAll()"/>
+				<mx:Button id="btnFlexSpy" label="FlexSpy" click="FlexSpy.show()"  textAlign="center"/>
+				<mx:CheckBox id="editEnabled" label="Enable editing"/>
+			</mx:ControlBar>
+			<mx:DataGrid editable="{editEnabled.selected}" id="cmdGrid" x="10" y="10" height="{.6*height}" width="{.8*width}" dataProvider="{commands}" allowMultipleSelection="true" allowDragSelection="true" rowCount="20">
+				<mx:columns>
+					<mx:DataGridColumn headerText="" width="40" editable="false"/>
+					<mx:DataGridColumn headerText="" width="20">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Image source="@Embed(source='assets/delete.png')" click="outerDocument.removeCommand(this)"/>
+							</mx:Component>
+						</mx:itemRenderer>	
+					</mx:DataGridColumn>								
+					<mx:DataGridColumn headerText="Command" dataField="command" width="100"/>					
+					<mx:DataGridColumn headerText="Value" dataField="value" width="100"/>
+					<mx:DataGridColumn headerText="Property" dataField="prop" width="100"/>					
+					<mx:DataGridColumn headerText="Arguments" dataField="args" width="200" editable="false">
+						<mx:itemEditor>
+							<mx:Component>
+									<mx:TextArea text="{data.args.join('\n')}"/>
+							</mx:Component>
+						</mx:itemEditor>	
+					</mx:DataGridColumn>						
+					<mx:DataGridColumn headerText="Container Value" dataField="containerId" width="100"/>
+					<mx:DataGridColumn headerText="Container Property" dataField="containerProp" width="100"/>										
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		<mx:VBox label="Source" width="100%" height="100%" show="showSource(event)">
+			<mx:Text text="The source below will replay the recorded commands. Source is generated for commands selected in the Command list."/>
+			<mx:TextArea id="source"  width="100%" height="100%" x="0"/>
+		</mx:VBox>					
+		<mx:VBox label="FlexUnit" height="{.7*height}" width="{.9*width}">
+			<mx:ControlBar width="100%">
+			<mx:Button label="Run" click="run()"/>
+			</mx:ControlBar>
+	    	<flexui:TestRunnerBase id="testRunner" height="{.6*height}" width="{.8*width}" />	    	
+	    </mx:VBox>
+	</mx:TabNavigator>
+		
+	</mx:VBox>
+
+</aggro:CollapsableTitleWindow>
