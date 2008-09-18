@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<aggro:CollapsableTitleWindow title="Flex Monkey!" xmlns:flexui="flexunit.flexui.*" xmlns:aggro="de.aggro.components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="{.33*Application.application.width}" height="{.33*Application.application.height}" creationComplete="create()" >
+<aggro:CollapsableTitleWindow mouseDown="if (btnRecord.selected) stopRecording()" title="Flex Monkey!" xmlns:flexui="flexunit.flexui.*" xmlns:aggro="de.aggro.components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="{.5*Application.application.width}" height="{.5*Application.application.height}" creationComplete="create()" >
 	<mx:Script>
 		<![CDATA[
 			import mx.core.Application;
@@ -53,9 +53,10 @@
 		private function startRecording():void
 		{
 			
-			Automation.automationManager.addEventListener(AutomationRecordEvent.RECORD, recordHandler, false, 0, true);
-                                            
+			this.tabs.selectedIndex = 0;
+			Automation.automationManager.addEventListener(AutomationRecordEvent.RECORD, recordHandler, false, 0, true);    
 			AQAdapter.aqAdapter.beginRecording();
+
 
 		}
 		
@@ -80,25 +81,48 @@
 
 		private function stopRecording():void
 		{
+			Automation.automationManager.removeEventListener(AutomationRecordEvent.RECORD, recordHandler);			
+			btnRecord.selected = false;
 			AQAdapter.aqAdapter.endRecording();
-			//output.text = AQAdapter.aqAdapter.getRecords();
 			invalidateSize();
 			validateNow();
-			btnRecord.enabled = true;
-			//btnReplay.enabled = true;
 		}
 		
-		private function showSource(event:FlexEvent):void {
+		private function showSource(event:Event):void {
+			source.text = "";
 			var cmds:Array = cmdGrid.selectedItems.reverse();
 			if (cmds.length == 0) {
 				cmds = ArrayCollection(cmdGrid.dataProvider).toArray();
 			}
 			
-			source.text =
-				"// FlexUnit test method\n" +
-				"public function testSomething():void {\n" +
-		  		"  FlexMonkey.theMonkey.addEventListener(MonkeyEvent.READY_FOR_VALIDATION, addAsync(verifySomething, 10000));\n" +
-				"  FlexMonkey.runCommands([\n";
+			if (fullClass.selected) {
+				source.text =
+				"package your.package\n" +
+				"{\n" +
+				"	import com.gorillalogic.flexmonkey.FlexCommand;\n" +
+				"	import com.gorillalogic.flexmonkey.FlexMonkey;\n" +
+				"	import com.gorillalogic.flexmonkey.MonkeyEvent;\n" +
+				"	import com.gorillalogic.flexmonkey.MonkeyUtils;\n" +
+				"\n" +	
+				"	import flash.display.DisplayObject;\n" +
+				"\n" +	
+				"	import flexunit.framework.Assert;\n" +
+				"	import flexunit.framework.TestCase;\n" +
+				"\n" +
+				"\n" +
+				"	[Mixin]\n" +
+				"	public class YourTests extends TestCase\n" +
+				"	{\n" +
+				"      public static function init(root:DisplayObject) : void {\n" +
+				"     	FlexMonkey.addTestSuite(YourTests);\n" +
+				"	}\n";
+			}
+			
+			source.text+=
+				"	// FlexUnit test method\n" +
+				"	public function testSomething():void {\n" +
+		  		"		FlexMonkey.theMonkey.addEventListener(MonkeyEvent.READY_FOR_VALIDATION, addAsync(verifySomething, 10000));\n" +
+				"		FlexMonkey.runCommands([\n";
 			var first:Boolean = true;	
 			for each (var cmd:FlexCommand in cmds) {
 				if (first) {
@@ -108,7 +132,7 @@
 				}
 			
 				source.text+=
-				 	"      new FlexCommand(\"" + cmd.value + "\", \"" + cmd.command + "\"";
+				 	"			new FlexCommand(\"" + cmd.value + "\", \"" + cmd.command + "\"";
 				 	source.text+=", [";
 
 			 		source.text+=quote(cmd.args[0]);
@@ -130,14 +154,18 @@
 			 		source.text+=")"
 
 			}
-			source.text+="   ]);\n" +
+			source.text+="			]);\n" +
 				"   }\n\n";
 			source.text+=
-				"// Called after commands have been run\n" +
-				"private function verifySomething(event:MonkeyEvent):void {\n" +
-				"   var comp:UIComponent = MonkeyUtils.findComponentWith(\"someAutomationName\")\n" +
-				"   Assert.assertEquals(\"value\",comp.prop);\n" +
-				"}"
+				"	// Called after commands have been run\n" +
+				"	private function verifySomething(event:MonkeyEvent):void {\n" +
+				"		var comp:UIComponent = MonkeyUtils.findComponentWith(\"someAutomationName\")\n" +
+				"		Assert.assertEquals(\"value\",comp.prop);\n" +
+				"	}"
+				
+			if (fullClass.selected) {
+				source.text+="   }\n}";
+			}
 				
 				
 		} 
@@ -314,11 +342,14 @@
 				</mx:columns>
 			</mx:DataGrid>
 		</mx:VBox>
-		<mx:VBox label="Source" width="100%" height="100%" show="showSource(event)">
-			<mx:Text text="The source below will replay the recorded commands. Source is generated for commands selected in the Command list."/>
+		<mx:VBox label="TestCase Code" width="100%" height="100%" show="showSource(event)">
+			<mx:Panel>
+				<mx:Text text="The source below is generated from the currently selected commands in the Command List." fontStyle="italic" fontWeight="bold"/>
+			</mx:Panel>
+			<mx:CheckBox id="fullClass" label="Show complete TestCase" click="showSource(event)"/>
 			<mx:TextArea id="source"  width="100%" height="100%" x="0"/>
 		</mx:VBox>					
-		<mx:VBox label="FlexUnit" height="{.7*height}" width="{.9*width}">
+		<mx:VBox label="FlexUnit Runner" height="{.7*height}" width="{.9*width}">
 			<mx:ControlBar width="100%">
 			<mx:Button label="Run" click="run()"/>
 			</mx:ControlBar>

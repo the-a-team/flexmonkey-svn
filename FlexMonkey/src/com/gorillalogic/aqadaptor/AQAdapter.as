@@ -257,7 +257,7 @@ public class AQAdapter implements IAQCodecHelper
 			try {
 				loader.load(request);
 			} catch (error:Error) {
-				Alert.show("Unable to load FlexMonkeyEnv.xml from current directory.");
+				Alert.show("Unable to load FlexMonkeyEnv.xml from current directory: " + error.message);
 			}
         }
     }
