@@ -34,6 +34,7 @@ import flash.display.DisplayObject;
 import flash.events.*;
 import flash.net.URLLoader;
 import flash.net.URLRequest;
+import flash.utils.ByteArray;
 import flash.utils.getDefinitionByName;
 
 import mx.automation.Automation;
@@ -62,6 +63,9 @@ use namespace mx_internal;
  */
 public class AQAdapter implements IAQCodecHelper
 {
+	
+	[Embed(source="FlexMonkeyEnv.xml", mimeType="application/octet-stream")]  
+	protected const FlexMonkeyEnv:Class;
 	
 	//--------------------------------------------------------------------------
 	//
@@ -246,19 +250,14 @@ public class AQAdapter implements IAQCodecHelper
                 trace("Invalid PlayerID");
                 return;
             }*/
+            
+            
 
-		   // Load environment XML
-		   var te:String = "FlexMonkeyEnv.xml";
-	
-			var loader:URLLoader = new URLLoader();
-			configureListeners(loader);
-	
-			var request:URLRequest = new URLRequest(te);
-			try {
-				loader.load(request);
-			} catch (error:Error) {
-				Alert.show("Unable to load FlexMonkeyEnv.xml from current directory: " + error.message);
-			}
+			var byteArray:ByteArray = new FlexMonkeyEnv() as ByteArray;
+			var env:String = new String(byteArray.readUTFBytes(byteArray.length));
+			setTestingEnvironment(env);
+			PopUpManager.createPopUp(DisplayObject(Application.application), FlexMonkey);			
+
         }
     }
     
@@ -876,50 +875,50 @@ public class AQAdapter implements IAQCodecHelper
 		return AQCodecHelper;
 	}
 	
-        private function configureListeners(dispatcher:IEventDispatcher):void 
-        {
-            dispatcher.addEventListener(Event.COMPLETE, completeHandler);
-            dispatcher.addEventListener(Event.OPEN, openHandler);
-            dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler);
-            dispatcher.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-            dispatcher.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
-            dispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-        }
-
-        private function completeHandler(event:Event):void {
-            
-            var loader:URLLoader = URLLoader(event.target);
-            //trace("completeHandler: " + loader.data);
-       
-            setTestingEnvironment(loader.data);
-
-			PopUpManager.createPopUp(DisplayObject(Application.application), FlexMonkey);
-        }
-
-        private function openHandler(event:Event):void {
-            //trace("openHandler: " + event);
-        }
-
-        private function progressHandler(event:ProgressEvent):void {
-            //trace("progressHandler loaded:" + event.bytesLoaded + " total: " + event.bytesTotal);
-        }
-
-        private function securityErrorHandler(event:SecurityErrorEvent):void {
-            Alert.show("securityErrorHandler: " + event);
-        }
-
-        private function httpStatusHandler(event:HTTPStatusEvent):void {
-            //trace("httpStatusHandler: " + event);
-        }
-
-        private function ioErrorHandler(event:IOErrorEvent):void {
-            Alert.show("ioErrorHandler: " + event);
-        }
-    
-	public function getRecords():String
-	{
-		return records.toXMLString();
-	}
+//        private function configureListeners(dispatcher:IEventDispatcher):void 
+//        {
+//            dispatcher.addEventListener(Event.COMPLETE, completeHandler);
+//            dispatcher.addEventListener(Event.OPEN, openHandler);
+//            dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+//            dispatcher.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+//            dispatcher.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
+//            dispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+//        }
+//
+//        private function completeHandler(event:Event):void {
+//            
+//            var loader:URLLoader = URLLoader(event.target);
+//            //trace("completeHandler: " + loader.data);
+//       
+//            setTestingEnvironment(loader.data);
+//
+//			PopUpManager.createPopUp(DisplayObject(Application.application), FlexMonkey);
+//        }
+//
+//        private function openHandler(event:Event):void {
+//            //trace("openHandler: " + event);
+//        }
+//
+//        private function progressHandler(event:ProgressEvent):void {
+//            //trace("progressHandler loaded:" + event.bytesLoaded + " total: " + event.bytesTotal);
+//        }
+//
+//        private function securityErrorHandler(event:SecurityErrorEvent):void {
+//            Alert.show("securityErrorHandler: " + event);
+//        }
+//
+//        private function httpStatusHandler(event:HTTPStatusEvent):void {
+//            //trace("httpStatusHandler: " + event);
+//        }
+//
+//        private function ioErrorHandler(event:IOErrorEvent):void {
+//            Alert.show("ioErrorHandler: " + event);
+//        }
+//    
+//	public function getRecords():String
+//	{
+//		return records.toXMLString();
+//	}
 
 }
 

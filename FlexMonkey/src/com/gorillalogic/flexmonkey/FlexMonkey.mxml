@@ -12,6 +12,7 @@
 	
 <mx:Script>
 	<![CDATA[
+		import flexunit.framework.Assert;
 		import com.gorillalogic.flexmonkey.MonkeyEvent;
 		import flexunit.framework.TestSuite;
 		import mx.controls.Alert;
@@ -44,6 +45,9 @@
 		public var thinkTime:int = 500;
 
 		
+		/**
+		 * Currently running FlexMonkey instance
+		 */ 
 		public static var theMonkey:FlexMonkey;
 	
 		private function create():void {
@@ -256,9 +260,7 @@
 				}
 
 				var target:IAutomationObject = MonkeyUtils.findComponentWith(value, prop, container);
-				if (!target) {
-					throw new AssertionFailed("Unable to find component having " + prop + " = " + value);
-				}
+				Assert.assertNotNull(target,"Unable to find component having " + prop + " = " + value);
 
 		        if (!target || !am.isSynchronized(target))
 					return false;

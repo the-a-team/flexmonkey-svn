@@ -27,11 +27,22 @@ package com.gorillalogic.flexmonkey
 			* The property containing the specified containingId value.
 			*/
 			public var containerProp:String = null;		
-			
-		public function FlexCommand(value:String, command:String, args:Array = null, prop:String = null, containerValue:String = null, containerProp:String = null)
+		
+		/**
+		 * Generate a flex event for the component identified by the specified 
+		 * property-value pair.
+		 * 
+		 * @param value the value to search for
+		 * @param name the name of the event to generate
+		 * @param args the event args
+		 * @param prop the property to search for the specified value. Defaults to automationName.
+		 * @param containerValue if specified, only children/descendants of the container having this property value will be searched.
+		 * @param containerProp The property to search for the specified containerValue. If no containerProperty-containerValue pair is specified, all components will be searched.
+		 */ 	
+		public function FlexCommand(value:String, name:String, args:Array = null, prop:String = "automationName", containerValue:String = null, containerProp:String = null)
 		{
 			this.value = value;
-			this.command = command;
+			this.command = name;
 			this.args = args;
 			this.prop = prop
 			this.containerValue = containerValue;
