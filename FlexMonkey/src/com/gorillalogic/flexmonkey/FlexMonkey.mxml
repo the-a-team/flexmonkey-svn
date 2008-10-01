@@ -247,7 +247,7 @@
 			runCommands(selectedCommands);
 		}
 		
-		private static function runCommand(value:String, command:String, args:Array, prop=null, containerValue:String=null, containerProp:String=null):Boolean {
+		private static function runCommand(value:String, command:String, args:Array, prop:String=null, containerValue:String=null, containerProp:String=null):Boolean {
 			    var am:IAutomationManager = AQAdapter.aqAdapter.automationManager;
         	
 				if (!am.isSynchronized(null)) {
@@ -325,7 +325,7 @@
 					<mx:DataGridColumn headerText="" width="20">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:Image source="@Embed(source='assets/delete.png')" click="outerDocument.removeCommand(this)"/>
+								<mx:Image source="@Embed(source='/assets/delete.png')" click="outerDocument.removeCommand(this)"/>
 							</mx:Component>
 						</mx:itemRenderer>	
 					</mx:DataGridColumn>								
