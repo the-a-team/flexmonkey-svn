@@ -51,11 +51,11 @@
 				</mx:FormItem>
 
 			</mx:Form>
-			<mx:HBox>
+			<mx:ControlBar>
 				<mx:Button label="Add" click="add()"/>
-				<mx:Button label="Change" click="change()" enabled="{grid.selectedIndex > -1}"/>				
+				<mx:Button label="Change" click="change()" enabled="{grid.selectedIndex > -1}"/>
 				<mx:Button label="Delete" click="deleteRow()" enabled="{grid.selectedIndex > -1}"/>
-			</mx:HBox>				
+			</mx:ControlBar>
 			</mx:VBox>			
 				<mx:DataGrid id="grid" width="100%" height="100%" dataProvider="{contacts}" editable="true">
 						<mx:columns>
