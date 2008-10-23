@@ -12,6 +12,8 @@
 	
 <mx:Script>
 	<![CDATA[
+		import flexunit.flexui.TestRunner;
+		import de.aggro.components.CollapsableTitleWindowEvent;
 		import flexunit.framework.Assert;
 		import com.gorillalogic.flexmonkey.MonkeyEvent;
 		import flexunit.framework.TestSuite;
@@ -49,19 +51,40 @@
 		 * Currently running FlexMonkey instance
 		 */ 
 		public static var theMonkey:FlexMonkey;
+		
+		private static var autoStart:Boolean = false;
 	
 		private function create():void {
 			theMonkey = this;
+			if (autoStart) {
+				// For some inexplicable reason, setting selectedIndex is having no effect :(
+				tabs.selectedIndex = 2;
+				
+				// Collapse the FlexMonkey window 
+				this.collapseHandler(new MouseEvent("synthetic"));
+				
+				// The following line doesn't work either :(
+				theMonkey.testRunner.addEventListener("testsComplete", function():void {
+					this.expandHandler(new MouseEvent("synthetic"))});
+					
+				theMonkey.run();
+			}
 		}
 	
 		private function startRecording():void
 		{
-			
 			this.tabs.selectedIndex = 0;
 			Automation.automationManager.addEventListener(AutomationRecordEvent.RECORD, recordHandler, false, 0, true);    
 			AQAdapter.aqAdapter.beginRecording();
 
 
+		}
+
+		/**
+		/* Enable FlexUnit tests to start running as soon as FlexMonkey opens
+		*/
+		public static function enableAutoStart(enable:Boolean = true):void {
+			autoStart = enable;
 		}
 		
 		private function recordHandler(event:AutomationRecordEvent):void {
@@ -119,6 +142,8 @@
 				"	{\n" +
 				"      public static function init(root:DisplayObject) : void {\n" +
 				"     	FlexMonkey.addTestSuite(YourTests);\n" +
+				"       // Uncomment the following line to run tests immediately upon app startup\n" +
+				"       // FlexMonkey.enableAutoStart();\n" +
 				"	}\n";
 			}
 			

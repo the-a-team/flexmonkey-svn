@@ -12,13 +12,17 @@ package test
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.DataGrid;
+	import mx.events.FlexEvent;
 
 
 	[Mixin]
 	public class FlexUnitTests extends TestCase
 	{
       public static function init(root:DisplayObject) : void {
+   		
      	FlexMonkey.addTestSuite(FlexUnitTests);
+     	// Uncomment the following line to run tests immediately upon app startup
+		// FlexMonkey.enableAutoStart();
 	}
 	// FlexUnit test method
 	public function testSomething():void {
