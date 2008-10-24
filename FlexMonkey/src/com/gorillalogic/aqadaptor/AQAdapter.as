@@ -32,8 +32,6 @@ import com.gorillalogic.flexmonkey.FlexMonkey;
 
 import flash.display.DisplayObject;
 import flash.events.*;
-import flash.net.URLLoader;
-import flash.net.URLRequest;
 import flash.utils.ByteArray;
 import flash.utils.getDefinitionByName;
 
@@ -348,6 +346,10 @@ public class AQAdapter implements IAQCodecHelper
 	 */
     public function setTestingEnvironment(te:String):void
     {
+    	if (automationManager == null) {
+    		Alert.show("Automation Manager does not appear to be loaded. Be sure you are including the automation libraries.");
+    		return;
+    	}
         automationManager.automationEnvironment = new AQEnvironment(new XML(te));
     }
 
