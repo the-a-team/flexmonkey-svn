@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<project name="Flex Monkey" default="compile" basedir=".">
+
+ <!-- specific directory -->
+ <property name="src.dir" value="src"/>
+ <property name="build.dir" value="build"/>
+ <property name="docs.dir" value="docs"/>
+ <property name="lib.dir" value="libs"/>
+
+ <!-- Load Environment specific properties from properties file -->
+ <property file="build.properties"/>
+ <fail unless="flex.home" message="flex.home should be set (in build.properties file)"/>
+ <property name="FLEX_HOME" value="${flex.home}"/>
+	
+ <property name="DEFAULT.LOCAL" value="en_US"/>
+ <property name="ENCODING" value="UTF-8"/>
+
+ <property name="project.name" value="MonkeyContacts"/>
+ <property name="swf.export" value="MonkeyContacts.swf"/>
+
+ <!-- Load the flex tasks for compiling the actionScript code and running flexUnit --> 
+ <taskdef resource="flexTasks.tasks" classpath="${flex.ant.loc}/lib/flexTasks.jar"/> 
+
+ <!-- Compile Flex files -->
+ <target name="compile" description="Compile the flex part">
+
+   <mxmlc file="${src.dir}/${main.mxml}"
+      output="${build.dir}/${swf.export}"
+      actionscript-file-encoding="${ENCODING}"
+      keep-generated-actionscript="false"
+      incremental="false"
+      as3="true"
+      context-root="${project.name}"
+      debug="true">
+     <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+     <source-path path-element="${FLEX_HOME}/frameworks"/>
+   	
+     <source-path path-element="${src.dir}"/>
+   	
+   	<includes symbol="${flex.flexunit.testcase}"/>
+
+     <!-- lib directory for flex -->
+     <compiler.library-path dir="${lib.dir}" append="true">
+       <include name="**/*.swc" />
+     </compiler.library-path>
+
+     <compiler.include-libraries dir="${lib.dir}" append="true">
+       <include name="**/*.swc" />    	
+     </compiler.include-libraries>
+   	
+    <compiler.include-libraries dir="${FLEX_HOME}/frameworks/libs" append="true">
+      <include name="automation.swc"/>
+      <include name="automation_agent.swc"/>     	
+    </compiler.include-libraries>   	
+   	
+   </mxmlc>
+
+ </target>
+
+</project>
