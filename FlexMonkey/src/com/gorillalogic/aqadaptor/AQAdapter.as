@@ -254,7 +254,7 @@ public class AQAdapter implements IAQCodecHelper
 			var byteArray:ByteArray = new FlexMonkeyEnv() as ByteArray;
 			var env:String = new String(byteArray.readUTFBytes(byteArray.length));
 			setTestingEnvironment(env);
-			PopUpManager.createPopUp(DisplayObject(Application.application), FlexMonkey);			
+			PopUpManager.addPopUp(FlexMonkey.theMonkey, DisplayObject(Application.application));			
 
         }
     }

@@ -50,12 +50,11 @@
 		/**
 		 * Currently running FlexMonkey instance
 		 */ 
-		public static var theMonkey:FlexMonkey;
+		public static const theMonkey:FlexMonkey = new FlexMonkey();
 		
 		private static var autoStart:Boolean = false;
 	
 		private function create():void {
-			theMonkey = this;
 			if (autoStart) {
 				// For some inexplicable reason, setting selectedIndex is having no effect :(
 				tabs.selectedIndex = 2;
