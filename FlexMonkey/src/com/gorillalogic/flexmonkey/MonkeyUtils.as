@@ -44,14 +44,14 @@ package com.gorillalogic.flexmonkey
 				}
 				return null;
 			}
-			var numChildren:int = container.numChildren;
+			var numChildren:int = container.numAutomationChildren;
 			if (numChildren == 0) {
 				return null;
 			}
 			
 			var component:UIComponent;
 			for (var i:int=0; i < numChildren; i++) {
-				child = container.getChildAt(i);
+				child = container.getAutomationChildAt(i) as DisplayObject;
 
 				if (!(child is UIComponent)) {
 					continue;

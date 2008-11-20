@@ -12,6 +12,7 @@
 	
 <mx:Script>
 	<![CDATA[
+		import flexunit.framework.TestCase;
 		import flexunit.flexui.TestRunner;
 		import de.aggro.components.CollapsableTitleWindowEvent;
 		import flexunit.framework.Assert;
@@ -45,6 +46,8 @@
 		 */ 
 		 [Bindable]
 		public var thinkTime:int = 500;
+		
+		public var runner:CommandRunner = new CommandRunner();
 
 		
 		/**
@@ -63,8 +66,8 @@
 				this.collapseHandler(new MouseEvent("synthetic"));
 				
 				// The following line doesn't work either :(
-				theMonkey.testRunner.addEventListener("testsComplete", function():void {
-					this.expandHandler(new MouseEvent("synthetic"))});
+				theMonkey.testRunner.addEventListener("testsComplete",function():void {
+					theMonkey.expandHandler(new MouseEvent("synthetic"))});
 					
 				theMonkey.run();
 			}
@@ -149,7 +152,7 @@
 			source.text+=
 				"	// FlexUnit test method\n" +
 				"	public function testSomething():void {\n" +
-		  		"		FlexMonkey.theMonkey.addEventListener(MonkeyEvent.READY_FOR_VALIDATION, addAsync(verifySomething, 10000));\n" +
+		  		"		FlexMonkey.addVerifier(this, verifySomething, 10000);\n" +
 				"		FlexMonkey.runCommands([\n";
 			var first:Boolean = true;	
 			for each (var cmd:FlexCommand in cmds) {
@@ -220,47 +223,8 @@
 		 * 		]);
 		 */ 
 		public static function runCommands(cmds:Array, validator:Function=null):void {	
-				
+			theMonkey.runner.runCommands(cmds, validator);				
 
-			var runTimer:Timer = new Timer(theMonkey.thinkTime, 1);		
-			var nextCmdIndex:int = 0;	
-
-			runTimer.addEventListener(TimerEvent.TIMER_COMPLETE, function():void {
-				runTimer.delay = theMonkey.thinkTime;
-				if (nextCmdIndex == cmds.length) {
-					theMonkey.dispatchEvent(new MonkeyEvent(MonkeyEvent.READY_FOR_VALIDATION));
-					return;
-				}
-				
-				var c:Object = cmds[nextCmdIndex];
-				if (c is PauseCommand) {
-					runTimer.delay = PauseCommand(c).delay;
-					runTimer.start();
-					nextCmdIndex++;
-					return;
-				}
-				
-				if (c is CallCommand) {
-					CallCommand(c).func();
-					nextCmdIndex++;
-					runTimer.start();
-					return;
-				}
-				
-				var cmd:FlexCommand = c as FlexCommand;
-				
-				try {
-					if (runCommand(cmd.value, cmd.command, cmd.args, cmd.prop, cmd.containerValue, cmd.containerProp)) {
-						nextCmdIndex++;
-					}
-				} catch (error:Error) {
-					Alert.show(error.message);
-					nextCmdIndex++
-				}
-				runTimer.start();
-				
-			});
-			runTimer.start();
 		}
 		
 		private function runSelected(event:MouseEvent):void {
@@ -270,38 +234,6 @@
 			}	
 			runCommands(selectedCommands);
 		}
-		
-		private static function runCommand(value:String, command:String, args:Array, prop:String=null, containerValue:String=null, containerProp:String=null):Boolean {
-			    var am:IAutomationManager = AQAdapter.aqAdapter.automationManager;
-        	
-				if (!am.isSynchronized(null)) {
-					return false;
-				}
-
-				var container:UIComponent = null;
-				if (containerValue != null) {
-					container = MonkeyUtils.findComponentWith(containerValue, containerProp); 
-				}
-
-				var target:IAutomationObject = MonkeyUtils.findComponentWith(value, prop, container);
-				Assert.assertNotNull(target,"Unable to find component having " + prop + " = " + value);
-
-		        if (!target || !am.isSynchronized(target))
-					return false;
-
-	            if (!am.isVisible(target as DisplayObject))
-					return false;
-
-        	
-	        	AQAdapter.aqAdapter.run(target, 
-		        						command, 
-		        						args);
-//		        if (recordEnabled()) {					
-//		        	ArrayCollection(theMonkey.cmdGrid.dataProvider).addItem(new FlexCommand(value, command, args, prop, containerValue, containerProp));
-//		        }
-				return true;
-		}
-		
 		
 		private static function recordEnabled():Boolean {
 			return !theMonkey.btnRecord.enabled;
@@ -324,6 +256,10 @@
 		
 		public function removeCommand(img:Image):void {
 			commands.removeItemAt(img.listData.rowIndex);
+		}
+		
+		public static function addVerifier(test:TestCase, func:Function, timeOut:int=10000):void {
+			theMonkey.runner.addVerifier(test, func, timeOut);
 		}
 		
 		
