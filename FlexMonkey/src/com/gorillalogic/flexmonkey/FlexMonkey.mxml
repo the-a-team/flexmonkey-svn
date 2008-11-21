@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<aggro:CollapsableTitleWindow mouseDown="if (btnRecord.selected) stopRecording()" title="Flex Monkey!" xmlns:flexui="flexunit.flexui.*" xmlns:aggro="de.aggro.components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="{.5*Application.application.width}" height="{.5*Application.application.height}" creationComplete="create()" >
+<aggro:CollapsableTitleWindow creationPolicy="all" mouseDown="if (btnRecord.selected) stopRecording()" title="Flex Monkey!" xmlns:flexui="flexunit.flexui.*" xmlns:aggro="de.aggro.components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="{.5*Application.application.width}" height="{.5*Application.application.height}" creationComplete="create()" >
 	<mx:Script>
 		<![CDATA[
 			import mx.core.Application;
@@ -12,6 +12,7 @@
 	
 <mx:Script>
 	<![CDATA[
+		import mx.managers.PopUpManager;
 		import flexunit.framework.TestCase;
 		import flexunit.flexui.TestRunner;
 		import de.aggro.components.CollapsableTitleWindowEvent;
@@ -59,15 +60,15 @@
 	
 		private function create():void {
 			if (autoStart) {
-				// For some inexplicable reason, setting selectedIndex is having no effect :(
-				tabs.selectedIndex = 2;
 				
 				// Collapse the FlexMonkey window 
 				this.collapseHandler(new MouseEvent("synthetic"));
 				
-				// The following line doesn't work either :(
 				theMonkey.testRunner.addEventListener("testsComplete",function():void {
-					theMonkey.expandHandler(new MouseEvent("synthetic"))});
+					tabs.selectedIndex = 2;
+					theMonkey.expandHandler(new MouseEvent("synthetic"))
+					PopUpManager.centerPopUp(theMonkey);
+					});
 					
 				theMonkey.run();
 			}
@@ -311,13 +312,13 @@
 			<mx:CheckBox id="fullClass" label="Show complete TestCase" click="showSource(event)"/>
 			<mx:TextArea id="source"  width="100%" height="100%" x="0"/>
 		</mx:VBox>					
-		<mx:VBox label="FlexUnit Runner" height="{.7*height}" width="{.9*width}">
+		<mx:VBox id="flexrunner" label="FlexUnit Runner" height="{.9*height}" width="{.9*width}" borderStyle="solid" borderThickness="1">
 			<mx:ControlBar width="100%">
 			<mx:Button label="Run" click="run()"/>
 			</mx:ControlBar>
-	    	<flexui:TestRunnerBase id="testRunner" height="{.6*height}" width="{.8*width}" />	    	
+	    	<flexui:TestRunnerBase id="testRunner" height="{.9*flexrunner.height}" width="{.9*flexrunner.width}" />	    	
 	    </mx:VBox>
-	</mx:TabNavigator>
+	</mx:TabNavigator> 
 		
 	</mx:VBox>
 
