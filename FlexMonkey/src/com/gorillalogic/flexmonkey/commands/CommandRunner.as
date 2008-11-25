@@ -1,20 +1,22 @@
-package com.gorillalogic.flexmonkey
+package com.gorillalogic.flexmonkey.commands
 {
 	import com.gorillalogic.aqadaptor.AQAdapter;
+	import com.gorillalogic.flexmonkey.core.MonkeyUtils;
+	import com.gorillalogic.flexmonkey.core.MonkeyEvent;
 	
 	import flash.display.DisplayObject;
 	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
-	import flexunit.framework.Assert;
-	import flexunit.framework.TestCase;
-	
 	import mx.automation.IAutomationManager;
 	import mx.automation.IAutomationObject;
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	
+	
+	[Event(name="readyForValidation", type="com.gorillalogic.MonkeyEvent")]
+	[Event(name="error", type="com.gorillalogic.MonkeyEvent")]	
 	public class CommandRunner extends EventDispatcher
 	{
 		public function CommandRunner()
@@ -80,8 +82,10 @@ package com.gorillalogic.flexmonkey
 
 			var target:IAutomationObject = MonkeyUtils.findComponentWith(value, prop, container);
 			
-			Assert.assertNotNull(target,"Unable to find component having " + prop + " = " + value);
-
+			if (target == null) {
+				dispatchEvent(new MonkeyEvent(MonkeyEvent.ERROR, false, false, "Unable to find component having " + prop + " = " + value));
+			}
+			
 	        if (!target || !am.isSynchronized(target))
 				return false;
 
@@ -94,16 +98,7 @@ package com.gorillalogic.flexmonkey
 	        						args);
 			return true;
 		}
-		
-		/**
-		 * Registers a verification function for a TestCase. Function will be called after commands have been run.
-		 * @param test the TestCase 	
-		 * @param func the function to call after commands have been run
-		 * @param timeOut Maximum time to wait for the commands to run
-		 */ 
-		public function addVerifier(test:TestCase, func:Function, timeOut:int=10000):void {
-			addEventListener(MonkeyEvent.READY_FOR_VALIDATION, test.addAsync(func, timeOut));
-		}
+
 
 
 	}	

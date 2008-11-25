@@ -1,4 +1,4 @@
-package com.gorillalogic.flexmonkey
+package com.gorillalogic.flexmonkey.commands
 {
 	/**
 	 * Call the specified function during playback

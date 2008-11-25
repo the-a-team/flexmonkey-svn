@@ -28,7 +28,6 @@ import com.gorillalogic.aqadaptor.codec.ScrollDirectionPropertyCodec;
 import com.gorillalogic.aqadaptor.codec.TabObjectCodec;
 import com.gorillalogic.aqadaptor.codec.TriggerEventPropertyCodec;
 import com.gorillalogic.aqadaptor.custom.CustomAutomationClass;
-import com.gorillalogic.flexmonkey.FlexMonkey;
 
 import flash.display.DisplayObject;
 import flash.events.*;
@@ -254,8 +253,7 @@ public class AQAdapter implements IAQCodecHelper
 			var byteArray:ByteArray = new FlexMonkeyEnv() as ByteArray;
 			var env:String = new String(byteArray.readUTFBytes(byteArray.length));
 			setTestingEnvironment(env);
-			PopUpManager.addPopUp(FlexMonkey.theMonkey, DisplayObject(Application.application));
-			PopUpManager.centerPopUp(FlexMonkey.theMonkey);			
+		
 
         }
     }
@@ -456,10 +454,10 @@ public class AQAdapter implements IAQCodecHelper
             var obj:IAutomationObject = event.automationObject ;
             
             // Skip clicks on the toolbar itself
-            if (event.automationObject is FlexMonkey) {
-            	automationManager.decrementCacheCounter();
-           		return;
-            }
+//            if (event.automationObject is FlexMonkey) {
+//            	automationManager.decrementCacheCounter();
+//           		return;
+//            }
             
             var rid:AutomationID = automationManager.createID(obj);
 

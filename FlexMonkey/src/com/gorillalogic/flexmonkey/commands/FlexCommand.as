@@ -1,6 +1,6 @@
-package com.gorillalogic.flexmonkey
+package com.gorillalogic.flexmonkey.commands
 {
-	public class FlexCommand	
+	public class FlexCommand
 	{
 			/**
 			 * The id of the target component to which to send the command. By default, it's the automationName
