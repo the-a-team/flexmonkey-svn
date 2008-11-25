@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actionScriptProperties mainApplicationPath="MonkeyContacts.mxml" version="3">
-<compiler additionalCompilerArguments="-locale en_US -includes test.FlexUnitTests -include-libraries &quot;/Applications/Adobe Flex Builder 3/sdks/3.0.0/frameworks/libs/automation_agent.swc&quot; &quot;/Applications/Adobe Flex Builder 3/sdks/3.0.0/frameworks/libs/automation.swc&quot; &quot;/Users/sstern/eclipse/gxesvn/FlexMonkey/bin/FlexMonkey.swc&quot;" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
+<compiler additionalCompilerArguments="-locale en_US -includes test.FlexUnitTests -include-libraries &quot;/Applications/Adobe Flex Builder 3/sdks/3.0.0/frameworks/libs/automation_agent.swc&quot; &quot;/Applications/Adobe Flex Builder 3/sdks/3.0.0/frameworks/libs/automation.swc&quot; &quot;/Users/sstern/eclipse/gxesvn/MonkeyExample/libs/FlexMonkeyUI.swc&quot;" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
 <compilerSourcePath/>
 <libraryPath defaultLinkType="1">
 <libraryPathEntry kind="4" path=""/>
-<libraryPathEntry kind="3" linkType="1" path="/FlexMonkey/bin/FlexMonkey.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="1" linkType="1" path="libs"/>
 </libraryPath>
 <sourceAttachmentPath/>
 </compiler>

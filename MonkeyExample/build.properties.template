@@ -6,9 +6,13 @@ flex.home=/Applications/Adobe Flex Builder 3/sdks/3.0.0
 # Location of flexTasks.jar
 flex.ant.loc=${flex.home}/ant
 
-#flexunit test case
+# Source of app to be tested with FlexMonkey
+main.mxml=MonkeyContacts.mxml
+
+#flexunit test case to be run against app
 flex.flexunit.testcase=test.FlexUnitTests
 
-# Source of app to be tested
-main.mxml=FlexMonkey.mxml
+# Test properties for running tests from Ant
+flex.unit.swf=${basedir}/bin-debug/MonkeyContacts.swf
+report.dir=${basedir}/report
 

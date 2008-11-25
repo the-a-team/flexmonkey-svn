@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<project name="Flex Monkey" default="compile" basedir=".">
+<project name="Monkey Example" default="compile" basedir=".">
 
  <!-- specific directory -->
  <property name="src.dir" value="src"/>
- <property name="build.dir" value="build"/>
+ <property name="build.dir" value="bin-debug"/>
  <property name="docs.dir" value="docs"/>
  <property name="lib.dir" value="libs"/>
 
@@ -20,6 +20,9 @@
 
  <!-- Load the flex tasks for compiling the actionScript code and running flexUnit --> 
  <taskdef resource="flexTasks.tasks" classpath="${flex.ant.loc}/lib/flexTasks.jar"/> 
+	
+ <!-- Load the flexunit task definitions. -->
+ <taskdef resource="com/adobe/ac/ant/tasks/tasks.properties" />
 
  <!-- Compile Flex files -->
  <target name="compile" description="Compile the flex part">
@@ -47,14 +50,40 @@
      <compiler.include-libraries dir="${lib.dir}" append="true">
        <include name="**/*.swc" />    	
      </compiler.include-libraries>
-   	
+
     <compiler.include-libraries dir="${FLEX_HOME}/frameworks/libs" append="true">
       <include name="automation.swc"/>
       <include name="automation_agent.swc"/>     	
-    </compiler.include-libraries>   	
+    </compiler.include-libraries>     	
+   	
    	
    </mxmlc>
+ </target>
 
+ <target name="test" depends="compile">						
+	<flexunit
+		
+		timeout="0"
+		verbose="true"
+		swf="${flex.unit.swf}"
+		toDir="${report.dir}"
+		haltonfailure="false" />	
+	
+	<junitreport todir="${report.dir}">
+	  <fileset dir="${report.dir}">
+	     <include name="TEST-*.xml"/>
+	  </fileset>
+			
+	  <report format="frames" todir="${report.dir}/flex"/>
+		
+	</junitreport>	
+ </target>
+	
+ <target name="all">
+	<subant target="dist">
+ 		<filelist dir="../" files="FlexMonkey/build.xml,FlexMonkeyUI/build.xml"/>
+	</subant>
+ 	<antcall target="compile"/>
  </target>
 
 </project>
