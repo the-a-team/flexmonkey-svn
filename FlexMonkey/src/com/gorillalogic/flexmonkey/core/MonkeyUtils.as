@@ -70,6 +70,13 @@ package com.gorillalogic.flexmonkey.core
 			return null;
 				
 		}
+		
+		/**
+		 * @return the path of FlexMonkey.swf's file location
+		 */
+		static public function getAppPath():String {
+			return Application.application.url.split('/').slice(0,-1).join('/');
+		}
 
 
 	}

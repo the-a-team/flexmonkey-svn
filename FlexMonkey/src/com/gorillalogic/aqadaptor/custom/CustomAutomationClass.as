@@ -13,13 +13,13 @@ import flash.display.DisplayObject;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
 import flash.system.ApplicationDomain;
-import flash.utils.describeType;
 import flash.utils.getQualifiedClassName;
-import mx.utils.ObjectUtil;
+
 import mx.automation.IAutomationClass;
-import mx.automation.IAutomationMethodDescriptor;
 import mx.automation.IAutomationEventDescriptor;
+import mx.automation.IAutomationMethodDescriptor;
 import mx.automation.IAutomationPropertyDescriptor;
+import mx.utils.ObjectUtil;
 
 /**
  * Provides serializable class information for external automation tools.
@@ -226,7 +226,11 @@ public class CustomAutomationClass implements IAutomationClass
             eventType = "keyPress";
         var eventClassName:String = getClassName(event);
         var hash:String = hash(eventClassName, eventType);
-        return hash in _event2descriptor ? _event2descriptor[hash] : null;
+        var ob:IAutomationEventDescriptor = (hash in _event2descriptor) ? _event2descriptor[hash] : null;
+        if (ob == null) {
+        	trace("no method");
+        }
+        return ob;
     }
 
      /**
