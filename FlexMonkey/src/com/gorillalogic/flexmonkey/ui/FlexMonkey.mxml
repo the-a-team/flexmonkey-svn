@@ -76,6 +76,9 @@
 		private static var autoStart:Boolean = false;
 		
 		private static var visible:Boolean = true;
+		
+		[Bindable]
+		private var swfLoader:SWFLoader;
 	
 		private function create():void {
 			
@@ -174,11 +177,8 @@
 				"       root.addEventListener(FlexEvent.APPLICATION_COMPLETE, function():void {\n" +
 				"        // To run with the FlexMonkey UI\n" +
 				"     	 FlexMonkey.addTestSuite(YourTests);\n" +
-				"\n" +
-				"        // Uncomment the following line to start tests immediately upon opening the FlexMonkey window (not needed for Ant)\n" +
-				"        // FlexMonkey.enableAutoStart();\n" +
 				"\n" +				
-				"        // To run without the FlexMonkeyUI, use the lines below instead of the ones obove (and link FlexMonkey.swc instead of FlexMonkeyUI.swc)\n" +
+				"        // To run from ant instead of the built-in runner, use the lines below instead of the ones obove (and link FlexMonkey.swc instead of FlexMonkeyUI.swc)\n" +
 				"        // var	antRunner:JUnitTestRunner = new JUnitTestRunner();\n" +	
 				"        // antRunner.run(new TestSuite(FlexUnitTests));\n" +	
 				"       });\n" +							
@@ -329,7 +329,11 @@
 				if (Application.application.parameters.hasOwnProperty("targetSwf")) {
 					var target:String = Application.application.parameters.targetSwf;
 					var test:String = Application.application.parameters.testSwf;
-					loadWith(target, test);
+					var visible:String = Application.application.parameters.visible;
+					var autoStart:String =  Application.application.parameters.autoStart;
+					var height:int = Application.application.parameters.targetHeight;
+					var width:int = Application.application.parameters.targetWidth;
+					loadWith(target, test, visible, autoStart, width, height);
 					return;
 					
 				}
@@ -359,27 +363,34 @@
 
 				var target:String = config.@targetSwf;
 				var test:String = config.@testSwf;				
-				visible = !(config.@visible == "false");
-				var autoStart:Boolean = config.@autoStart == "true";
-				loadWith(target, test, visible, autoStart);
+				var visible:String = config.@visible;
+				var autoStart:String = config.@autoStart;
+				var width:int = config.@width;
+				var height:int = config.@height;
+				loadWith(target, test, visible, autoStart, width, height);
 
 			}
 			
-			private function loadWith(target:String, test:String, visible:Boolean=true, autoStart:Boolean=false): void {
+			private function loadWith(target:String, test:String, vis:String="true", autoStart:String="false", width:int=0, height:int=0): void {
+				visible = !(vis == "false");
 				if (visible) {
 					showMonkey();
 				}
-				var swfLoader:SWFLoader = loadSwf(targetSwf, target);
-				loadSwf(testSwf, test);
 				
-				if (autoStart) {
-					swfLoader.addEventListener(Event.COMPLETE, function():void {
+				swfLoader = loadSwf(targetSwf, target, width, height);
+				if (test != null && test.length > 0) {
+					loadSwf(testSwf, test);
+				}
+				
+				// Doesn't work. Starts tests before app is finished loading?
+				if (autoStart == "true") {
+					swfLoader.addEventListener(Event.INIT, function():void {
 						FlexMonkey.run();
 					});	
 				}			
 			}
 			
-			private function loadSwf(input:TextInput, name:String):SWFLoader {
+			private function loadSwf(input:TextInput, name:String, width:int=0, height:int=0):SWFLoader {
 				var loader:SWFLoader = new SWFLoader();
 				loader.addEventListener(FlexEvent.PREINITIALIZE, function():void {
 					loader.loaderContext = new LoaderContext(false, ApplicationDomain.currentDomain);
@@ -404,7 +415,17 @@
 					input.text = fname;
 				}
 
+
+
 				loader.source = fname;
+				loader.scaleContent = true;
+				if (width > 0) {
+					loader.width = width;
+				}
+				if (height > 0) {
+					loader.height = height;
+				}
+
 				Application.application.addChild(loader);
 				return loader;
 			}
@@ -454,7 +475,7 @@
 			<mx:ControlBar width="100%">
 				<mx:Button label="Run" click="runSelected(event)"/>
 				<mx:Button label="Clear" click="commands.removeAll()"/>
-				<mx:Button id="btnFlexSpy" label="FlexSpy" click="FlexSpy.show()"  textAlign="center"/>
+				<mx:Button id="btnFlexSpy" label="FlexSpy" click="FlexSpy.show(swfLoader.content['application'])" enabled="{swfLoader != null}"  textAlign="center"/>
 				<mx:CheckBox id="editEnabled" label="Enable editing"/>
 			</mx:ControlBar>
 			<mx:DataGrid editable="{editEnabled.selected}" id="cmdGrid" x="10" y="10" height="{.6*height}" width="{.8*width}" dataProvider="{commands}" allowMultipleSelection="true" allowDragSelection="true" rowCount="20">
