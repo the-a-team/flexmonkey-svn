@@ -165,24 +165,22 @@
 				"	import mx.events.FlexEvent;\n" +				
 				"\n" +	
 				"	import flexunit.framework.Assert;\n" +
-				"	import flexunit.framework.TestCase;\n" +
-				"	import flexunit.framework.TestSuite;\n" +
-				"	import flexunit.junit.JUnitTestRunner;\n" +				
+				"	import flexunit.framework.TestCase;\n" +			
 				"\n" +
 				"\n" +
-				"	[Mixin]\n" +
+//				"	[Mixin]\n" +
 				"	public class YourTests extends TestCase\n" +
-				"	{\n" +
-				"      public static function init(root:DisplayObject) : void {\n" +
-				"       root.addEventListener(FlexEvent.APPLICATION_COMPLETE, function():void {\n" +
-				"        // To run with the FlexMonkey UI\n" +
-				"     	 FlexMonkey.addTestSuite(YourTests);\n" +
-				"\n" +				
-				"        // To run from ant instead of the built-in runner, use the lines below instead of the ones obove (and link FlexMonkey.swc instead of FlexMonkeyUI.swc)\n" +
-				"        // var	antRunner:JUnitTestRunner = new JUnitTestRunner();\n" +	
-				"        // antRunner.run(new TestSuite(FlexUnitTests));\n" +	
-				"       });\n" +							
-				"	}\n";
+				"	{\n";
+//				"      public static function init(root:DisplayObject) : void {\n" +
+//				"       root.addEventListener(FlexEvent.APPLICATION_COMPLETE, function():void {\n" +
+//				"        // To run with the FlexMonkey UI\n" +
+//				"     	 FlexMonkey.addTestSuite(YourTests);\n" +
+//				"\n" +				
+//				"        // To run from ant instead of the built-in runner, use the lines below instead of the ones obove (and link FlexMonkey.swc instead of FlexMonkeyUI.swc)\n" +
+//				"        // var	antRunner:JUnitTestRunner = new JUnitTestRunner();\n" +	
+//				"        // antRunner.run(new TestSuite(FlexUnitTests));\n" +	
+//				"       });\n" +							
+//				"	}\n";
 			}
 			
 			source.text+=
