@@ -1,0 +1,33 @@
+<html>
+<!-- 
+
+Customize this file to pass arguments to FlexMonkeyLauncher:
+
+targetSwf (required) - The name of the swf to be tested. It must reside in the same directory as FlexMonkeyLauncher.
+testSwf - The name of the swf continaing your tests. It also must reside in the same place as FlexMonkeyLauncher.
+visible - If false, the FlexMonkey window will not be displayed
+targetHeight - The height to be set for the targetSwf.
+targetWidth - The width to be set for the targetSwf.
+
+The arguments are passed to FlexMonkeyLauncher as flashvars. See http://livedocs.adobe.com/flex/3/html/help.html?content=passingarguments_3.html
+to learn more about setting flashvars 
+
+ -->
+<head>
+<title>Test Runner Template</title>
+<style>
+body { margin: 0px;
+ overflow:hidden }
+</style>
+</head>
+<body scroll='no'>
+
+
+    <object id='FlexMonkeyRunner' classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab' height='100%' width='100%'>
+        <param name='src' value='FlexMonkeyLauncher.swf'/>
+        <param name='flashVars' value='targetSwf=SOME_APP&testSwf=SOME_TEST'/>
+        <embed name='mySwf' src='FlexMonkeyLauncher.swf' pluginspage='http://www.adobe.com/go/getflashplayer' height='100%' width='100%' flashVars='targetSwf=SOME_APP&testSwf=SOME_TEST'/>
+    </object>
+
+</body>
+</html>
