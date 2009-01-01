@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<project name="Monkey Example" default="compile" basedir=".">
+<project name="Monkey Example" default="test" basedir=".">
 
  <!-- specific directory -->
  <property name="src.dir" value="src"/>
- <property name="build.dir" value="bin-debug"/>
+ <property name="build.dir" value="build"/>
  <property name="docs.dir" value="docs"/>
  <property name="lib.dir" value="libs"/>
 
@@ -17,14 +17,20 @@
 
  <property name="project.name" value="MonkeyContacts"/>
  <property name="swf.export" value="MonkeyContacts.swf"/>
-
+ <property name="swf.test.export" value="FlexMonkeyTests.swf"/>
+	
  <!-- Load the flex tasks for compiling the actionScript code and running flexUnit --> 
  <taskdef resource="flexTasks.tasks" classpath="${flex.ant.loc}/lib/flexTasks.jar"/> 
 	
  <!-- Load the flexunit task definitions. -->
- <taskdef resource="com/adobe/ac/ant/tasks/tasks.properties" />
+ <taskdef resource="com/adobe/ac/ant/tasks/tasks.properties" classpath="${flex.ant.loc}/lib/FlexAntTasks.jar"/>
 
  <!-- Compile Flex files -->
+	
+ <target name="clean">
+	<delete dir="${build.dir}"/>
+ </target>
+	
  <target name="compile" description="Compile the flex part">
 
    <mxmlc file="${src.dir}/${main.mxml}"
@@ -39,29 +45,44 @@
      <source-path path-element="${FLEX_HOME}/frameworks"/>
    	
      <source-path path-element="${src.dir}"/>
-   	
-   	<includes symbol="${flex.flexunit.testcase}"/>
 
      <!-- lib directory for flex -->
      <compiler.library-path dir="${lib.dir}" append="true">
        <include name="**/*.swc" />
      </compiler.library-path>
-
-     <compiler.include-libraries dir="${lib.dir}" append="true">
-       <include name="**/*.swc" />    	
-     </compiler.include-libraries>
-
-    <compiler.include-libraries dir="${FLEX_HOME}/frameworks/libs" append="true">
-      <include name="automation.swc"/>
-      <include name="automation_agent.swc"/>     	
-    </compiler.include-libraries>     	
+   	
    	
    	
    </mxmlc>
  </target>
+	
+	 <target name="compile-tests" description="Compile the swf containing the tests">
 
- <target name="test" depends="compile">						
-	<flexunit
+	   <mxmlc file="${src.dir}/${main.test.mxml}"
+	      output="${build.dir}/${swf.test.export}"
+	      actionscript-file-encoding="${ENCODING}"
+	      keep-generated-actionscript="false"
+	      incremental="false"
+	      as3="true"
+	      context-root="${project.name}"
+	      debug="true">
+	     <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+	     <source-path path-element="${FLEX_HOME}/frameworks"/>
+	   	
+	     <source-path path-element="${src.dir}"/>
+
+	     <!-- lib directory for flex -->
+	     <compiler.library-path dir="${lib.dir}" append="true">
+	       <include name="**/*.swc" />
+	     </compiler.library-path>
+   		   	
+	   </mxmlc>
+	 </target>	
+
+ <target name="test" depends="compile,compile-tests">	
+ 	<copy file="${src.dir}/${test.html.wrapper}" todir="${build.dir}" failonerror="false"/>
+ 	<copy file="${lib.dir}/FlexMonkeyLauncher.swf" todir="${build.dir}"/>
+ 	<flexunit
 		
 		timeout="0"
 		verbose="true"
@@ -77,13 +98,6 @@
 	  <report format="frames" todir="${report.dir}/flex"/>
 		
 	</junitreport>	
- </target>
-	
- <target name="all">
-	<subant target="dist">
- 		<filelist dir="../" files="FlexMonkey/build.xml,FlexMonkeyUI/build.xml"/>
-	</subant>
- 	<antcall target="compile"/>
  </target>
 
 </project>

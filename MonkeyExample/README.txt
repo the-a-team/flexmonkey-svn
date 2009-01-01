@@ -1,23 +1,48 @@
-The AS class test.FlexUnitTests provides an example of how to test an application (MonkeyContacts.mxml) with FlexMonkey.To run,
-open bin-debug/MonkeyContacts.html in your browser. FlexMonkey will start automatically along with the application.
+The AS class test.FlexUnitTests provides an example of how to test an application (MonkeyContacts.mxml) with FlexMonkey.
 
-To run the sample FlexUnit test, click on the FlexUnit tab in FlexMonkey and click the "Run" button. The source for the FlexUnit test is in src/test/FlexUnitTests.as.
+RUNNING
+======
 
-You can record and play scripts on the "Command List" tab. The source tab will show a FlexUnit test generated from the commands currently selected in the command list.
+open build/MonkeyContactsTest.html. 
+
+To run the sample FlexUnit test:
+
+1. Click on the FlexUnit tab in FlexMonkey
+2. Click the "Run" button. 
+
+The source for the FlexUnit test is in src/test/FlexUnitTests.as.
 
 For more info, see http://code.google.com/p/flexmonkey/wiki/GettingStarted.wiki.
 
+RECORDING A TEST
+===============
+
+1. Click the record button.
+2. Interact with the application. Notice that commands are recorded in the command list. You can replay selected commands by highlighting them and hitting Run.
+
+Generating Test Code Source
+===========================
+
+1. Click on the Test Source Code tab.
+2. Source code will be displayed for the recorded commands.
+
+Running from Ant
+================
+
 To run from Ant:
 
-1. Replace FlexMonkeyUI.swc with FlexMonkey.wsc in the libs folder. FlexMonkey.swc can be found in the "optional" folder.
-2. Change the "init" method in FlexUnitTests to:
+1. Create the file build.properties by copying build.properties.template
+2. Customize build.properties for your environment
+3. Change the "create" method in MonkeyContactsTest to:
 
-      public static function init(root:DisplayObject) : void {
-       root.addEventListener(FlexEvent.APPLICATION_COMPLETE, function():void {
-         var antRunner:JUnitTestRunner = new JUnitTestRunner();
-         antRunner.run(new TestSuite(FlexUnitTests));
-       });
+			public function create():void {
+		            var	antRunner:JUnitTestRunner = new JUnitTestRunner();
+		            antRunner.run(new TestSuite(FlexUnitTests), function():void {
+                  	       fscommand("quit");
+         		    }); 
+			}
        
-3. type: ant test
+4. type: ant
+
 
   
