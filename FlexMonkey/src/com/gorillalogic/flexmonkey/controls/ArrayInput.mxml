@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.ArrayUtil;
+			
+			override public function get data() : Object
+			{
+				return ArrayUtil.toArray(text);
+			}
+		]]>
+	</mx:Script>
+</mx:TextInput>

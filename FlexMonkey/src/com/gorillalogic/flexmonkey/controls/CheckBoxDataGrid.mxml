@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- code provided by Danny Gold at http://www.thegoldhold.com/wp-content/uploads/2008/02/CheckboxDataGrid.mxml -->
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" headerRelease="{stopEvent(event)}" allowMultipleSelection="true" allowDragSelection="true" >
+
+	<!-- Selected Column -->
+	<mx:DataGridColumn id="selectColumn" dataField="prototype" editable="false" width="30" resizable="false"> 
+	   <mx:headerRenderer>
+	   		<mx:Component>
+	   			<mx:Canvas width="30" height="100%" click="{outerDocument.headerCheckboxClicked(event)}">	   					   			
+	   				<mx:CheckBox verticalCenter="0" horizontalCenter="0" id="headerCheckbox" mouseEnabled="false" selected="{outerDocument.allItemsSelected(outerDocument.selectedItems)}" />	   				
+	   			</mx:Canvas>
+	   		</mx:Component>
+	   </mx:headerRenderer>
+	   <mx:itemRenderer>
+	      <mx:Component>
+	      	 <mx:Canvas width="30" height="100%">			     
+	         	<mx:CheckBox id="selectedBox" verticalCenter="0" horizontalCenter="0" mouseEnabled="false" selected="{outerDocument.isSelected(data,outerDocument.selectedItems)}"/>		      	 	      	 							      	 										      	 			         	         		         	         		      				      	 	      	 							      	 										      	 			         	         		         	         		      
+	    	 </mx:Canvas>
+	      </mx:Component>						
+	   </mx:itemRenderer> 
+	</mx:DataGridColumn>	
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.automation.IAutomationObject;
+			import mx.controls.listClasses.IListItemRenderer;
+			import mx.events.DataGridEvent;
+			import mx.collections.ListCollectionView;
+			import mx.controls.CheckBox;			
+			
+			override public function set columns(value:Array):void
+			{
+				var newColumns:Array = value.slice();
+				if(newColumns.indexOf(selectColumn) == -1)
+				{
+					newColumns.unshift(selectColumn);
+				}
+				super.columns = newColumns;
+			}
+			
+			override protected function selectItem(item:IListItemRenderer,shiftKey:Boolean, ctrlKey:Boolean,transition:Boolean = true):Boolean
+			{
+				//Check to see if the select is from the Checkbox row, all the others will have a listData property
+				//if(!(item as Object).hasOwnProperty("listData") && !shiftKey)
+				if((item as Object).hasOwnProperty("selectedBox"))
+				{
+					ctrlKey = true;
+				//}
+					return super.selectItem(item, shiftKey, ctrlKey, transition);
+				} 
+				return false;
+			}
+			
+			public function isSelected(data:Object, selectedItems:Array):Boolean
+			{
+				return isItemSelected(data);
+			}
+			
+			public function headerCheckboxClicked(event:Event):void
+			{					
+	   			//Either select or deselect all the rows
+	   			if(allItemsSelected())
+	   			{
+	   				//Clear all selected items
+	   				selectedItems = new Array();   							
+	   			}
+	   			else
+	   			{
+	   				//Select the entire grid			
+	   				if(dataProvider is ListCollectionView)
+	   				{
+	   					selectedItems = (dataProvider as ListCollectionView).toArray();
+	   				}							
+	   			}		
+			}			
+   			
+   			public function allItemsSelected(items:Array = null):Boolean
+			{
+ 				if(dataProvider is ListCollectionView)
+				{
+					if((dataProvider as ListCollectionView).length > 0)
+					{
+						return selectedItems.length == (dataProvider as ListCollectionView).length;
+					}
+				} 
+				return false;   			   			
+			}
+			
+			public function stopEvent(event:DataGridEvent):void
+			{
+				if(columns[event.columnIndex] == selectColumn)
+				{
+					event.stopImmediatePropagation();
+					event.preventDefault();
+				}
+			}			
+			
+		/**
+		 * overriding the pair of functions numAutomationChildern and getAutomationChildAt() 
+		 * effectively removes the ability for this component to be recognized by the Adobe automation engine - wes */	
+		override public function get numAutomationChildren():int {
+			return 0;
+		}
+		
+		override public function getAutomationChildAt(index:int):IAutomationObject{
+			return null;
+		}
+			
+		]]>
+	</mx:Script>	
+	
+</mx:DataGrid>
