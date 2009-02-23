@@ -77,6 +77,10 @@
 		private var testSwfLoader:SWFLoader;
 	
 		private function create():void {
+			var settings:SharedObject = SharedObject.getLocal("fm.windowPreferences");
+			if(settings.data.stopOnFocus != null)
+			cbStopRecordingOnFocus.selected = settings.data.stopOnFocus;
+			
 			allowClose = false;
 			cmdRunner.addEventListener(MonkeyEvent.ERROR, function(event:MonkeyEvent):void {
 				Assert.fail(event.message);
@@ -467,6 +471,12 @@
 			FlexSpy.show(targetSwfLoader.content['application']);
 		}
 		
+		public function savePreferences():void{
+			var settings:SharedObject = SharedObject.getLocal("fm.windowPreferences");
+			trace("stop on Focus= " + cbStopRecordingOnFocus.selected);
+			settings.data.stopOnFocus = cbStopRecordingOnFocus.selected;
+		}
+		
 	]]>
 </mx:Script>
 	<mx:HRule width="100%"/>
@@ -498,7 +508,7 @@
 				</mx:FormItem>
 				<mx:FormItem label="Window Preferences" width="100%" fontWeight="bold">
 					<mx:VBox height="100%" borderStyle="solid" cornerRadius="6" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
-						<mx:CheckBox id="cbStopRecordingOnFocus" label="Stop recording on focus" toolTip="stops recording when the FlexMonkey window is brought into focus by a click" fontWeight="bold" selected="true"/> 
+						<mx:CheckBox id="cbStopRecordingOnFocus" click="savePreferences()" label="Stop recording on focus" toolTip="stops recording when the FlexMonkey window is brought into focus by a click" fontWeight="bold" selected="true"/> 
 						<!--<mx:CheckBox id="cbMinOnRecord" label="Minimize on Record" fontWeight="bold"/>-->
 						<!--<mx:CheckBox id="refreshSWF" label="Refresh SWF on Playback" fontWeight="bold"/>
 						<mx:CheckBox id="minOnPlayback" label="Minimize on Playback" fontWeight="bold"/>-->
