@@ -92,13 +92,10 @@
 		
 		public function collapseWindow():void {
 			theMonkey.collapse();
-			//this.collapseHandler(new MouseEvent("synthetic"));
 		}
 		
 		public function expandWindow():void {
-			//theMonkey.expandHandler(new MouseEvent("synthetic"))
 			theMonkey.expand();
-			PopUpManager.centerPopUp(theMonkey);
 		}
 	
 		private function startRecording():void
@@ -388,12 +385,10 @@
 					testSwfLoader = loadSwf(testSwf, test);
 				}
 				
-				// Doesn't work. Starts tests before app is finished loading?
 				if (autoStart == "true" && testSwfLoader!=null) {
-					testSwfLoader.addEventListener(Event.INIT, function():void {
-						FlexMonkey.run();
-					});	
-				}			
+					testSwfLoader.addEventListener(Event.INIT, swfInitComplete);
+					targetSwfLoader.addEventListener(Event.INIT, swfInitComplete);
+				}
 			}
 			
 			private function loadSwf(input:TextInput, name:String, width:int=0, height:int=0):SWFLoader {
