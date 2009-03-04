@@ -48,7 +48,7 @@
     <compiler.include-libraries dir="${FLEX_HOME}/frameworks/libs" append="true">
       <include name="automation.swc"/>
       <include name="automation_agent.swc"/> 
-      <include name="automation_dmv.scw"/>
+      <include name="automation_dmv.swc"/>
     </compiler.include-libraries>      	
    	
    </mxmlc>
