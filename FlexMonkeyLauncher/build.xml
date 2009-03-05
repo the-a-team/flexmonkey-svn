@@ -22,36 +22,38 @@
 	<delete dir="${build.dir}"/>
  </target>
 	
- <target name="compile" description="Compile the flex part">
-
-   <mxmlc file="${src.dir}/${main.mxml}"
-      output="${build.dir}/${swf.export}"
+ <target name="compile" description="Compile FlexMonkeyLauncher">
+   <echo>Compiling FlexMonkeyLauncher.mxml</echo>
+   <mxmlc fork="true" file="${src.dir}/FlexMonkeyLauncher.mxml"
+      output="${build.dir}/FlexMonkeyLauncher.swf"
       actionscript-file-encoding="${ENCODING}"
       keep-generated-actionscript="false"
-      incremental="false"
+      incremental="true"
       as3="true"
-      debug="true">
+      debug="true"
+      maxmemory="1024m">
+
      <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
-     <source-path path-element="${FLEX_HOME}/frameworks"/>
-   	
-     <source-path path-element="${src.dir}"/>
+     <!--<source-path path-element="${FLEX_HOME}/frameworks"/>-->
+   	 <source-path path-element="${src.dir}"/>
 
      <!-- lib directory for flex -->
-     <compiler.library-path dir="${lib.dir}" append="true">
+     <!--><compiler.library-path dir="${lib.dir}" append="true">
        <include name="**/*.swc" />
      </compiler.library-path>
-   	
+   	-->
+
     <compiler.library-path dir="${monkey.dir}/build" append="true">
-      <include name="**/*.swc" />
-    </compiler.library-path>   	
-   	
+      <include name="**/FlexMonkey.swc" />
+    </compiler.library-path>
+    
     <compiler.include-libraries dir="${FLEX_HOME}/frameworks/libs" append="true">
-      <include name="automation.swc"/>
-      <include name="automation_agent.swc"/> 
-      <include name="automation_dmv.swc"/>
-    </compiler.include-libraries>      	
-   	
-   </mxmlc>
+			<include name="**/automation_dmv.swc"/>      
+			<include name="**/automation.swc"/>
+      <include name="**/automation_agent.swc"/> 
+    </compiler.include-libraries>
+    
+    </mxmlc>
  </target>
 
 </project>
