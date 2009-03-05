@@ -1,0 +1,64 @@
+<project name="FlexMonkeyBuilder" default="build" basedir=".">
+	<description>A consolidated builder for the Flex Monkey suite.</description>
+	<property name="flexBuilderSdkLibs" location="//Applications/Adobe Flex Builder 3/sdks/3.2.0/frameworks/libs/"/>
+	<property name="FLEX_HOME" location="//Applications/Adobe Flex Builder 3/sdks/3.2.0"/>
+	<property name="flex.ant.loc" location="${FLEX_HOME}/ant"/>
+ 	<property name="build" location="build"/>
+	
+	<!-- SUB PROJECT DIRECTORIES -->
+	<property name="fm.dir" location="../FlexMonkey"/>
+	<property name="fml.dir" location="../FlexMonkeyLauncher"/>
+	<property name="example.dir" location="../MonkeyExample"/>
+
+<target name="FlexMonkey">
+	<ant dir="${fm.dir}"  inheritAll="false" target="compile">
+		<property name="src.dir" value="${fm.dir}/src"/>
+		<property name="lib.dir" value="${fm.dir}/lib"/>
+	</ant>
+</target>
+
+<target name="FlexMonkeyLauncher" depends="FlexMonkey">
+	<ant dir="${fml.dir}" inheritAll="false">
+		<property name="monkey.dir" value="../FlexMonkey"/>
+		<property name="src.dir" value="${fml.dir}/src"/>
+		<property name="lib.dir" value="${build}/lib"/>
+	</ant>
+</target>
+
+<target name="MonkeyExample" depends="FlexMonkeyLauncher">
+	<ant dir="${example.dir}" inheritAll="false">
+			<property name="flex.home" location="${FLEX_HOME}"/>
+			<property name="flex.ant.loc" location="${FLEX_HOME}/ant"/>
+			<property name="src.dir" location="${example.dir}/src"/>
+			<property name="lib.dir" location="${example.dir}/libs"/> <!-- TODO rename to lib -->
+	</ant>
+</target>
+
+<target name="build" depends="MonkeyExample">
+		
+		<copy file="${fm.dir}/build/FlexMonkey.swc" todir="${build}"/>
+		<copy todir="${build}/lib">
+	    <fileset dir="${fm.dir}/lib"/>
+	  </copy>
+	  
+		<copy file="${fml.dir}/build/FlexMonkeyLauncher.swf" todir="${build}"/>
+		
+		<copy file="${example.dir}/build/MonkeyContacts.swf" todir="${build}"/>
+		<copy file="${example.dir}/build/FlexMonkeyTests.swf" todir="${build}"/>
+    <copy file="${example.dir}/src/MonkeyContactsTest.html" todir="${build}"/>
+	  <copy todir="${build}/src">
+      <fileset dir="${example.dir}/src"/>
+    </copy>
+    
+    <zip destfile="FlexMonkeyAll.zip">
+      <fileset dir="${build}"/>
+    </zip>
+</target>
+
+<target name="help">
+</target>
+
+<target name="clean">
+	<delete dir="${build}"/>
+</target>
+</project>
