@@ -147,7 +147,7 @@
 		
 		private function showSource(event:Event):void {
 			source.text = "";
-			var cmds:Array = cmdGrid.selectedItems.reverse();
+			var cmds:Array = cmdGrid.selectedItems;
 			if (cmds.length == 0) {
 				cmds = ArrayCollection(cmdGrid.dataProvider).toArray();
 			}
