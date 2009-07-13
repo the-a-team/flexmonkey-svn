@@ -3,6 +3,7 @@
 	<name>MonkeyTestLauncher</name>
 	<comment></comment>
 	<projects>
+		<project>FlexAutomationLibrary</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -19,7 +20,7 @@
 		<link>
 			<name>bin-debug</name>
 			<type>2</type>
-			<location>/Users/grroggy/Documents/FlexMonkeyGoogleCode/MonkeyContactsCodeGenExample/bin-debug</location>
+			<location>/Users/grroggy/Documents/FlexMonkeyGoogleCodeTest/MonkeyContactsCodeGenExample/bin-debug</location>
 		</link>
 	</linkedResources>
 </projectDescription>
