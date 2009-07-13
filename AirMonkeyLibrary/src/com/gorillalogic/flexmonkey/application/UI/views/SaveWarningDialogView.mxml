@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	backgroundAlpha="1"
+	title="{titleText}"
+	initialize="initializeHandler()"
+	creationComplete="creationCompleteHandler()"
+	>
+	<mx:Script>
+		<![CDATA[
+			import com.gorillalogic.flexmonkey.application.UI.viewComponents.AnimatedGIF;
+			import com.gorillalogic.flexmonkey.application.events.MonkeyFileEvent;
+			
+			import mx.managers.PopUpManager;
+			import flash.events.MouseEvent;		
+		
+			[Bindable] public var titleText:String;
+			[Bindable] public var messageText:String;
+			
+			[Bindable] public var buttonText1:String = "Save";
+			[Bindable] public var buttonText2:String = "Don't Save";
+			[Bindable] public var buttonText3:String = "Cancel";
+
+			public var mateDispatcher:IEventDispatcher;
+
+			private function initializeHandler():void{
+				var animatedGIF:AnimatedGIF = new AnimatedGIF(getStyle("GIF"));
+				messageBox.addChild(animatedGIF);				
+			}
+
+			private function creationCompleteHandler():void{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			private function button1ClickHandler(event:MouseEvent):void{
+				mateDispatcher.dispatchEvent(new MonkeyFileEvent(MonkeyFileEvent.TEST_FILE_SAVE));
+				PopUpManager.removePopUp(this);		
+			}	
+			private function button2ClickHandler(event:MouseEvent):void{
+				mateDispatcher.dispatchEvent(new MonkeyFileEvent(MonkeyFileEvent.TEST_FILE_DONT_SAVE));				
+				PopUpManager.removePopUp(this);		
+			}	
+			private function button3ClickHandler(event:MouseEvent):void{
+				mateDispatcher.dispatchEvent(new MonkeyFileEvent(MonkeyFileEvent.TEST_FILE_SAVE_CANCELLED));								
+				PopUpManager.removePopUp(this);		
+			}	
+			
+			[Embed("assets/gifs/m179.gif", mimeType="application/octet-stream")]			
+			[Bindable] public static var defaultGIF:Class;
+			
+			private static var classConstructed:Boolean = classConstruct();
+			private static function classConstruct():Boolean{
+				var styleDeclaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration("SaveWarningDialogView");
+			    if (!styleDeclaration)
+			    	styleDeclaration = new CSSStyleDeclaration();
+			    styleDeclaration.defaultFactory = function ():void {
+					this.GIF = defaultGIF;
+			    }
+			    StyleManager.setStyleDeclaration("SaveWarningDialogView", styleDeclaration, false);				
+				return true;
+			}					
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		[Style(name="GIF", type="Class", inherit="no")]
+	</mx:Metadata>
+	<mx:VBox
+		width="100%"
+		height="100%"
+		horizontalAlign="center">
+		<mx:HBox
+			width="100%"
+			height="100%"
+			id="messageBox"
+			horizontalAlign="center"
+			verticalAlign="middle"
+			>
+			<mx:Text text="{messageText}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Button id="button1" label="{buttonText1}" click="button1ClickHandler(event)"/>		
+			<mx:Button id="button2" label="{buttonText2}" click="button2ClickHandler(event)"/>		
+			<mx:Button id="button3" label="{buttonText3}" click="button3ClickHandler(event)"/>					
+		</mx:HBox>
+	</mx:VBox>	
+</mx:TitleWindow>

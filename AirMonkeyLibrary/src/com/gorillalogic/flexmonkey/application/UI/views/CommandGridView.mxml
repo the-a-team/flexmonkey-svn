@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:comps="com.gorillalogic.flexmonkey.application.UI.viewComponents.*"
+	width="100%"
+	height="100%"
+	paddingTop="0"
+	paddingRight="0"
+	paddingBottom="4"
+	paddingLeft="3"	
+	horizontalAlign="center"
+	verticalAlign="middle"
+	initialize="initializeHandler()"
+>
+	<mx:Script>
+		<![CDATA[
+			import com.gorillalogic.flexmonkey.core.MonkeyTestCase;	
+			import mx.controls.listClasses.IListItemRenderer;
+			import com.asfusion.mate.core.IDataReceiver;
+			import mx.collections.IViewCursor;
+			import mx.collections.HierarchicalCollectionView;
+			import mx.events.DragEvent;
+			import com.asfusion.mate.ioc.InjectorRegistry;
+
+			import mx.controls.TextInput;
+			import mx.events.AdvancedDataGridEvent;
+			import mx.events.AdvancedDataGridEventReason;
+			import mx.events.ListEvent;	
+			
+			import com.gorillalogic.flexmonkey.application.events.UserEvent;
+			import com.gorillalogic.flexmonkey.core.MonkeyTestSuite;
+			import com.gorillalogic.flexmonkey.core.MonkeyTestCase;
+			import com.gorillalogic.flexmonkey.core.MonkeyTest;
+			import com.gorillalogic.flexmonkey.core.MonkeyRunnable;
+			import com.gorillalogic.flexmonkey.monkeyCommands.PauseMonkeyCommand;
+			import com.gorillalogic.flexmonkey.monkeyCommands.UIEventMonkeyCommand;
+			import com.gorillalogic.flexmonkey.monkeyCommands.VerifyMonkeyCommand;	
+
+			import mx.collections.HierarchicalData;
+			import flash.events.IEventDispatcher;
+
+			public var mateDispatcher : IEventDispatcher;
+
+			[Bindable] public var commandGridCommandItemRendererFactory:IFactory;
+			[Bindable] public var commandGridResultItemRendererFactory:IFactory;	             
+	                    	
+			private var _testData:HierarchicalData;
+	        [Bindable] 
+	        public function get testData():HierarchicalData{
+	        	return _testData;
+	        }
+	        public function set testData(d:HierarchicalData):void{
+	        	_testData = d;
+	        }
+	                        					
+	        private var _selectedItem:Object;
+	        [Bindable]
+	        public function get selectedItem():Object{
+	        	return _selectedItem;
+	        }
+	        public function set selectedItem(i:Object):void{
+				if(i && i != i.parent){
+					var t:Object = i;
+					while(t && t != t.parent){
+						commandGrid.expandItem(t.parent,true,false);
+						t = t.parent;
+					}
+				}
+				commandGrid.validateNow();	
+				callLater(scrollToIndex);		
+	        	_selectedItem=i;
+				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.SELECT_ITEM,i)); 
+			}		             
+	             
+	        private var _selectedItems:Array;
+	        public function get selectedItems():Array{
+	        	return _selectedItems;
+	        }   
+	        public function set selectedItems(a:Array):void{
+		        _selectedItems = a;
+		        if(a && a.length>0){
+					mateDispatcher.dispatchEvent(new UserEvent(UserEvent.SELECT_ITEMS,a.slice())); 
+	        	}
+	        }
+	        
+	        private var dropSource:Object;
+	         
+			private function initializeHandler():void{
+				InjectorRegistry.register(this);
+			}
+								
+		    public function itemUpdate(newValue:String,item:Object,columnIndex:uint):void
+		    {
+		    	var itemCopy:Object = item.clone();
+		    	if(item is MonkeyTestSuite ||
+		    	   item is MonkeyTestCase ||
+		    	   item is MonkeyTest){
+		    		switch(columnIndex){
+		    			case 0:
+		    				itemCopy.name = newValue;
+		    			default:
+		    		}
+		    	}else if(item is UIEventMonkeyCommand){
+		    		switch(columnIndex){
+		    			default:
+		    		}		    		
+		    	}else if(item is PauseMonkeyCommand){
+		    		switch(columnIndex){
+						case 2:
+							PauseMonkeyCommand(itemCopy).duration = int(newValue);
+		    			default:
+		    		}		    		
+		    	}else if(item is VerifyMonkeyCommand){
+		    		switch(columnIndex){
+						case 2:
+							VerifyMonkeyCommand(itemCopy).description = newValue;
+		    			default:
+		    		}			    		
+		    	}
+		    	mateDispatcher.dispatchEvent(new UserEvent(UserEvent.UPDATE_ITEM,itemCopy));
+		    }     
+		                     
+			public function column0LabelFunction(item:Object, column:AdvancedDataGridColumn):String{
+				if(item is MonkeyTestSuite || item is MonkeyTestCase || item is MonkeyTest ){
+					return item.name;									
+				}else{
+					return null;
+				} 
+			}
+			public function column1LabelFunction(item:Object, column:AdvancedDataGridColumn):String{
+				if(item is UIEventMonkeyCommand){
+					return UIEventMonkeyCommand(item).command;					
+				}else if(item is PauseMonkeyCommand){
+					return "Pause";					
+				}else if(item is VerifyMonkeyCommand){
+					return "Verify";					
+				}else{
+					return null;
+				} 	
+			}
+			public function column2LabelFunction(item:Object, column:AdvancedDataGridColumn):String{
+				if(item is UIEventMonkeyCommand){
+					return UIEventMonkeyCommand(item).value;					
+				}else if(item is PauseMonkeyCommand){
+					return PauseMonkeyCommand(item).duration.toString();					
+				}else if(item is VerifyMonkeyCommand){
+					return VerifyMonkeyCommand(item).value;					
+				}else{
+					return null;
+				} 		
+			}
+			public function column3LabelFunction(item:Object, column:AdvancedDataGridColumn):String{
+				if(item is UIEventMonkeyCommand){
+					return UIEventMonkeyCommand(item).args.toString();					
+				}else{
+					return null;
+				} 		
+			}	
+			public function column4LabelFunction(item:Object, column:AdvancedDataGridColumn):String{
+				if(item is MonkeyTestSuite || 
+				   item is MonkeyTestCase || 
+				   item is MonkeyTest ||
+				   item is VerifyMonkeyCommand){
+					return item.result;									
+				}else{
+					return null;
+				}	
+			}			
+					
+			private function scrollToIndex():void{
+				var index:int = commandGrid.selectedIndex;
+				if(index>=0){
+					commandGrid.validateNow();
+					commandGrid.scrollToIndex(index);
+				}				
+			}	
+					
+			private function itemCloseHandler(event:AdvancedDataGridEvent):void{
+				commandGrid.selectedItem = MonkeyRunnable(event.item);
+			}		
+
+	 		private function itemDoubleClickHandler(event:ListEvent):void{
+	 			if(commandGrid.columns[event.columnIndex].editable==true){
+	 				commandGrid.editable = "true";
+					var pos:Object = {columnIndex:event.columnIndex,rowIndex:event.rowIndex};
+					commandGrid.editedItemPosition = pos;	 	
+	 			}
+			}
+
+		    private function itemEditEndHandler(event:AdvancedDataGridEvent):void
+		    {
+		    	if(event.reason == AdvancedDataGridEventReason.CANCELLED){
+		    		commandGrid.editable="false";
+		    		return;
+		    	}	
+		    	event.preventDefault();
+		    	var newValue:String=TextInput(commandGrid.itemEditorInstance).text;
+		    	var item:Object = event.itemRenderer.data;
+				var columnIndex:uint = event.columnIndex;	    	
+		    	commandGrid.destroyItemEditor();
+		    	commandGrid.editable="false";
+		    	itemUpdate(newValue,item,columnIndex);		    	
+		    } 
+			
+			private function dragStartHandler(event:DragEvent):void{
+				commandGrid.setMyDragScrolling();	
+//the use of item[0] here needs review
+				dropSource = event.dragSource.dataForFormat("treeDataGridItems")[0];	
+				
+				var allDropSource:Object = event.dragSource.dataForFormat("treeDataGridItems");
+			}
+
+			private function dragOverHandler(event:DragEvent):void{
+				var dropIndex:int = commandGrid.calculateDropIndex(event);
+				var dropTargetItem:Object = null;
+				var beforeDropTargetItem:Object = null;
+				var view:HierarchicalCollectionView = HierarchicalCollectionView(commandGrid.dataProvider);				
+				var viewCursor:IViewCursor = view.createCursor();
+				for(var i:int=0;viewCursor.afterLast == false && i < dropIndex;i++){
+					beforeDropTargetItem = viewCursor.current;
+					viewCursor.moveNext();
+				}
+				dropTargetItem= viewCursor.current;
+				if(
+					// we're in position to drop a non-test at the very bottom of the top-level
+					((dropTargetItem == null) && 
+					(beforeDropTargetItem == beforeDropTargetItem.parent)) && 
+					!(dropSource is MonkeyTest ) ||				
+
+					// we're in position to drop a non-test at the very top of the top-level
+					(beforeDropTargetItem == null) &&
+					((dropTargetItem == dropTargetItem.parent) && 
+					!(dropSource is MonkeyTest)) ||
+
+					// we're in a position to drop a non-test between two top-level tests
+					(dropTargetItem && 
+						(dropTargetItem.parent == dropTargetItem) && 
+						beforeDropTargetItem && 
+						(beforeDropTargetItem.parent == beforeDropTargetItem) && 
+						!(dropSource is MonkeyTest)) ||
+
+					// we're in position to drop a non-test between a top-level test and 
+					// the last item of the (open) test immediately before the dropTarget test,
+					// but the cursor is positioned to indicate dropping at the top-level
+					((dropTargetItem is MonkeyTest) && 
+							(dropTargetItem.parent == dropTargetItem) &&
+							!(beforeDropTargetItem is MonkeyTest) && 
+							!(dropSource is MonkeyTest) && 
+							!commandGrid.dropInRowTopHalf(event)) ||
+
+					// we're in position to drop an item on itself							
+					(commandGrid.selectedItems.indexOf(dropTargetItem)!=-1)
+				){
+					commandGrid.dropEnabled = false;
+					commandGrid.hideDropFeedback(event);					
+				}else{
+					commandGrid.dropEnabled = true; 
+					commandGrid.showDropFeedback(event);					
+				}
+				
+				commandGrid.updateMyMouseY(event);								
+			}
+
+			private function dragDropHandler(event:DragEvent):void{
+				if(commandGrid.dropEnabled){
+					event.preventDefault();
+					commandGrid.hideDropFeedback(event);
+					var dropIndex:int = commandGrid.calculateDropIndex(event);
+					var dropTargetItem:Object = null;
+					var beforeDropTargetItem:Object = null;
+					var view:HierarchicalCollectionView = HierarchicalCollectionView(commandGrid.dataProvider);
+					var viewCursor:IViewCursor = view.createCursor();
+					for(var i:int=0;viewCursor.afterLast == false && i < dropIndex;i++){
+						beforeDropTargetItem = viewCursor.current;
+						viewCursor.moveNext();
+					}
+					dropTargetItem= viewCursor.current;
+					var dropSource:Object = event.dragSource.dataForFormat("treeDataGridItems");	
+					var dropAtBeforeDropTargetLevel:Boolean = commandGrid.dropInRowTopHalf(event);
+					var userEvent:UserEvent = new UserEvent(UserEvent.DRAG_MOVE,dropSource,dropTargetItem,beforeDropTargetItem,dropAtBeforeDropTargetLevel);			
+					mateDispatcher.dispatchEvent(userEvent); 
+				}				 	        	
+			}
+			
+			private function updateSelectedItemAfterDrag(event:DragEvent):void{
+				commandGrid.selectedItem = event.dragSource.dataForFormat("treeDataGridItems")[0];
+			}
+						
+			private function dragCompleteHandler(event:DragEvent):void{
+				callLater(updateSelectedItemAfterDrag,[event]);	
+				commandGrid.resetMyDragScrolling();
+			}
+						
+		]]>
+	</mx:Script>
+	<mx:Binding source="commandGridCommandItemRendererFactory" destination="column1.itemRenderer"/>
+	<mx:Binding source="commandGridResultItemRendererFactory" destination="column4.itemRenderer"/>
+	<mx:Binding source="testData" destination="commandGrid.dataProvider"/>
+	
+	<mx:Binding source="commandGrid.selectedItem" destination="selectedItem"/> 
+	<mx:Binding destination="commandGrid.selectedItem" source="selectedItem"/> 
+
+	<mx:Binding source="commandGrid.selectedItems" destination="selectedItems"/> 
+	
+	<comps:HAdvancedDataGrid
+	 	width="100%" 
+	 	height="100%"
+	 	paddingTop="0"
+	 	id="commandGrid"
+	 	editable="false"
+	 	doubleClickEnabled="true"
+	 	itemDoubleClick="itemDoubleClickHandler(event)"
+	 	itemEditEnd="itemEditEndHandler(event)"
+	 	openDuration="0"
+	 	itemClose="itemCloseHandler(event)"
+	 	allowMultipleSelection="false"
+	 	selectionMode="multipleRows"
+	 	dragEnabled="false"
+	 	dropEnabled="false"
+	 	dragMoveEnabled="false"
+	 	allowDragSelection="true"
+	 	dragStart="dragStartHandler(event)"
+	 	dragOver="dragOverHandler(event)"
+	 	dragDrop="dragDropHandler(event)"
+	 	dragComplete="dragCompleteHandler(event)"
+	    styleName="CommandGrid">
+	    <comps:columns>
+	        <mx:AdvancedDataGridColumn
+	        	id="column0"
+	        	width="150"
+	        	labelFunction="column0LabelFunction"
+	        	editable="true"
+	        	sortable = "false"
+	            headerText="Test"/>
+	        <mx:AdvancedDataGridColumn 
+	        	id="column1"  
+	        	width="100"
+	        	labelFunction="column1LabelFunction"
+				editable="false"
+	        	sortable = "false"
+	            headerText=""/>
+	        <mx:AdvancedDataGridColumn 
+	        	id="column2"
+	        	width="100"
+	        	labelFunction="column2LabelFunction"
+	        	editable="true"
+	        	sortable = "false"
+	            headerText=""/>
+			<mx:AdvancedDataGridColumn 
+	        	id="column3"
+	        	width="150"
+	        	labelFunction="column3LabelFunction"
+	        	editable="false"
+	        	sortable = "false"
+	            headerText=""/>	            
+	        <mx:AdvancedDataGridColumn 
+	        	id="column4"
+	        	width="100"
+	        	labelFunction="column4LabelFunction"
+	        	editable="false"
+	        	sortable = "false"
+	            headerText="Result"/>
+	    </comps:columns>
+	</comps:HAdvancedDataGrid> 
+</mx:VBox>

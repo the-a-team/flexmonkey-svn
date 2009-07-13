@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:Window 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:views="com.gorillalogic.flexmonkey.application.UI.views.*"	
+	title="Expected Snapshot"  
+	windowComplete="windowCompleteHandler()"
+	windowActivate="windowActivateHandler()"
+	closing="closingHandler(event)"
+	initialize="initializeHandler()"
+	backgroundColor="0xE0E0E0"
+	paddingTop="0"
+	paddingRight="0"
+	paddingBottom="0"
+	paddingLeft="0"	
+	mouseDown="mouseDownHandler2(event)"
+	mouseUp="mouseUpHandler2(event)" 
+	minHeight="100" 
+	minWidth="200" 
+	layout="absolute"	
+	>
+	<mx:Script>
+		<![CDATA[
+			import com.gorillalogic.flexmonkey.monkeyCommands.VerifyMonkeyCommand;			
+			import flash.events.Event;
+			import mx.graphics.codec.PNGEncoder;
+			import com.gorillalogic.flexmonkey.application.VOs.SnapshotVO;
+
+			private var _verifyCommand:VerifyMonkeyCommand;
+			[Bindable]
+			public function get verifyCommand():VerifyMonkeyCommand{
+				return _verifyCommand;
+			}
+			public function set verifyCommand(c:VerifyMonkeyCommand):void{
+				_verifyCommand = c;	
+				_verifyCommand.loadSnapshot();			
+			}
+
+			private var _expectedSnapshot:SnapshotVO;
+			public function get expectedSnapshot():SnapshotVO{
+				return _expectedSnapshot;
+			}
+			public function set expectedSnapshot(s:SnapshotVO):void{
+				_expectedSnapshot = s;
+				if(s){
+					expectedBitmapData = s.bitmapData;
+					nativeWindow.x -= s.width/2;
+					nativeWindow.y -= s.height/2;					
+				}
+			}
+			
+			private var _actualSnapshot:SnapshotVO;
+			public function get actualSnapshot():SnapshotVO{
+				return _actualSnapshot;
+			}
+			public function set actualSnapshot(s:SnapshotVO):void{
+				_actualSnapshot = s;
+				if(s){
+					actualBitmapData = s.bitmapData;
+				}	
+			}
+			
+			private var _expectedBitmapData:BitmapData;
+			public function set expectedBitmapData(d:BitmapData):void{
+				_expectedBitmapData = d;
+				var pngEncoder:PNGEncoder = new PNGEncoder();
+				expectedPNG = pngEncoder.encode(d);		
+//magic numbers
+				this.width = _expectedBitmapData.width + 36;
+				this.height = _expectedBitmapData.height + 52;	
+			}
+			
+			private var _actualBitmapData:BitmapData;
+			public function set actualBitmapData(d:BitmapData):void{
+				_actualBitmapData = d;
+				var pngEncoder:PNGEncoder = new PNGEncoder();
+				actualPNG = pngEncoder.encode(d);			
+			}		
+
+			[Bindable] private var actualPNG:ByteArray;
+			[Bindable] private var expectedPNG:ByteArray;
+		
+			private function mouseDownHandler2(event:MouseEvent):void{
+				if(actualPNG){
+					expectedSnapshotImage.visible=false;
+					actualSnapshotImage.visible=true;
+					title="Actual Snapshot";
+				}
+			}
+			private function mouseUpHandler2(event:MouseEvent):void{
+				expectedSnapshotImage.visible=true;
+				actualSnapshotImage.visible=false;		
+				title="Expected Snapshot";		
+			}
+
+			private function initializeHandler():void{
+			}
+			private function windowCompleteHandler():void{
+			}
+			private function windowActivateHandler():void{
+			}	
+			private function closingHandler(event:Event):void{
+			}			
+		]]>
+	</mx:Script>
+	<mx:Binding source="verifyCommand.expectedSnapshot" destination="this.expectedSnapshot"/>
+	<mx:Binding source="verifyCommand.actualSnapshot"   destination="this.actualSnapshot"/>
+	<mx:Image 
+		id="expectedSnapshotImage" 
+		x="18"
+		y="18"
+		data="{expectedPNG}"/>
+	<mx:Image
+		id="actualSnapshotImage"
+		x="18"
+		y="18"		
+		data="{actualPNG}"	
+		visible="false"/>
+</mx:Window>

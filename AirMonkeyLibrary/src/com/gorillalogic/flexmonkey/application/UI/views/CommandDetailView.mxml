@@ -1,0 +1,767 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	height="100%"
+	paddingTop="0"
+	paddingRight="5"
+	paddingBottom="7"
+	paddingLeft="0"
+	verticalGap="5"
+	horizontalAlign="center"
+	verticalScrollPolicy="off"
+	initialize="initializeHandler()"
+	creationComplete="creationCompleteHandler()"	
+>
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import com.gorillalogic.flexmonkey.core.MonkeyTestSuite;
+			import mx.core.UITextField;
+			import com.asfusion.mate.ioc.InjectorRegistry;
+			import flash.ui.Keyboard;
+			import flash.events.MouseEvent;
+			import flash.events.KeyboardEvent;
+			import flash.events.FocusEvent; 
+			import mx.events.FocusRequestDirection;
+			import mx.events.ListEvent;
+
+			import com.gorillalogic.flexmonkey.application.events.UserEvent;
+			import com.gorillalogic.flexmonkey.application.UI.renderers.CommandGridResultItemRenderer;
+			import com.gorillalogic.flexmonkey.core.MonkeyTestSuite;
+			import com.gorillalogic.flexmonkey.core.MonkeyTestCase;
+			import com.gorillalogic.flexmonkey.core.MonkeyRunnable;
+			import com.gorillalogic.flexmonkey.core.MonkeyTest;
+			import com.gorillalogic.flexmonkey.monkeyCommands.PauseMonkeyCommand;
+			import com.gorillalogic.flexmonkey.monkeyCommands.UIEventMonkeyCommand;
+			import com.gorillalogic.flexmonkey.monkeyCommands.VerifyMonkeyCommand;
+			import com.gorillalogic.flexmonkey.application.VOs.AttributeVO;
+
+	
+			import flash.geom.Point;
+			
+			import mx.events.PropertyChangeEvent;
+			import mx.events.ToolTipEvent;	
+			import flash.events.IEventDispatcher;
+
+			public var mateDispatcher : IEventDispatcher;
+						
+			private var escKey:Boolean = false;
+
+			[Bindable] public var monkeyTestSuite:MonkeyTestSuite;
+			[Bindable] public var monkeyTestCase:MonkeyTestCase;
+			[Bindable] public var monkeyTest:MonkeyTest;
+			[Bindable] public var uiEventMonkeyCommand:UIEventMonkeyCommand; 		
+			[Bindable] public var verifyMonkeyCommand:VerifyMonkeyCommand; 
+			[Bindable] public var pauseMonkeyCommand:PauseMonkeyCommand; 
+			
+			[Bindable] public var commandDetailAttributeItemRendererFactory:IFactory;
+			[Bindable] public var attributeMoveArrowItemRendererFactory:IFactory;
+			[Bindable] public var attributeResultItemRendererFactory:IFactory;
+
+			public static const IDLE:String = "idle";
+			public static const TEST_SUITE:String = "test_suite";
+			public static const TEST_CASE:String = "test_case";
+			public static const TEST:String = "test";
+			public static const UI_EVENT:String = "UIEvent";
+			public static const PAUSE:String = "pause";
+			public static const VERIFY:String = "verify";
+			
+			private var verifyOverallResultRenderer:CommandGridResultItemRenderer;
+			private var testSuiteResultRenderer:CommandGridResultItemRenderer;
+			private var testCaseResultRenderer:CommandGridResultItemRenderer;
+			private var testResultRenderer:CommandGridResultItemRenderer;
+			private var uiEventCommandResultRenderer:CommandGridResultItemRenderer;
+		
+			[Bindable] private var verifyMonkeyCommandHasTarget:Boolean;
+		
+	        private var _selectedItem:MonkeyRunnable = null;  
+			public function get selectedItem():MonkeyRunnable{
+				return _selectedItem;
+			}
+			public function set selectedItem(o:MonkeyRunnable):void{
+				if(_selectedItem && _selectedItem.hasEventListener(PropertyChangeEvent.PROPERTY_CHANGE)){
+					_selectedItem.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE,selectedItemPropertyChangeEventHandler);
+				}
+				_selectedItem = o;
+				if(_selectedItem){
+					_selectedItem.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,selectedItemPropertyChangeEventHandler,false,0,true);
+				}
+				updateClones();
+			}
+			
+			public function set resultItemRendererFactory(factory:ClassFactory):void {
+				var verifyBitmapResultRenderer:CommandGridResultItemRenderer = CommandGridResultItemRenderer(factory.newInstance());
+				bitmapBox.addChild(verifyBitmapResultRenderer);
+				BindingUtils.bindProperty(verifyBitmapResultRenderer, "data", this, ["verifyMonkeyCommand","snapshotResult"]);				
+
+				verifyOverallResultRenderer = CommandGridResultItemRenderer(factory.newInstance());
+				buttonBox.addChild(verifyOverallResultRenderer);
+				
+				uiEventCommandResultRenderer = CommandGridResultItemRenderer(factory.newInstance());
+				uiEventCommandOverallResultBox.addChild(uiEventCommandResultRenderer);
+				
+				testSuiteResultRenderer = CommandGridResultItemRenderer(factory.newInstance());
+				testSuiteOverallResultBox.addChild(testSuiteResultRenderer);
+				
+				testCaseResultRenderer = CommandGridResultItemRenderer(factory.newInstance());
+				testCaseOverallResultBox.addChild(testCaseResultRenderer);
+				
+				testResultRenderer = CommandGridResultItemRenderer(factory.newInstance());
+				testOverallResultBox.addChild(testResultRenderer);
+			}
+			
+			private function selectedItemPropertyChangeEventHandler(event:PropertyChangeEvent):void{
+				updateClones();
+			}
+			
+			private function updateClones():void{
+				if(selectedItem is MonkeyTestSuite){
+					monkeyTestSuite = MonkeyTestSuite(selectedItem).clone();
+					currentState = TEST_SUITE;	
+				}else if(selectedItem is MonkeyTestCase){
+					monkeyTestCase = MonkeyTestCase(selectedItem).clone();
+					currentState = TEST_CASE;	
+				}else if(selectedItem is MonkeyTest){																
+					monkeyTest = MonkeyTest(selectedItem).clone();
+					currentState = TEST;					
+				}else if(selectedItem is UIEventMonkeyCommand){
+					uiEventMonkeyCommand = UIEventMonkeyCommand(selectedItem).clone();
+					currentState = UI_EVENT;
+				}else if(selectedItem is PauseMonkeyCommand){
+					pauseMonkeyCommand = PauseMonkeyCommand(selectedItem).clone();				
+					currentState = PAUSE;
+				}else if(selectedItem is VerifyMonkeyCommand){
+					verifyMonkeyCommand = VerifyMonkeyCommand(selectedItem).clone();
+					if(verifyMonkeyCommand.value != null && verifyMonkeyCommand.value != "" ){
+						verifyMonkeyCommandHasTarget = true;   	
+					}else{
+						verifyMonkeyCommandHasTarget = false;
+					}
+					currentState = VERIFY;
+				}else{
+					currentState = IDLE;
+				}			
+			}
+			
+			public function restoreHandler():void{
+				if(selectedItem is MonkeyTestSuite){
+					monkeyTestSuite = MonkeyTestSuite(MonkeyTestSuite(selectedItem).clone());	
+				}else if(selectedItem is MonkeyTestCase){
+					monkeyTestCase = MonkeyTestCase(MonkeyTestCase(selectedItem).clone());	
+				}else if(selectedItem is MonkeyTest){
+					monkeyTest = MonkeyTest(MonkeyTest(selectedItem).clone());
+				}else if(selectedItem is UIEventMonkeyCommand){
+					uiEventMonkeyCommand = UIEventMonkeyCommand(selectedItem).clone();
+				}else if(selectedItem is PauseMonkeyCommand){
+					pauseMonkeyCommand = PauseMonkeyCommand(selectedItem).clone();				
+				}else if(selectedItem is VerifyMonkeyCommand){
+					verifyMonkeyCommand = VerifyMonkeyCommand(selectedItem).clone();
+				}	
+			}
+			
+			public function updateHandler():void{
+				if(selectedItem is MonkeyTest){
+		    		if(!selectedItem.isEqualTo(monkeyTest)){	
+		    			mateDispatcher.dispatchEvent(new UserEvent(UserEvent.UPDATE_ITEM,monkeyTest));
+		    		}
+		    	}else if(selectedItem is MonkeyTestCase){
+		    		if(!selectedItem.isEqualTo(monkeyTestCase)){	
+		    			mateDispatcher.dispatchEvent(new UserEvent(UserEvent.UPDATE_ITEM,monkeyTestCase));
+		    		}
+		    	}else if(selectedItem is MonkeyTestSuite){	
+		    		if(!selectedItem.isEqualTo(monkeyTestSuite)){	
+		    			mateDispatcher.dispatchEvent(new UserEvent(UserEvent.UPDATE_ITEM,monkeyTestSuite));
+		    		}
+				}else if(selectedItem is UIEventMonkeyCommand){
+					if(!selectedItem.isEqualTo(uiEventMonkeyCommand)){	
+						mateDispatcher.dispatchEvent(new UserEvent(UserEvent.UPDATE_ITEM,uiEventMonkeyCommand));
+					}
+				}else if(selectedItem is PauseMonkeyCommand){
+					if(!selectedItem.isEqualTo(pauseMonkeyCommand)){
+						mateDispatcher.dispatchEvent(new UserEvent(UserEvent.UPDATE_ITEM,pauseMonkeyCommand));
+					}
+				}else if(selectedItem is VerifyMonkeyCommand){
+					if(!selectedItem.isEqualTo(verifyMonkeyCommand)){
+						mateDispatcher.dispatchEvent(new UserEvent(UserEvent.UPDATE_ITEM,verifyMonkeyCommand));
+					}
+				}				
+			}
+							
+			public function takeExpectedSnapshotHandler(event:MouseEvent=null):void{
+				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.TAKE_EXPECTED_SNAPSHOT,verifyMonkeyCommand));
+			}
+			public function retakeExpectedSnapshotHandler(event:MouseEvent):void{
+				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.RETAKE_EXPECTED_SNAPSHOT,verifyMonkeyCommand));
+			}		
+			public function showSnapshotWindowHandler(event:MouseEvent):void{
+				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.SHOW_SNAPSHOT_WINDOW));
+			}
+			public function showSpyWindowHandler(event:MouseEvent):void{
+				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.SHOW_SPY_WINDOW));
+			}
+			
+			public function toolTipShowHandler(event:ToolTipEvent):void{   
+				var point:Point = event.currentTarget.localToGlobal(new Point(0,0));
+				event.toolTip.x = point.x;
+				event.toolTip.y = point.y + event.currentTarget.height;
+			}
+
+// document all mate-specific code not in the event map...			
+			private function initializeHandler():void{
+				InjectorRegistry.register(this);
+			}	
+			
+			private function creationCompleteHandler():void{
+				this.addEventListener(FocusEvent.FOCUS_OUT,fieldFocusOutHandler);
+				this.addEventListener(KeyboardEvent.KEY_UP,escKeyHandler);
+			}
+
+			private function fieldFocusOutHandler(event:FocusEvent):void{
+				if(event.target is UITextField){
+					if(!escKey){
+						updateHandler();
+					} else {
+						escKey = false;
+					}
+				}	
+			}
+			
+			private function uiEventArgsItemEditEndHandler(event:ListEvent):void{				
+				updateHandler();
+			}
+															
+			private function escKeyHandler(event:KeyboardEvent):void{
+				if(event.keyCode == Keyboard.ESCAPE && event.target is UITextField){
+					restoreHandler();
+					escKey = true;
+					focusManager.moveFocus(FocusRequestDirection.FORWARD);
+				}
+			}		
+			
+			private function verifyBitmapClickHandler():void{
+				verifyMonkeyCommand.snapshotResult = "NOT_RUN";
+				updateHandler();
+				verifyMonkeyCommand.updateParentResult();
+			}
+	        
+	        private function itemClickHandler(event:ListEvent):void{
+				if(event.columnIndex == 2){
+					var attributeVO:AttributeVO = AttributeVO(attributeGrid.selectedItem);
+					attributeVO.expectedValue = attributeVO.actualValue;
+					attributeVO.result = "NOT_RUN";
+					updateHandler();	
+					verifyMonkeyCommand.updateParentResult();
+				}
+	        }
+		]]>
+	</mx:Script>
+	
+	<mx:Binding source="testSuiteNameFormItem.text" destination="monkeyTestSuite.name"/>
+	<mx:Binding source="monkeyTestSuite.name" destination="testSuiteNameFormItem.text"/>
+	<mx:Binding source="monkeyTestSuite.passedAssertionCount.toString()" destination="testSuitePassedAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTestSuite.failedAssertionCount.toString()" destination="testSuiteFailedAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTestSuite.errorCount.toString()" destination="testSuiteErrorCountFormItem.text"/>
+	<mx:Binding source="monkeyTestSuite.notRunAssertionCount.toString()" destination="testSuiteNotRunAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTestSuite.assertionCount.toString()" destination="testSuiteAssertionCountFormItem.text"/>
+	
+	<mx:Binding source="testCaseNameFormItem.text" destination="monkeyTestCase.name"/>
+	<mx:Binding source="monkeyTestCase.name" destination="testCaseNameFormItem.text"/>
+	<mx:Binding source="monkeyTestCase.passedAssertionCount.toString()" destination="testCasePassedAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTestCase.failedAssertionCount.toString()" destination="testCaseFailedAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTestCase.errorCount.toString()" destination="testCaseErrorCountFormItem.text"/>
+	<mx:Binding source="monkeyTestCase.notRunAssertionCount.toString()" destination="testCaseNotRunAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTestCase.assertionCount.toString()" destination="testCaseAssertionCountFormItem.text"/>
+
+	<mx:Binding source="testNameFormItem.text" destination="monkeyTest.name"/>
+	<mx:Binding source="monkeyTest.name" destination="testNameFormItem.text"/>
+	<mx:Binding source="uint(testThinkTimeFormItem.text)" destination="monkeyTest.defaultThinkTime"/>
+	<mx:Binding source="monkeyTest.defaultThinkTime.toString()" destination="testThinkTimeFormItem.text"/>
+	<mx:Binding source="monkeyTest.passedAssertionCount.toString()" destination="testPassedAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTest.failedAssertionCount.toString()" destination="testFailedAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTest.errorCount.toString()" destination="testErrorCountFormItem.text"/>
+	<mx:Binding source="monkeyTest.notRunAssertionCount.toString()" destination="testNotRunAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTest.assertionCount.toString()" destination="testAssertionCountFormItem.text"/>
+
+	<mx:Binding source="uiEventCommandFormItem.text" destination="uiEventMonkeyCommand.command"/>
+	<mx:Binding source="uiEventMonkeyCommand.command" destination="uiEventCommandFormItem.text"/>
+	<mx:Binding source="uiEventValueFormItem.text" destination="uiEventMonkeyCommand.value"/>
+	<mx:Binding source="uiEventMonkeyCommand.value" destination="uiEventValueFormItem.text"/>
+	<mx:Binding source="uiEventPropFormItem.text" destination="uiEventMonkeyCommand.prop"/>
+	<mx:Binding source="uiEventMonkeyCommand.prop" destination="uiEventPropFormItem.text"/>
+	<mx:Binding source="uiEventContainerValueFormItem.text" destination="uiEventMonkeyCommand.containerValue"/>
+	<mx:Binding source="uiEventMonkeyCommand.containerValue" destination="uiEventContainerValueFormItem.text"/>	
+	<mx:Binding source="uiEventContainerPropFormItem.text" destination="uiEventMonkeyCommand.containerProp"/>
+	<mx:Binding source="uiEventMonkeyCommand.containerProp" destination="uiEventContainerPropFormItem.text"/>	
+	<mx:Binding source="uiEventMonkeyCommand.args" destination="uiEventArgsFormItem.dataProvider"/>	
+	<mx:Binding source="uiEventMonkeyCommand.error" destination="uiEventCommandErrorTextArea.text"/>
+
+	<mx:Binding source="uint(pauseDurationFormItem.text)" destination="pauseMonkeyCommand.duration"/>
+	<mx:Binding source="pauseMonkeyCommand.duration.toString()" destination="pauseDurationFormItem.text"/>
+	
+
+	<mx:Binding source="verifyMonkeyCommandHasTarget" destination="retakeSnapshotButton.enabled"/>
+	<mx:Binding source="verifyMonkeyCommandHasTarget" destination="showSnapshotWindowButton.enabled"/>
+	<mx:Binding source="verifyMonkeyCommandHasTarget" destination="showSpyWindowButton.enabled"/>
+	
+	<mx:Binding source="verifyDescriptionFormItem.text" destination="verifyMonkeyCommand.description"/>
+	<mx:Binding source="verifyMonkeyCommand.description" destination="verifyDescriptionFormItem.text"/>	
+	<mx:Binding source="verifyValueFormItem.text" destination="verifyMonkeyCommand.value"/>
+	<mx:Binding source="verifyMonkeyCommand.value" destination="verifyValueFormItem.text"/>
+	<mx:Binding source="verifyPropFormItem.text" destination="verifyMonkeyCommand.prop"/>
+	<mx:Binding source="verifyMonkeyCommand.prop" destination="verifyPropFormItem.text"/>
+	<mx:Binding source="verifyContainerValueFormItem.text" destination="verifyMonkeyCommand.containerValue"/>
+	<mx:Binding source="verifyMonkeyCommand.containerValue" destination="verifyContainerValueFormItem.text"/>	
+	<mx:Binding source="verifyContainerPropFormItem.text" destination="verifyMonkeyCommand.containerProp"/>
+	<mx:Binding source="verifyMonkeyCommand.containerProp" destination="verifyContainerPropFormItem.text"/>		
+	<mx:Binding source="snapshotURLFormItem.text" destination="verifyMonkeyCommand.snapshotURL"/>
+	<mx:Binding source="verifyMonkeyCommand.snapshotURL" destination="snapshotURLFormItem.text"/>
+	<mx:Binding source="verifyMonkeyCommand.attributes" destination="attributeGrid.dataProvider"/>
+	<mx:Binding source="bitmapCheckbox.selected" destination="verifyMonkeyCommand.verifyBitmap"/>
+	<mx:Binding source="verifyMonkeyCommand.verifyBitmap" destination="bitmapCheckbox.selected"/>
+	<mx:Binding source="verifyMonkeyCommand.error" destination="verifyCommandErrorTextArea.text"/>
+	
+	<mx:Binding source="commandDetailAttributeItemRendererFactory" destination="nameColumn.itemRenderer"/>
+	<mx:Binding source="attributeMoveArrowItemRendererFactory" destination="arrowColumn.itemRenderer"/>
+	<mx:Binding source="attributeResultItemRendererFactory" destination="resultColumn.itemRenderer"/>
+			
+	<mx:Binding source="verifyMonkeyCommand" destination="verifyOverallResultRenderer.data"/>				
+	<mx:Binding source="uiEventMonkeyCommand" destination="uiEventCommandResultRenderer.data"/>
+	<mx:Binding source="monkeyTestSuite" destination="testSuiteResultRenderer.data"/>		
+	<mx:Binding source="monkeyTestCase" destination="testCaseResultRenderer.data"/>		
+	<mx:Binding source="monkeyTest" destination="testResultRenderer.data"/>			
+			
+	<mx:states>
+		<mx:State name="{IDLE}">
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+				<mx:Label text="" fontSize="24"/>
+			</mx:AddChild>
+		</mx:State>
+		
+		<mx:State name="{TEST_SUITE}">
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:HBox id="testSuiteOverallResultBox" width="100%" height="24"
+					     paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testSuiteOverallResultBox}" position="firstChild">
+			<mx:target>
+				<mx:Spacer width="100%"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testSuiteOverallResultBox}" position="after">
+			<mx:target>
+				<mx:Form id="testSuiteForm" width="100%" paddingTop="0" paddingLeft="10" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem label="Name" width="100%">
+						<mx:TextInput id="testSuiteNameFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					
+					<mx:FormItem width="100%">
+						<mx:HBox id="testSuiteResultDetailBox" width="100%" height="100%"
+					     paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="top" verticalScrollPolicy="off"/>
+					</mx:FormItem>			
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testSuiteResultDetailBox}" position="firstChild">
+			<mx:target>
+				<mx:Form id="testSuiteErrorForm" width="40%" paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem width="100%" indicatorGap="0">
+						<mx:Label text="Errors"/>
+					</mx:FormItem>
+					<mx:FormItem width="100%" indicatorGap="0">
+						<mx:TextInput id="testSuiteErrorCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>				
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testSuiteErrorForm}" position="after">
+			<mx:target>
+				<mx:Form id="testSuiteAssertionForm" width="60%" paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem width="100%">
+						<mx:Label text="Assertions"/>
+					</mx:FormItem>
+					<mx:FormItem label="Passed" width="100%">
+						<mx:TextInput id="testSuitePassedAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Failed" width="100%">
+						<mx:TextInput id="testSuiteFailedAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Not Run" width="100%">
+						<mx:TextInput id="testSuiteNotRunAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Total" width="100%">
+						<mx:TextInput id="testSuiteAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>				
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>		
+		</mx:State>
+		
+		<mx:State name="{TEST_CASE}">
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:HBox id="testCaseOverallResultBox" width="100%" height="24"
+					     paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testCaseOverallResultBox}" position="firstChild">
+			<mx:target>
+				<mx:Spacer width="100%"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testCaseOverallResultBox}" position="after">
+			<mx:target>
+				<mx:Form id="testCaseForm" width="100%" paddingTop="0" paddingLeft="10" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem label="Name" width="100%">
+						<mx:TextInput id="testCaseNameFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					
+					<mx:FormItem width="100%">
+						<mx:HBox id="testCaseResultDetailBox" width="100%" height="100%"
+					     paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="top" verticalScrollPolicy="off"/>
+					</mx:FormItem>			
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testCaseResultDetailBox}" position="firstChild">
+			<mx:target>
+				<mx:Form id="testCaseErrorForm" width="40%" paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem width="100%" indicatorGap="0">
+						<mx:Label text="Errors"/>
+					</mx:FormItem>
+					<mx:FormItem width="100%" indicatorGap="0">
+						<mx:TextInput id="testCaseErrorCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>				
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testCaseErrorForm}" position="after">
+			<mx:target>
+				<mx:Form id="testCaseAssertionForm" width="60%" paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem width="100%">
+						<mx:Label text="Assertions"/>
+					</mx:FormItem>
+					<mx:FormItem label="Passed" width="100%">
+						<mx:TextInput id="testCasePassedAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Failed" width="100%">
+						<mx:TextInput id="testCaseFailedAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Not Run" width="100%">
+						<mx:TextInput id="testCaseNotRunAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Total" width="100%">
+						<mx:TextInput id="testCaseAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>				
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>		
+		</mx:State>
+		
+		<mx:State name="{TEST}">
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:HBox id="testOverallResultBox" width="100%" height="24"
+					     paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testOverallResultBox}" position="firstChild">
+			<mx:target>
+				<mx:Spacer width="100%"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testOverallResultBox}" position="after">
+			<mx:target>
+				<mx:Form id="testForm" width="100%" paddingTop="0" paddingLeft="10" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem label="Name" width="100%">
+						<mx:TextInput id="testNameFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Think Time" width="100%">
+						<mx:TextInput id="testThinkTimeFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>						
+					<mx:FormItem width="100%">
+						<mx:HBox id="testResultDetailBox" width="100%" height="100%"
+					     paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="top" verticalScrollPolicy="off"/>
+					</mx:FormItem>			
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testResultDetailBox}" position="firstChild">
+			<mx:target>
+				<mx:Form id="testErrorForm" width="40%" paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem width="100%" indicatorGap="0">
+						<mx:Label text="Errors"/>
+					</mx:FormItem>
+					<mx:FormItem width="100%" indicatorGap="0">
+						<mx:TextInput id="testErrorCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>				
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testErrorForm}" position="after">
+			<mx:target>
+				<mx:Form id="testAssertionForm" width="60%" paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem width="100%">
+						<mx:Label text="Assertions"/>
+					</mx:FormItem>
+					<mx:FormItem label="Passed" width="100%">
+						<mx:TextInput id="testPassedAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Failed" width="100%">
+						<mx:TextInput id="testFailedAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Not Run" width="100%">
+						<mx:TextInput id="testNotRunAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Total" width="100%">
+						<mx:TextInput id="testAssertionCountFormItem" width="100%" editable="false" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>				
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>
+			
+		
+		</mx:State>
+		
+		<mx:State name="{UI_EVENT}">
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:HBox id="uiEventCommandOverallResultBox" width="100%" height="24"
+					     paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{uiEventCommandOverallResultBox}" position="firstChild">
+			<mx:target>
+				<mx:Spacer width="100%"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:Form id="uiEventForm" width="100%" paddingTop="0" paddingLeft="10" paddingRight="0" paddingBottom="0" verticalGap="5">
+					<mx:FormItem label="UI Event" width="100%">
+						<mx:TextInput id="uiEventCommandFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>		
+					<mx:FormItem label="Target Value" width="100%">
+						<mx:TextInput id="uiEventValueFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Target Property" width="100%">
+						<mx:TextInput id="uiEventPropFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Container Value" width="100%">
+						<mx:TextInput id="uiEventContainerValueFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Container Property" width="100%">
+						<mx:TextInput id="uiEventContainerPropFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Arguments" width="100%">
+						<mx:List id="uiEventArgsFormItem" width="100%" height="69" editable="true" itemEditEnd="uiEventArgsItemEditEndHandler(event)"
+							alternatingItemColors="[0xFFFFFF,0xDFDFDF]"/>
+					</mx:FormItem>	
+				</mx:Form>
+			</mx:target>	
+			</mx:AddChild>	
+			
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:VBox id="uiEventCommandErrorBox" width="100%" height="100" verticalGap="0"
+					     paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{uiEventCommandErrorBox}" position="firstChild">
+			<mx:target>
+				<mx:Label text="Error Message"
+					paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>	
+			
+			<mx:AddChild relativeTo="{uiEventCommandErrorBox}" position="lastChild">
+			<mx:target>
+				<mx:TextArea id="uiEventCommandErrorTextArea" editable="false" width="100%" height="100%" styleName="commandDetailErrorMessageText"
+					paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>	
+		</mx:State>	<!-- UI_EVENT -->
+		
+		<mx:State name="{PAUSE}">
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:Form id="pauseForm" width="100%" paddingTop="0" paddingLeft="10" paddingRight="0" paddingBottom="0" verticalGap="5">			
+					<mx:FormItem label="Duration" width="100%">
+						<mx:TextInput id="pauseDurationFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>			
+				</mx:Form>
+			</mx:target>				
+			</mx:AddChild>		
+		</mx:State>	<!-- PAUSE -->
+		
+		<mx:State name="{VERIFY}">	
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:HBox id="buttonBox" width="100%" height="48"
+					     paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{buttonBox}" position="firstChild">
+			<mx:target>
+				<mx:Button id="takeExpectedSnapshotButton" toolTip="Take Snapshot" styleName="TakeExpectedSnapshotButton"
+					toolTipShow="toolTipShowHandler(event)" click="takeExpectedSnapshotHandler(event)"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{takeExpectedSnapshotButton}" position="after">
+			<mx:target>
+				<mx:Button id="retakeSnapshotButton" toolTip="Retake Snapshot" styleName="RetakeExpectedSnapshotButton"
+					toolTipShow="toolTipShowHandler(event)" click="retakeExpectedSnapshotHandler(event)"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{retakeSnapshotButton}" position="after">
+			<mx:target>
+				<mx:Button id="showSnapshotWindowButton" toolTip="Show Snapshot Window" styleName="ShowSnapshotWindowButton"
+					toolTipShow="toolTipShowHandler(event)" click="showSnapshotWindowHandler(event)"/>
+			</mx:target>
+			</mx:AddChild>	
+				
+			<mx:AddChild relativeTo="{showSnapshotWindowButton}" position="after">
+			<mx:target>
+				<mx:Button id="showSpyWindowButton" toolTip="Show Spy Window" styleName="ShowSpyWindowButton"
+					toolTipShow="toolTipShowHandler(event)" click="showSpyWindowHandler(event)"/>
+			</mx:target>
+			</mx:AddChild>	
+			
+			<mx:AddChild relativeTo="{showSpyWindowButton}" position="after">
+			<mx:target>
+				<mx:Spacer width="100%"/>
+			</mx:target>
+			</mx:AddChild>			
+						
+			<mx:AddChild>
+			<mx:target>
+				<mx:HRule width="100%"/>
+			</mx:target>
+			</mx:AddChild>
+		
+			<mx:AddChild>
+			<mx:target>
+				<mx:Form id="verifyForm" width="100%" paddingTop="0" paddingLeft="10" paddingRight="0" paddingBottom="0" verticalGap="5">			
+					<mx:FormItem label="Description" width="100%">
+						<mx:TextInput id="verifyDescriptionFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>					
+					<mx:FormItem label="Target Value" width="100%">
+						<mx:TextInput id="verifyValueFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>
+					<mx:FormItem label="Target Property" width="100%">
+						<mx:TextInput id="verifyPropFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Container Value" width="100%">
+						<mx:TextInput id="verifyContainerValueFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Container Property" width="100%">
+						<mx:TextInput id="verifyContainerPropFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>	
+					<mx:FormItem label="Snapshot" width="100%">
+						<mx:TextInput id="snapshotURLFormItem" width="100%" enter="focusManager.moveFocus(FocusRequestDirection.FORWARD);"/>
+					</mx:FormItem>		
+				</mx:Form>				
+			</mx:target>				
+			</mx:AddChild>	
+
+			<mx:AddChild>
+			<mx:target>
+				<mx:HRule width="100%"/>
+			</mx:target>
+			</mx:AddChild>
+					
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:HBox id="bitmapBox" width="100%" height="24" backgroundColor="0xffffff" borderStyle="solid"
+					     paddingLeft="4" paddingRight="0" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{bitmapBox}" position="firstChild">
+			<mx:target>
+				<mx:CheckBox id="bitmapCheckbox" label="Verify Bitmap" click="verifyBitmapClickHandler();"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{bitmapCheckbox}" position="after">
+			<mx:target>
+				<mx:Spacer width="100%"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild>
+			<mx:target>
+				<mx:DataGrid id="attributeGrid" width="100%" height="100%" paddingRight="0" editable="false" itemClick="itemClickHandler(event)">
+					<mx:columns>
+						<mx:DataGridColumn id="nameColumn" dataField="name" headerText="Name"/>
+						<mx:DataGridColumn dataField="expectedValue" headerText="Expected"/>
+						<mx:DataGridColumn id="arrowColumn" headerText="" width="24"/>
+						<mx:DataGridColumn dataField="actualValue" headerText="Actual"/>
+						<mx:DataGridColumn id="resultColumn" dataField="result" headerText="Result"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:target>
+			</mx:AddChild>
+				
+			
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:VBox id="verifyCommandErrorBox" width="100%" height="50" verticalGap="0"
+					     paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="6" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{verifyCommandErrorBox}" position="firstChild">
+			<mx:target>
+				<mx:Label text="Error Message"
+					paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>	
+			
+			<mx:AddChild relativeTo="{verifyCommandErrorBox}" position="lastChild">
+			<mx:target>
+				<mx:TextArea id="verifyCommandErrorTextArea" width="100%" height="100%" styleName="commandDetailErrorMessageText"
+					paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="2"/>
+			</mx:target>
+			</mx:AddChild>	
+		</mx:State>	<!-- VERIFY -->
+	</mx:states>
+</mx:VBox>
+
+
+

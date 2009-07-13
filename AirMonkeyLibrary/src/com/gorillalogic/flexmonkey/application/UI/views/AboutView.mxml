@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	backgroundAlpha="1"
+	title="{titleText}"
+	initialize="initializeHandler()"	
+	creationComplete="creationCompleteHandler()"
+	>
+	<mx:Script>
+		<![CDATA[
+			import com.gorillalogic.flexmonkey.application.UI.viewComponents.AnimatedGIF;
+			
+			import mx.managers.PopUpManager;
+			import flash.events.MouseEvent;		
+			import com.gorillalogic.flexmonkey.application.events.UserEvent;
+		
+			[Bindable] public var titleText:String = "About";
+
+			public var mateDispatcher:IEventDispatcher;
+
+			private function initializeHandler():void{
+				var animatedGIF:AnimatedGIF = new AnimatedGIF(getStyle("GIF"));
+				messageBox.addChildAt(animatedGIF,1);				
+			}
+			
+			private function creationCompleteHandler():void{
+				var appDescriptor:XML = NativeApplication.nativeApplication.applicationDescriptor;
+				var ns:Namespace = appDescriptor.namespace();
+				var appCopyright:String = appDescriptor.ns::copyright;
+				var appVersion:String = appDescriptor.ns::version;
+
+				versionText.text = "FlexMonkey " + appVersion;
+				
+				// On Windows, ultiline strings coming out of app descriptor seem to have a problem.
+				// Clean them up with this regexp
+				var cleanCopyright:String = appCopyright.replace(/\r\n/gm, "\n")
+				copyrightText.text = cleanCopyright;
+				
+				PopUpManager.centerPopUp(this);
+			}
+			
+			public function close():void{
+				PopUpManager.removePopUp(this);
+			}			
+			
+			private function messageButtonClickHandler(event:MouseEvent):void{
+//				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.ALERT_CLICK));
+				PopUpManager.removePopUp(this);		
+			}	
+			
+			[Embed("assets/gifs/m177.gif", mimeType="application/octet-stream")]			
+			[Bindable] public static var defaultGIF:Class;
+			
+			private static var classConstructed:Boolean = classConstruct();
+			private static function classConstruct():Boolean{
+				var styleDeclaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration("IntroView");
+			    if (!styleDeclaration)
+			    	styleDeclaration = new CSSStyleDeclaration();
+			    styleDeclaration.defaultFactory = function ():void {
+					this.GIF = defaultGIF;
+			    }
+			    StyleManager.setStyleDeclaration("IntroView", styleDeclaration, false);				
+				return true;
+			}					
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		[Style(name="GIF", type="Class", inherit="no")]
+	</mx:Metadata>
+	<mx:VBox
+		width="100%"
+		height="100%"
+		horizontalAlign="center">
+		<mx:HBox
+			width="100%"
+			height="100%"
+			id="messageBox"
+			horizontalGap="5"
+			paddingRight="5"
+			horizontalAlign="center"
+			verticalAlign="middle"
+			>
+			<mx:VBox
+				width="100%"
+				height="100%"
+				verticalGap="1"
+				horizontalAlign="left"
+				>
+				<mx:Text id="versionText"  fontWeight="bold" />
+				<mx:Text id="copyrightText" fontWeight="bold"/>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:Button id="messageButton" label="OK" click="messageButtonClickHandler(event)"/>		
+	</mx:VBox>		
+</mx:TitleWindow>

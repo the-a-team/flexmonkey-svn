@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:Window 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:views="com.gorillalogic.flexmonkey.application.UI.views.*"	
+	title="{windowTitle}"  
+	windowComplete="windowCompleteHandler()"
+	windowActivate="windowActivateHandler()"
+	closing="closingHandler(event)"
+	initialize="initializeHandler()"
+	backgroundColor="0xE0E0E0"
+	width="1024" height="450">
+	<mx:Script>
+		<![CDATA[
+			import com.gorillalogic.flexmonkey.application.events.AlertEvent;
+			import flash.net.navigateToURL;
+			
+			import flash.events.Event;
+			import com.asfusion.mate.ioc.InjectorRegistry;
+			
+			
+			import mx.controls.Menu;
+			import mx.managers.ToolTipManager;
+			import mx.core.Application;
+			import flash.desktop.NativeApplication;
+			import flash.display.NativeMenu;
+			import flash.display.NativeMenuItem;
+			
+			import com.gorillalogic.flexmonkey.application.events.UndoEvent;
+			import com.gorillalogic.flexmonkey.application.events.MonkeyFileEvent;
+			import com.gorillalogic.flexmonkey.application.events.UserEvent;
+			
+			private var rootMenu:NativeMenu; 
+			private var appMenu:NativeMenu;
+			private var fileMenu:NativeMenu;
+			private var editMenu:NativeMenu;
+			private var projectMenu:NativeMenu;
+			private var windowMenu:NativeMenu;
+			private var helpMenu:NativeMenu;
+			
+
+			public var mateDispatcher:IEventDispatcher;
+			private function initializeHandler():void{
+				InjectorRegistry.register(this);
+			}
+			
+			private var _projectURL:String;
+			public function get projectURL():String{
+				return _projectURL;	
+			}
+			public function set projectURL(url:String):void{
+				_projectURL = url;	
+				var slashArray:Array = projectURL.split("/");
+				windowTitle = "FlexMonkey - .../" + slashArray[slashArray.length-2] + "/" + slashArray[slashArray.length-1];
+			}
+				
+			[Bindable] private var windowTitle:String = "FlexMonkey";
+			
+			private function windowCompleteHandler():void{
+				// menus ----------------------------------------------------------------	
+				
+				NativeApplication.nativeApplication.addEventListener(Event.EXITING,exitingHandler,false,0,true);
+				
+				if ( NativeApplication.supportsMenu ) {	
+					rootMenu = NativeApplication.nativeApplication.menu;
+												
+					appMenu = rootMenu.getItemAt(0).submenu;
+					fileMenu = rootMenu.getItemAt(1).submenu;
+					editMenu = rootMenu.getItemAt(2).submenu;
+					windowMenu = rootMenu.getItemAt(3).submenu;
+					projectMenu = new NativeMenu();
+					rootMenu.addSubmenuAt(projectMenu,3,"Project");
+				} else {
+					rootMenu = new NativeMenu();
+					this.nativeWindow.menu = rootMenu;
+					
+					fileMenu = new NativeMenu();
+					rootMenu.addSubmenu(fileMenu, "File");
+					editMenu = new NativeMenu();
+					rootMenu.addSubmenu(editMenu, "Edit");
+					projectMenu = new NativeMenu();
+					rootMenu.addSubmenu(projectMenu, "Project");
+					windowMenu = new NativeMenu();
+					rootMenu.addSubmenu(windowMenu, "Window");
+				}	
+				helpMenu = new NativeMenu();
+				rootMenu.addSubmenu(helpMenu, "Help");	
+			
+				// edit menu ------------------------------------------------------------			
+				var undoCommand:NativeMenuItem = new NativeMenuItem("Undo",false);
+				undoCommand.addEventListener(Event.SELECT, undoSelectHandler);
+				undoCommand.keyEquivalent="z";
+				
+				var redoCommand:NativeMenuItem = new NativeMenuItem("Redo",false);
+				redoCommand.addEventListener(Event.SELECT, redoSelectHandler);
+				redoCommand.keyEquivalent="Z";							
+
+				editMenu.addItemAt(undoCommand,0);				
+				editMenu.addItemAt(redoCommand,1);
+					
+				if( NativeApplication.supportsMenu ){
+					editMenu.addItemAt((new NativeMenuItem("",true)),2);					
+				}
+
+				// file menu ------------------------------------------------------------							
+				fileMenu.removeAllItems();
+				
+				var newProjectCommand:NativeMenuItem = new NativeMenuItem("New Project",false);
+				newProjectCommand.addEventListener(Event.SELECT,newProjectHandler);
+				newProjectCommand.keyEquivalent="n";
+				
+				var openProjectCommand:NativeMenuItem = new NativeMenuItem("Open Project",false);
+				openProjectCommand.addEventListener(Event.SELECT,openProjectHandler);
+				openProjectCommand.keyEquivalent="o";
+										
+				var saveTestFileCommand:NativeMenuItem = new NativeMenuItem("Save",false);
+				saveTestFileCommand.addEventListener(Event.SELECT, saveTestFileSelectHandler);
+				saveTestFileCommand.keyEquivalent="s";
+												
+				var saveTestFileAsAS3Command:NativeMenuItem = new NativeMenuItem("Generate AS3",false);
+				saveTestFileAsAS3Command.addEventListener(Event.SELECT, saveTestFileAsAS3SelectHandler);
+				saveTestFileAsAS3Command.keyEquivalent="d";																								
+
+				fileMenu.addItem(newProjectCommand)
+				fileMenu.addItem(openProjectCommand)
+					
+				fileMenu.addItem((new NativeMenuItem("",true)));
+				fileMenu.addItem(saveTestFileCommand)
+				fileMenu.addItem((new NativeMenuItem("",true)));				
+				fileMenu.addItem(saveTestFileAsAS3Command)
+				
+				if ( ! NativeApplication.supportsMenu ) {	
+					var exitCommand:NativeMenuItem = new NativeMenuItem("Exit",false);
+					exitCommand.addEventListener(Event.SELECT, exitSelectHandler);
+					
+					fileMenu.addItem((new NativeMenuItem("",true)));				
+					fileMenu.addItem(exitCommand)
+				}
+
+				// project menu -------------------------------------------------------------
+				var projectPropertiesCommand:NativeMenuItem = new NativeMenuItem("Properties",false);
+				projectPropertiesCommand.addEventListener(Event.SELECT,projectPropertiesSelectHandler);
+				projectPropertiesCommand.keyEquivalent="p";
+				
+				projectMenu.addItemAt(projectPropertiesCommand,0);
+				
+				// Help menu -------------------------------------------------------------
+				// TODO Add other help items here
+				var flexMonkeyForumCommand:NativeMenuItem = new NativeMenuItem("FlexMonkey Forum",false);
+				flexMonkeyForumCommand.addEventListener(Event.SELECT, flexMonkeyForumSelectHandler);
+				
+				helpMenu.addItem(flexMonkeyForumCommand);
+				
+				if( ! NativeApplication.supportsMenu ){
+					helpMenu.addItem((new NativeMenuItem("",true)));
+					var aboutCommand:NativeMenuItem = new NativeMenuItem("About",false);
+					aboutCommand.addEventListener(Event.SELECT,aboutSelectHandler);
+					
+					helpMenu.addItem(aboutCommand);
+				}
+			}
+				
+			private function windowActivateHandler():void{
+			}	
+									
+			private function closingHandler(event:Event):void{
+				event.preventDefault();
+				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.MONKEY_EXIT));
+			}
+			
+			private function exitingHandler(event:Event):void{
+				event.preventDefault();
+				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.MONKEY_EXIT));				
+			}
+			
+			
+			// edit menu select handlers ------------------------------------------------			
+			private function undoSelectHandler(event:Event):void{
+				var undoEvent:UndoEvent = new UndoEvent(UndoEvent.UNDO);
+				mateDispatcher.dispatchEvent(undoEvent);	
+			}
+			
+			private function redoSelectHandler(event:Event):void{
+				var undoEvent:UndoEvent = new UndoEvent(UndoEvent.REDO);
+				mateDispatcher.dispatchEvent(undoEvent);	
+			}	
+				
+			// file menu select handlers ------------------------------------------------	
+			private function newProjectHandler(event:Event):void{
+	        	var monkeyFileEvent:MonkeyFileEvent = new MonkeyFileEvent(UserEvent.PROJECT_REQUEST_FOR_NEW);
+				mateDispatcher.dispatchEvent(monkeyFileEvent);				
+			}
+
+			private function openProjectHandler(event:Event):void{
+	        	var monkeyFileEvent:MonkeyFileEvent = new MonkeyFileEvent(UserEvent.PROJECT_REQUEST_FOR_OPEN);
+				mateDispatcher.dispatchEvent(monkeyFileEvent);				
+			}
+
+			private function saveTestFileSelectHandler(event:Event):void{
+	        	var monkeyFileEvent:MonkeyFileEvent = new MonkeyFileEvent(MonkeyFileEvent.TEST_FILE_SAVE);
+				mateDispatcher.dispatchEvent(monkeyFileEvent);	
+			}	
+			
+			private function saveTestFileAsAS3SelectHandler(event:Event):void{
+	        	var monkeyFileEvent:MonkeyFileEvent = new MonkeyFileEvent(MonkeyFileEvent.TEST_FILE_SAVE_AS3);
+				mateDispatcher.dispatchEvent(monkeyFileEvent);						
+			}	
+			
+			private function exitSelectHandler(event:Event):void{
+	        	var exitEvent:UserEvent = new UserEvent(UserEvent.MONKEY_EXIT);
+				mateDispatcher.dispatchEvent(exitEvent);						
+			}
+		
+			// project menu select handlers
+			private function projectPropertiesSelectHandler(event:Event):void{
+	        	var userEvent:UserEvent = new UserEvent(UserEvent.PROJECT_EDIT_PROPERTIES);
+				mateDispatcher.dispatchEvent(userEvent);					
+			}	
+		
+			// help menu select handler
+			private function flexMonkeyForumSelectHandler(event:Event):void{
+				var url:String = "http://groups.google.com/group/FlexMonkey";
+				var request:URLRequest = new URLRequest(url);
+				try{
+					navigateToURL(request);
+				}catch(e:Error){
+					mateDispatcher.dispatchEvent(new AlertEvent(AlertEvent.ALERT, "Alert","Could not launch FlexMonkey Forum in Browser"));
+				}
+			}
+						
+			private function aboutSelectHandler(event:Event):void{
+	        	var userEvent:UserEvent = new UserEvent(UserEvent.HELP_ABOUT);
+				mateDispatcher.dispatchEvent(userEvent);					
+			}		
+		]]>
+	</mx:Script>	
+	<mx:VBox 
+		width="100%"
+		height="100%"
+		paddingTop="0"
+		paddingRight="0"
+		paddingBottom="0"
+		paddingLeft="0"
+		verticalGap="5"	>		
+		<views:ControlBarView id="controlBarView"/>
+		<mx:HDividedBox
+			width="100%"
+			height="100%"
+			paddingTop="0"
+			paddingRight="0"
+			paddingBottom="0"
+			paddingLeft="0"	
+			horizontalGap="10"		
+			>
+			<views:CommandGridView id="commandGridView" width="65%"/>
+			<views:CommandDetailView id="commandDetailView" width="35%"/>	
+		</mx:HDividedBox>
+	</mx:VBox>	
+</mx:Window>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" height="100%"
+	paddingTop="5"
+	paddingRight="5"
+	paddingBottom="5"
+	paddingLeft="5"	
+	initialize="initializeHandler()"	
+	creationComplete="creationCompleteHandler()"
+	>
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DataGridEvent;
+			import mx.events.FocusRequestDirection;
+			import mx.collections.ArrayCollection;
+			import com.asfusion.mate.ioc.InjectorRegistry;
+			import com.gorillalogic.flexmonkey.application.events.UserEvent;
+			import mx.events.ListEvent;
+
+			public var mateDispatcher:IEventDispatcher;
+			[Bindable] public var attributeMoveArrowItemRendererFactory:IFactory;
+
+			private var _propertyCollection:ArrayCollection;
+			[Bindable] 
+			public function get propertyCollection():ArrayCollection{
+				return _propertyCollection;
+			}
+			public function set propertyCollection(c:ArrayCollection):void{
+				_propertyCollection = c;
+			}
+			
+			private function initializeHandler():void{
+				InjectorRegistry.register(this);
+			}
+										
+			private function creationCompleteHandler():void{
+			}	
+				        
+	        private function selectAllHandler(event:MouseEvent):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_SELECT_ALL));     		   
+	        }
+	        
+	        private function deselectAllHandler(event:MouseEvent):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_DESELECT_ALL));     		        	        	
+	        }
+	       
+	      	private function invertSelectionHandler(event:MouseEvent):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_INVERT_SELECTION));     		           		        	
+	        }
+	        
+	        private function updateHandler(event:MouseEvent):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_UPDATE));     		   		
+	        }	
+	        
+	        private function filterChangeHandler(event:Event):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_FILTER_CHANGE,filterText.text));     		   	        	
+	        }
+	        
+	        private function itemClickHandler(event:ListEvent):void{
+				if(event.columnIndex == 0){
+					mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_SELECT_CLICK,propertiesGrid.selectedItem));
+				}else if(event.columnIndex == 3){
+					mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_ARROW_CLICK,propertiesGrid.selectedItem));					
+				}
+	        }
+/*	        
+	        private function itemEditBeginHandler(event:DataGridEvent):void{
+trace("edit begin");
+//				propertiesGrid.destroyItemEditor();	 
+//				propertiesGrid.dispatchEvent(new DataGridEvent(DataGridEvent.ITEM_EDIT_END));       
+//				propertiesGrid.focusManager.moveFocus(FocusRequestDirection.BACKWARD,propertiesGrid);	
+	        }
+	     
+	     	private function itemEditBeginningHandler(event:DataGridEvent):void{
+trace("edit beginning");	  
+//				event.preventDefault();
+//				event.stopImmediatePropagation();      		     		
+	     	}
+	     
+	        private function itemEditEndHandler(event:DataGridEvent):void{
+trace("edit end");	        	
+	        }	     
+*/	        
+		]]>
+	</mx:Script>
+	<mx:Binding source="attributeMoveArrowItemRendererFactory" destination="col3.itemRenderer"/>	
+	<mx:HBox width="100%">
+		<mx:Label text="Filter" fontWeight="bold"/>
+		<mx:TextInput id="filterText" change="filterChangeHandler(event)" />
+		<mx:Button label="Select All" click="selectAllHandler(event)"/>
+		<mx:Button label="Deselect All" click="deselectAllHandler(event)"/>
+		<mx:Button label="Invert Selection" click="invertSelectionHandler(event)"/>
+		<mx:Button label="Update" click="updateHandler(event)"/>
+	</mx:HBox>
+	<mx:DataGrid 
+		id="propertiesGrid" 
+		width="100%" height="100%"
+		editable="false"
+		dataProvider="{propertyCollection}"
+		itemClick="itemClickHandler(event)"
+		>
+		<mx:columns>
+			<mx:DataGridColumn id="col0"
+				width="20"
+				textAlign="center"
+				headerText=""
+				dataField="selected"
+				editorDataField="selected"
+				editable="false"
+				rendererIsEditor="true"
+				itemRenderer="mx.controls.CheckBox"
+			/>		
+			<mx:DataGridColumn id="col1"
+				width="160"
+				headerText="Property"
+				dataField="name"
+				editable="false"
+			/>
+			<mx:DataGridColumn id="col2"
+				width="200"
+				headerText="Actual"
+				dataField="actualValue"
+				editable="false"
+			/>	
+			<mx:DataGridColumn id="col3"
+				width="20"
+				headerText=""
+				editable="false"
+			/>		
+			<mx:DataGridColumn id="col4"
+				width="200"
+				headerText="Expected"
+				dataField="expectedValue"
+				editable="false"
+			/>	
+		</mx:columns>
+	</mx:DataGrid>
+</mx:VBox>

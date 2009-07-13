@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:spies="com.flexspy.imp.*"					
+	width="100%" height="100%"
+	paddingTop="5"
+	paddingRight="5"
+	paddingBottom="5"
+	paddingLeft="5"	
+	initialize="initializeHandler()"		
+	creationComplete="creationCompleteHandler()"	
+	>
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import com.asfusion.mate.ioc.InjectorRegistry;
+			import com.gorillalogic.flexmonkey.application.events.UserEvent;
+			import mx.events.ListEvent;
+
+			public var mateDispatcher:IEventDispatcher;
+			[Bindable] public var attributeMoveArrowItemRendererFactory:IFactory;
+
+			private var _styleCollection:ArrayCollection;
+			[Bindable] 
+			public function get styleCollection():ArrayCollection{
+				return _styleCollection;
+			}
+			public function set styleCollection(c:ArrayCollection):void{
+				_styleCollection = c;
+			}
+			
+			private function initializeHandler():void{
+				InjectorRegistry.register(this);
+			}
+										
+			private function creationCompleteHandler():void{
+			}	
+				        
+	        private function selectAllHandler(event:MouseEvent):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.STYLE_SELECT_ALL));     		   
+	        }
+	        
+	        private function deselectAllHandler(event:MouseEvent):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.STYLE_DESELECT_ALL));     		        	        	
+	        }
+	       
+	      	private function invertSelectionHandler(event:MouseEvent):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.STYLE_INVERT_SELECTION));     		           		        	
+	        }
+	        
+	        private function updateHandler(event:MouseEvent):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.STYLE_UPDATE));     		   		
+	        }	
+	        
+	        private function filterChangeHandler(event:Event):void{
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.STYLE_FILTER_CHANGE,filterText.text));     		   	        	
+	        }
+
+	        private function itemClickHandler(event:ListEvent):void{
+				if(event.columnIndex == 0){
+					mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_SELECT_CLICK,stylesGrid.selectedItem));
+				}else if(event.columnIndex == 3){
+					mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROPERTY_ARROW_CLICK,stylesGrid.selectedItem));					
+				}
+	        }		
+			
+		]]>
+	</mx:Script>
+	<mx:Binding source="attributeMoveArrowItemRendererFactory" destination="col3.itemRenderer"/>		
+	<mx:HBox width="100%">
+		<mx:Label text="Filter" fontWeight="bold"/>
+		<mx:TextInput id="filterText" change="filterChangeHandler(event)" />
+		<mx:Button label="Select All" click="selectAllHandler(event)"/>
+		<mx:Button label="Deselect All" click="deselectAllHandler(event)"/>
+		<mx:Button label="Invert Selection" click="invertSelectionHandler(event)"/>
+		<mx:Button label="Update" click="updateHandler(event)"/>
+				
+	</mx:HBox>
+	<mx:DataGrid 
+		id="stylesGrid" 
+		width="100%" height="100%"
+		editable="true"
+		dataProvider="{styleCollection}"		
+		itemClick="itemClickHandler(event)"
+		>
+		<mx:columns>
+			<mx:DataGridColumn id="col0"
+				width="20"
+				textAlign="center"
+				headerText=""
+				dataField="selected"
+				editorDataField="selected"
+				editable="true"
+				rendererIsEditor="true"
+				itemRenderer="mx.controls.CheckBox"
+			/>
+			<mx:DataGridColumn id="col1"
+				width="160"
+				headerText="Style"
+				dataField="name"
+				editable="false"
+			/>
+			<mx:DataGridColumn id="col2"
+				headerText="Actual"
+				dataField="actualValue"
+				editable="false"
+			/>	
+			<mx:DataGridColumn id="col3"
+				width="20"
+				headerText=""
+				editable="false"
+			/>		
+			<mx:DataGridColumn id="col5"
+				width="200"
+				headerText="Expected"
+				dataField="expectedValue"
+				editable="false"
+			/>							
+		</mx:columns>
+	</mx:DataGrid>
+</mx:VBox>

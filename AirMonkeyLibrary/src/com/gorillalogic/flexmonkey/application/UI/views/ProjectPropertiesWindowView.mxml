@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:Window 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	title="Project Properties Window"  
+	windowComplete="windowCompleteHandler()"
+	windowActivate="windowActivateHandler()"
+	closing="closingHandler(event)"
+	initialize="initializeHandler()"
+	backgroundColor="0xE0E0E0"
+	width="750" height="410"	
+	>
+	<mx:Script>
+		<![CDATA[
+			import com.gorillalogic.flexmonkey.application.VOs.FlashVarVO;
+			import mx.collections.ArrayCollection;
+			import flash.events.Event;
+			
+			import com.asfusion.mate.ioc.InjectorRegistry;
+			
+			import com.gorillalogic.flexmonkey.application.events.UserEvent;
+			import com.gorillalogic.flexmonkey.application.VOs.ProjectPropertiesVO;
+
+			public var mateDispatcher:IEventDispatcher;
+			
+			public var projectURL:String;
+		
+			[Bindable] public var targetSWFURL:String;
+			[Bindable] public var targetSWFWidth:uint;
+			[Bindable] public var targetSWFHeight:uint;
+			[Bindable] public var useBrowser:Boolean;
+			[Bindable] public var useFlashVars:Boolean;
+			[Bindable] public var flashVars:ArrayCollection;
+			[Bindable] public var generatedCodeSourceDirectory:String;
+			[Bindable] public var generatedCodeSuitesPackageName:String;
+		
+			private function initializeHandler():void{
+				InjectorRegistry.register(this);
+			}
+			
+			private function windowCompleteHandler():void{
+			}
+				
+			private function windowActivateHandler():void{
+			}	
+									
+			private function closingHandler(event:Event):void{
+			}
+			
+			private function cancelClickHandler(event:MouseEvent):void{
+				this.close();
+			}
+			
+			private function updateProjectProperties():void{
+				var projectProperties:ProjectPropertiesVO = new ProjectPropertiesVO();
+				projectProperties.generatedCodeSourceDirectory = generatedCodeSourceDirectoryFormItem.text;
+				projectProperties.generatedCodeSuitesPackageName = generatedCodeSuitesPackageNameFormItem.text;
+				projectProperties.targetSWFHeight = uint(targetSWFHeightFormItem.text);
+				projectProperties.targetSWFWidth = uint(targetSWFWidthFormItem.text);
+				projectProperties.targetSWFURL = targetSWFURLFormItem.text;
+				projectProperties.useBrowser = useBrowserCheckBox.selected;				
+				projectProperties.useFlashVars = useFlashVarsCheckBox.selected;
+				projectProperties.flashVars = flashVars;
+   				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROJECT_PROPERTIES_UPDATE,projectProperties)); 				
+			}
+
+			private function applyClickHandler(event:MouseEvent):void{
+ 				updateProjectProperties();
+   			}
+			
+			private function okClickHandler(event:MouseEvent):void{
+ 				updateProjectProperties();
+	   			this.close();
+   			}
+   			
+   			private var targetSWFFile:File;
+			private function browseForTargetSWFURLClickHandler(event:MouseEvent):void{
+				targetSWFFile = new File(projectURL);
+				var filter:FileFilter = new FileFilter("SWF","*.swf");
+				targetSWFFile.browseForOpen("Select Test Target SWF", [filter]);
+				targetSWFFile.addEventListener(Event.SELECT,targetSWFFileSelectHandler,false,0,true);		
+			}
+			private function targetSWFFileSelectHandler(event:Event):void{
+				targetSWFURLFormItem.text = event.target.url;
+			}
+			
+			private var generatedSourceCodeDirectory:File;
+			private function browseForGeneratedCodeSourceDirectoryClickHandler(event:MouseEvent):void{
+				generatedSourceCodeDirectory = new File(projectURL);
+				generatedSourceCodeDirectory.browseForDirectory("Select Directory");
+				generatedSourceCodeDirectory.addEventListener(Event.SELECT,generatedSourceCodeDirectorySelectHandler,false,0,true);
+			}
+			private function generatedSourceCodeDirectorySelectHandler(event:Event):void{
+				generatedCodeSourceDirectoryFormItem.text = event.target.url;	
+			}
+
+			private function addFlashVarClickHandler(event:MouseEvent):void{
+				var fV:FlashVarVO = new FlashVarVO("varName","varValue");
+				flashVars.addItem(fV);
+			}	
+			private function deleteFlashVarClickHandler(event:MouseEvent):void{		
+				flashVars.removeItemAt(flashVarsGrid.selectedIndex);
+			}
+		]]>
+	</mx:Script>
+	<mx:Binding source="useBrowser" destination="useBrowserCheckBox.selected"/>	
+	<mx:Binding destination="useBrowser" source="useBrowserCheckBox.selected"/>
+	<mx:Binding source="targetSWFURL" destination="targetSWFURLFormItem.text"/>
+	<mx:Binding source="targetSWFWidth.toString()" destination="targetSWFWidthFormItem.text"/>
+	<mx:Binding source="targetSWFHeight.toString()" destination="targetSWFHeightFormItem.text"/>
+	<mx:Binding source="useFlashVars" destination="useFlashVarsCheckBox.selected"/>
+	<mx:Binding destination="useFlashVars" source="useFlashVarsCheckBox.selected"/>
+	<mx:Binding source="flashVars" destination="flashVarsGrid.dataProvider"/>
+	<mx:Binding destination="flashVars" source="ArrayCollection(flashVarsGrid.dataProvider)"/>
+	<mx:Binding source="generatedCodeSourceDirectory" destination="generatedCodeSourceDirectoryFormItem.text"/>
+	<mx:Binding source="generatedCodeSuitesPackageName" destination="generatedCodeSuitesPackageNameFormItem.text"/>
+	<mx:VBox 
+		width="100%"
+		height="100%"
+		paddingTop="5"
+		paddingRight="5"
+		paddingBottom="2"
+		paddingLeft="5"
+		verticalGap="0"	>	
+		<mx:Form id="projectPropertiesForm" verticalGap="2" width="100%" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0">
+			<mx:Label text="Test Target SWF" fontSize="12"/>
+			<mx:FormItem label="Use Browser" width="100%">
+				<mx:CheckBox id="useBrowserCheckBox"/>									
+			</mx:FormItem>
+			<mx:FormItem label="URL" width="100%" >
+				<mx:HBox
+					width="100%"
+					paddingTop="0"
+					paddingRight="0"
+					paddingBottom="0"
+					paddingLeft="0"
+					horizontalGap="4"
+					horizontalAlign="center">
+					<mx:TextInput id="targetSWFURLFormItem" width="100%"/>
+					<mx:Button id="browseForTargetSWFURLButton" label="Browse" enabled="{!useBrowser}" click="browseForTargetSWFURLClickHandler(event)"/>				
+				</mx:HBox>					
+			</mx:FormItem>					
+			<mx:FormItem label="Width" width="100%">
+				<mx:TextInput id="targetSWFWidthFormItem" width="50"/>
+			</mx:FormItem>	
+			<mx:FormItem label="Height" width="100%">
+				<mx:TextInput id="targetSWFHeightFormItem" width="50"/>
+			</mx:FormItem>	
+			<mx:FormItem label="Use FlashVars" width="100%">
+				<mx:CheckBox id="useFlashVarsCheckBox"/>									
+			</mx:FormItem>
+			<mx:FormItem label="FlashVars" width="100%">
+				<mx:DataGrid 
+					id="flashVarsGrid"
+				 	width="100%" 
+				 	height="100"
+				 	editable="true"
+				 	doubleClickEnabled="true"
+					>
+					<mx:columns>
+						<mx:DataGridColumn id="nameColumn" editable="true" dataField="name" headerText="Name"/>
+						<mx:DataGridColumn id="valueColumn" editable="true" dataField="value" headerText="Value"/>							
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:HBox paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" horizontalGap="1">
+					<mx:Button id="addFlashVarButton" label="+" width="20" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" toolTip="Add FlashVar" click="addFlashVarClickHandler(event)"/>
+					<mx:Button id="deleteFlashVarButton" label="-" width="20" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" toolTip="Delete FlashVar" click="deleteFlashVarClickHandler(event)"/>
+				</mx:HBox>				
+			</mx:FormItem>
+			<mx:VBox		
+				width="100%"
+				height="10"
+				paddingTop="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingLeft="0"
+				verticalGap="0"
+				verticalAlign="middle">
+				<mx:HRule width="100%"/>
+			</mx:VBox>
+			<mx:Label text="Generated AS3" fontSize="12"/>
+			<mx:FormItem label="Source Directory URL" width="100%">
+				<mx:HBox
+					width="100%"
+					paddingTop="0"
+					paddingRight="0"
+					paddingBottom="0"
+					paddingLeft="0"
+					horizontalGap="4"
+					horizontalAlign="center">				
+					<mx:TextInput id="generatedCodeSourceDirectoryFormItem" width="100%"/>
+					<mx:Button id="browseForGeneratedCodeSourceDirectoryButton" label="Browse" click="browseForGeneratedCodeSourceDirectoryClickHandler(event)"/>				
+				</mx:HBox>
+			</mx:FormItem>					
+			<mx:FormItem label="Suites Package Name" width="100%">
+				<mx:TextInput id="generatedCodeSuitesPackageNameFormItem" width="250"/>
+			</mx:FormItem>
+			<mx:VBox		
+				width="100%"
+				height="10"
+				paddingTop="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingLeft="0"
+				verticalGap="0"
+				verticalAlign="middle">
+				<mx:HRule width="100%"/>
+			</mx:VBox>	
+		</mx:Form>					
+		<mx:HBox 
+			width="100%" 
+			paddingBottom="4" paddingLeft="0" paddingRight="0" paddingTop="0"
+			horizontalAlign="right"
+			>
+			<mx:Button label="Apply" id="applyButton" click="applyClickHandler(event)"/>
+			<mx:Button label="Cancel" id="cancelButton" click="cancelClickHandler(event)"/>
+			<mx:Button label="OK" id="okButton" click="okClickHandler(event)"/>			
+		</mx:HBox>
+	</mx:VBox>			
+</mx:Window>

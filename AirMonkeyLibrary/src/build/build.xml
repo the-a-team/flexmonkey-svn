@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project basedir="../" >
+
+	<!-- Define variables/paths used in this build script -->
+	<property file="${basedir}/build/build.properties" /> 
+
+
+	<!--
+		Generate ASDoc output for the library
+	-->
+	<target name="docs">
+		<!-- Clean out the contents of the doc directory, without delete "docs" -->
+		<delete includeemptydirs="true">
+			<fileset dir="docs" includes="**/*" />
+		</delete>
+		
+		<exec executable="/Applications/Adobe Flex Builder 3/sdks/3.3.0/bin/asdoc" spawn="no">
+			<arg line='-window-title "Smokin Monkey Docs"' />
+			<arg line="-o ${docs.dir}" />
+			<arg line="-l+=${flex3sdk.lib.air.dir}" />
+			<arg line="-l+=${flex3sdk.lib.monkey.dir}" />
+
+			<!-- Specify the main source path as "src" -->
+			<arg line="-sp ${src.dir}" />
+			
+			<!-- Document all of the classes in the "src" tree -->
+			<!-- <arg line="-ds ${src.dir}" /> -->
+			
+			<arg line="-dc com.gorillalogic.flexmonkey.monkeyCommands.MonkeyCommandRunner" /> 
+			
+			<!-- Include the library name in the window title -->
+			<!-- <arg line="-window-title 'Adobe ActionScript 3.0 Library - ${library.name}' "/> -->
+		</exec>
+
+	</target>
+
+</project>
