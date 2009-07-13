@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties version="1">
+<includeClasses>
+<classEntry path="com.gorillalogic.aqadaptor.codec.ListDataObjectCodec"/>
+<classEntry path="com.gorillalogic.aqadaptor.codec.TabObjectCodec"/>
+<classEntry path="com.gorillalogic.aqadaptor.codec.AutomationObjectPropertyCodec"/>
+<classEntry path="com.gorillalogic.aqadaptor.custom.CustomAutomationMethodDescriptor"/>
+<classEntry path="com.gorillalogic.aqadaptor.AQAdapter"/>
+<classEntry path="com.gorillalogic.aqadaptor.IAQCodecHelper"/>
+<classEntry path="com.gorillalogic.aqadaptor.codec.ScrollDetailPropertyCodec"/>
+<classEntry path="com.gorillalogic.aqadaptor.custom.utilities.EnvXMLParser"/>
+<classEntry path="com.gorillalogic.aqadaptor.AQEnvironment"/>
+<classEntry path="com.gorillalogic.aqadaptor.custom.CustomAutomationClass"/>
+<classEntry path="com.gorillalogic.aqadaptor.AQEventDescriptor"/>
+<classEntry path="com.gorillalogic.aqadaptor.codec.TriggerEventPropertyCodec"/>
+<classEntry path="com.gorillalogic.aqadaptor.IAQPropertyDescriptor"/>
+<classEntry path="com.gorillalogic.aqadaptor.AQPropertyDescriptor"/>
+<classEntry path="com.gorillalogic.aqadaptor.custom.CustomAutomationPropertyDescriptor"/>
+<classEntry path="com.gorillalogic.aqadaptor.IAQMethodDescriptor"/>
+<classEntry path="com.gorillalogic.aqadaptor.AQMethodDescriptor"/>
+<classEntry path="com.gorillalogic.aqadaptor.custom.CustomAutomationEventDescriptor"/>
+<classEntry path="com.gorillalogic.aqadaptor.codec.ScrollDirectionPropertyCodec"/>
+</includeClasses>
+<includeResources/>
+<namespaceManifests/>
+</flexLibProperties>
