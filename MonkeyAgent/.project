@@ -3,6 +3,8 @@
 	<name>MonkeyAgent</name>
 	<comment></comment>
 	<projects>
+		<project>AirMonkeyLibrary</project>
+		<project>FlexAutomationLibrary</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
