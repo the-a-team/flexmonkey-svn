@@ -1,0 +1,36 @@
+<TopNode>
+  <TestSuite name="TestSuite1">
+    <TestCase name="TestCase1">
+      <Test name="Test1" defaultThinkTime="500">
+        <UIEvent command="SelectText" value="inName" prop="automationName">
+          <arg value="0"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Input" value="inName" prop="automationName">
+          <arg value="Fred"/>
+        </UIEvent>
+        <UIEvent command="Open" value="inType" prop="automationName">
+          <arg value="null"/>
+        </UIEvent>
+        <UIEvent command="Select" value="inType" prop="automationName">
+          <arg value="Work"/>
+          <arg value="1"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="SelectText" value="inPhone" prop="automationName">
+          <arg value="0"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Input" value="inPhone" prop="automationName">
+          <arg value="303 555 1212"/>
+        </UIEvent>
+        <UIEvent command="Click" value="Add" prop="automationName">
+          <arg value="0"/>
+        </UIEvent>
+        <Verify description="New Verify" snapshotURL="28928BC8-1F1B-D687-D0BF-DBF92B651CB6.snp" value="Change" prop="automationName" verifyBitmap="true">
+          <Attribute name="enabled" expectedValue="true" actualValue="true" type="property"/>
+        </Verify>
+      </Test>
+    </TestCase>
+  </TestSuite>
+</TopNode>

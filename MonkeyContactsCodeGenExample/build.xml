@@ -1,0 +1,74 @@
+<project name="monkey-code-gen-example" basedir="." default="test-with-launcher">
+	<property file="build.properties" />
+	
+	<!-- Location of the Monkey ant tasks -->
+	<path id="libraries">
+	   <fileset dir="${basedir}/libs">
+	      <include name="**/*.jar"/>
+	   </fileset>
+	</path>
+	
+	<!-- Define the Monkey runner ant task -->
+	<taskdef name="monkey-test-runner"
+	   classname="com.gorillalogic.flexmonkey.anttask.MonkeyTestRunnerAntTask"
+	   classpathref="libraries" />
+
+	
+	<!-- Define the Monkey launcher ant task -->
+	<taskdef name="monkey-test-launcher"
+	   classname="com.gorillalogic.flexmonkey.anttask.MonkeyTestLauncherAntTask"
+	   classpathref="libraries" />
+	
+	<!-- Directory where reports will be written -->
+	<property name="report.dir" location="${basedir}/output" />
+	
+	<target name="clean">
+        <delete dir="${report.dir}" />
+    </target>
+
+	<target name="init" depends="clean">
+		<mkdir dir="${report.dir}" />
+	</target>
+	
+	<target name="test-with-launcher" depends="init">       
+	   <monkey-test-launcher
+          timeout="0"
+          launcher="${basedir}/bin-debug/MonkeyTestLauncher.html"
+          targetSwf="file:///${basedir}/bin-debug/MonkeyContacts.swf"
+          testModuleSwf="file:///${basedir}/bin-debug/MonkeyContactsCodeGenExampleTestModule.swf"
+	      snapshotDir="${basedir}/snapshots"
+          toDir="${report.dir}" 
+          haltonfailure="false" />
+				
+	   <junitreport todir="${report.dir}">
+          <fileset dir="${report.dir}">
+             <include name="TEST-*.xml"/>
+          </fileset>	
+          <report format="frames" todir="${report.dir}/html"/>
+	   </junitreport>
+	</target>
+	
+	<target name="test-with-runner" depends="init">       
+		<monkey-test-runner
+		   targetSwf="file:///${basedir}/bin-debug/MonkeyContacts.swf"
+		   snapshotDir="file:///${basedir}/snapshots"
+		   debug="true"
+		   headless="true"
+		   failonerror="false"
+		   testRunner="${flexmonkey.testrunner}"
+		   outputDir="${report.dir}">
+
+		   <fileset dir="${basedir}/bin-debug">
+		      <include name="MonkeyContactsCodeGenExampleTestModule.swf"/>
+		   </fileset>
+		</monkey-test-runner>	        
+		
+		<junitreport todir="${report.dir}">
+	    	<fileset dir="${report.dir}">
+	        	<include name="*.xml"/>
+	       	</fileset>            
+			<report format="frames" todir="${report.dir}/flex"/>    
+		</junitreport>  
+	 </target>
+
+</project>
