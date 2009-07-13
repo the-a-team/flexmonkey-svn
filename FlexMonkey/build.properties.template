@@ -1,8 +1,0 @@
-
-# Customize for local environment 
-
-# Flex sdk home
-flex.home=/Applications/Adobe Flex Builder 3/sdks/3.0.0
-# Location of flexTasks.jar
-flex.ant.loc=${flex.home}/ant
-
