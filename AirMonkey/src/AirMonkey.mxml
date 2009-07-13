@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:WindowedApplication
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:maps="com.gorillalogic.flexmonkey.application.maps.*"
+	xmlns:views="com.gorillalogic.flexmonkey.application.UI.views.*"
+	width="100%"
+	height="100%"
+	paddingTop="0"
+	paddingRight="0"
+	paddingBottom="0"
+	paddingLeft="0"
+	backgroundColor="0xE0E0E0"
+	title="{windowTitle}"
+	frameRate="50"
+	visible="false"
+	applicationComplete="applicationCompleteHandler()"
+	initialize="initializeHandler()" 
+	creationComplete="creationCompleteHandler()"
+	closing="closingHandler(event)"
+>
+	<mx:Script>
+		<![CDATA[
+			import com.gorillalogic.flexmonkey.application.events.AlertEvent;
+		
+import flash.net.navigateToURL;		
+ 
+ //           import com.gorillalogic.flexmonkey.registration.MonkeyRegistrationStore;
+		
+			import com.gorillalogic.flexmonkey.monkeyCommands.UIEventMonkeyCommand;
+			import mx.controls.Alert;
+			import mx.managers.ToolTipManager;
+			import mx.core.Application;
+			import com.gorillalogic.flexmonkey.application.events.UserEvent;
+
+			import air.update.events.UpdateEvent;
+			import air.update.ApplicationUpdaterUI;
+			
+			private var _useBrowser:Boolean;
+			[Bindable ("useBrowserChanged")] 
+			public function get useBrowser():Boolean{
+				return _useBrowser;
+			}
+			public function set useBrowser(u:Boolean):void{
+				_useBrowser = u;
+				
+				// This is a workaround for what seems to be a Windows bug.
+				// If the useBrowserChanged event is dispatched immediately here, the target SWF window ends up invisible because
+				// the system changes it after the binding runs.
+				var timer:Timer = new Timer(1, 1);
+				timer.addEventListener(TimerEvent.TIMER_COMPLETE, timerCompleteHandler, false, 0, true);
+				timer.start();
+				timerCompleteHandler();
+			}
+			
+			private function timerCompleteHandler(event:TimerEvent=null):void{
+				dispatchEvent(new Event("useBrowserChanged"));
+			}
+			
+			private var updater:ApplicationUpdaterUI = new ApplicationUpdaterUI();
+			
+//import flash.net.registerClassAlias;
+//import mx.messaging.messages.RemotingMessage;	
+//import mx.messaging.channels.AMFChannel;
+// substituted a compiler -include for the AMFChannel couplet of import and register... (see below)	
+			
+			private function initializeHandler():void{
+				StyleManager.loadStyleDeclarations( "assets/airmonkey.swf",true );
+			}
+			
+			private var rxConnection:LocalConnection;
+			private var txConnection:LocalConnection;
+			
+			private function creationCompleteHandler():void{
+				updater.configurationFile=new File("app:/config/updaterConfig.xml");
+				updater.addEventListener(UpdateEvent.INITIALIZED,updaterInitialized);
+				updater.initialize();		
+/*				
+				if (!MonkeyRegistrationStore.checkValidKey()) {
+					dispatchEvent(new UserEvent(UserEvent.REGISTRATION_PROMPT));
+                }				
+*/										
+			}
+// ------------------------------------------------------------------------------------------			
+					
+			private function updaterInitialized(event:UpdateEvent):void{
+				var isFirstRun:Boolean = event.target.isFirstRun;
+				var previousVersion:String = event.target.previousVersion;
+				var currentVersion:String = event.target.currentVersion;
+			}
+			
+			private function applicationCompleteHandler():void{
+//registerClassAlias("flex.messaging.messages.RemotingMessage", RemotingMessage);	
+//registerClassAlias("flex.messaging.messages.AMFChannel", AMFChannel);	
+//	<mx:Style source="/assets/airmonkey.css"/>
+				
+				ToolTipManager.showDelay = 1000;
+			}
+			
+			private function closingHandler(event:Event):void{
+				event.preventDefault();
+				dispatchEvent(new UserEvent(UserEvent.MONKEY_EXIT));				
+			}			
+
+			private var _targetSWFURL:String;
+			[Bindable]
+			public function get targetSWFURL():String{
+				return _targetSWFURL;
+			}
+			public function set targetSWFURL(url:String):void{
+				_targetSWFURL = url;
+				var slashArray:Array = targetSWFURL.split("/");
+				windowTitle = slashArray[slashArray.length-1];				
+			}
+			
+			[Bindable] private var windowTitle:String = "FlexMonkey Target Application";			
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Binding source="{!useBrowser}" destination="this.visible"/>
+	<maps:ApplicationEventMap/>
+	<views:MainView/>		
+</mx:WindowedApplication>
