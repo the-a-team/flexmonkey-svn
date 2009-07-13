@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties version="1">
+<includeClasses>
+<classEntry path="com.gorillalogic.flexmonkey.context.ISnapshotLoader"/>
+<classEntry path="com.gorillalogic.flexmonkey.context.SnapshotLoader"/>
+<classEntry path="com.gorillalogic.flexmonkey.flexunit.tests.MonkeyFlexUnitTestCase"/>
+<classEntry path="com.gorillalogic.flexmonkey.flexunit.tests.MonkeyFlexUnitTestContext"/>
+<classEntry path="com.gorillalogic.flexmonkey.flexunit.tests.MonkeyFlexUnitTestSuite"/>
+</includeClasses>
+<includeResources/>
+<namespaceManifests/>
+</flexLibProperties>
