@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:fluint="http://www.digitalprimates.net/2008/fluint"
+	creationComplete="creationCompleteHandler()"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	width="100%"
+	height="100%"
+	>
+<mx:Script>
+	<![CDATA[
+		import flash.display.BitmapData;
+		import flash.events.DataEvent;
+		import flash.net.XMLSocket;
+		import flash.utils.describeType;
+		
+		import mx.automation.Automation;
+		import mx.automation.IAutomationObject;
+		import mx.automation.events.AutomationRecordEvent;
+		import mx.core.UIComponent;
+		import mx.collections.ArrayCollection;
+		import mx.modules.Module;
+		import mx.managers.SystemManager;
+		import mx.events.FlexEvent;
+		import mx.controls.SWFLoader;
+		import mx.controls.Alert;
+		
+		import com.gorillalogic.flexmonkey.context.SnapshotLoader;
+		import com.gorillalogic.flexmonkey.flexunit.tests.MonkeyFlexUnitTestContext;
+		import com.gorillalogic.flexmonkey.flexunit.tests.MonkeyFlexUnitTestSuite;
+		
+		private static const REQUEST_PARAMS : String = "<requestParams/>";
+		private static const END_OF_TEST_RUN : String = "<endOfTestRun/>";
+		private static const END_OF_TEST_ACK_NAME : String = "endOfTestRunAck";
+		private static const PARAMETERS_RESPONSE_NAME : String = "parameters";
+		
+		[Inspectable]
+		public var port : uint = 1024;
+		
+		[Inspectable]
+		public var server : String = "127.0.0.1";
+		
+		[Bindable]
+		public var status : String = "";
+		
+		private var reports : Object = new Object();
+		private var testsComplete : Function;
+		private var totalTestCount : int;
+    	private var numTestsRun : int = 0;
+    	private var socket : XMLSocket;
+		
+		private var targetSWFURL:String;
+		[Bindable] private var targetSWFWidth:uint = 600;
+		[Bindable] private var targetSWFHeight:uint = 400;
+		
+		private var testModuleSWFURL:String;
+		[Bindable] private var testSWFWidth:uint = 600;
+		[Bindable] private var testSWFHeight:uint = 400;
+		
+		private var snapshotDirURL:String;
+
+		private function creationCompleteHandler():void{
+			connectSocket();
+		}   
+
+		private function loadTargetSWF():void{
+			var loaderContext:LoaderContext = new LoaderContext();
+//		 	loaderContext.applicationDomain = ApplicationDomain.currentDomain;
+			targetSwfLoader.addEventListener(Event.COMPLETE,targetSwfLoaderCompleteHandler,false,0,true);
+			targetSwfLoader.addEventListener(IOErrorEvent.IO_ERROR,targetSwfLoaderIOErrorHandler,false,0,true);
+			targetSwfLoader.loaderContext = loaderContext;
+			targetSwfLoader.percentHeight=100;
+			targetSwfLoader.percentWidth=100;
+			targetSwfLoader.scaleContent = true;
+			targetSwfLoader.load(targetSWFURL);			
+		}
+
+		private function targetSwfLoaderCompleteHandler(event:Event):void{
+			targetSwfLoader.removeEventListener(Event.COMPLETE,targetSwfLoaderCompleteHandler,false);	
+			writeConsole("Target SWF loaded");						
+			SystemManager(targetSwfLoader.content).addEventListener(FlexEvent.APPLICATION_COMPLETE, targetSWFApplicationCompleteHandler,false,0,true);
+		}	
+				
+		private function targetSwfLoaderIOErrorHandler(event:IOErrorEvent):void{
+			writeConsole("Failed to load Target SWF: " + event.text);
+		}
+		
+		private function targetSWFApplicationCompleteHandler(event:FlexEvent):void{	
+			writeConsole("Target SWF ready");						
+			var loadedApplication:Application = Application(event.target.application);
+
+			testRunner.addEventListener(TestRunner.TESTS_COMPLETE, processResults);
+			testModuleLoader.url = testModuleSWFURL;
+		}	
+				
+		private function testModuleLoaderReadyHandler():void{
+			writeConsole("Test module SWF ready, running tests...");
+			
+			var testSuites:Array = Object(testModuleLoader.child).getTestSuites();
+			
+			// TODO Use code shared with project manager to get project resources
+			var snapshotLoader:SnapshotLoader = new SnapshotLoader(snapshotDirURL);
+			var testContext:MonkeyFlexUnitTestContext = new MonkeyFlexUnitTestContext(snapshotLoader);
+			for each ( var suite : MonkeyFlexUnitTestSuite in testSuites ) {
+				suite.context = testContext;
+			}
+			
+			testRunner.startTests( testSuites );
+		}
+		
+		protected function processResults(event:Event):void{
+		   sendResults();
+		}
+				
+		private function writeConsole(m:String):void{
+			console.text += "\n" + m;
+			console.validateNow();
+            console.verticalScrollPosition = console.maxVerticalScrollPosition;			
+		}
+
+		//--------------------------------------------------------------------------
+		
+		/*
+		 * Open a socket to talk back to the Ant task.
+		 */
+		private function connectSocket() : void {
+			writeConsole("Connecting to " + server + ":" + port + "...");
+			socket = new XMLSocket();
+			socket.addEventListener( Event.CONNECT, handleConnect );
+			socket.addEventListener( DataEvent.DATA, handleResponse );
+   	   		socket.connect( server, port );
+		}
+		
+		/*
+		 * First thing we do with the socket is request our parameters.
+		 */
+		private function handleConnect( event : Event ) : void {
+			writeConsole("Sending requestParams");
+			socket.send( REQUEST_PARAMS );
+		}
+
+		/*
+		 * Sends the results. This sends the reports back to the controlling Ant
+		 * task using an XMLSocket.
+		 */
+		private function sendResults() : void
+		{
+			var testSuitesXml : XML = testRunner.xmlResults;
+			
+			writeConsole("Sending test results");
+			for each(var testSuiteXml:XML in testSuitesXml.testsuite) { 
+				// Send the testsuite XML.
+				//writeConsole("Sending test suite result XML:");
+				//writeConsole(testSuiteXml.toXMLString());
+				socket.send( testSuiteXml.toXMLString() );
+			}
+			// Send the end of reports terminator.
+			writeConsole("Sending endOfTestRun");
+			socket.send( END_OF_TEST_RUN );
+		}
+		
+		/*
+		 * Event listener to handle data received on the socket.
+		 */
+		private function handleResponse( event : DataEvent ) : void
+		{
+			var data : String = event.data;
+			
+			var xml:XML = new XML(data);
+   			if ( xml.name() == END_OF_TEST_ACK_NAME ) {
+				exit();
+   			} else if ( xml.name() == PARAMETERS_RESPONSE_NAME ) {
+   				targetSWFURL = xml.@targetSwf;
+   				testModuleSWFURL = xml.@testModuleSwf;
+   				snapshotDirURL = xml.@snapshotDir;
+   				writeConsole("Received parameters: targetSWF=" + targetSWFURL + ", testModuleSWF=" + testModuleSWFURL + ", snapshotDir=" + snapshotDirURL);
+   				loadTargetSWF();
+   			}
+		}
+		
+		/*
+		 * Exit the test runner.
+		 */
+		private function exit() : void
+		{
+			writeConsole("Done.");
+			
+			// Close the socket.
+			socket.close();
+			
+			// TODO Has no effect in browser...
+			fscommand( "quit" );
+		}
+	]]>
+</mx:Script>
+<mx:ModuleLoader id="testModuleLoader"
+	ready="testModuleLoaderReadyHandler()"/>
+	
+<fluint:TestRunner id="testRunner"/>
+
+<mx:VDividedBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:SWFLoader id="targetSwfLoader" width="{targetSWFWidth}" height="{targetSWFHeight}"/>
+	<fluint:TestResultDisplay width="100%" height="100%" />
+	<mx:TextArea id="console" editable="false" text="Initialized" width="100%" height="60" verticalScrollPolicy="on"/>	
+</mx:VDividedBox>
+
+</mx:Application>
