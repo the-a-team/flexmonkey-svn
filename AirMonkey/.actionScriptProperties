@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionScriptProperties mainApplicationPath="AirMonkey.mxml" version="3">
+<compiler additionalCompilerArguments="-locale en_US -includes mx.messaging.channels.AMFChannel  -include-libraries &quot;../../FlexAutomationLibrary/bin/FlexAutomationLibrary.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation.swc&quot;    -include-libraries &quot;${flexlib}/libs/automation_agent.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation_dmv.swc&quot;" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="true" verifyDigests="true" warn="true">
+<compilerSourcePath/>
+<libraryPath defaultLinkType="1">
+<libraryPathEntry kind="4" path="">
+<modifiedEntries>
+<libraryPathEntry kind="3" linkType="4" path="${PROJECT_FRAMEWORKS}/libs/framework.swc" useDefaultLinkType="true">
+<crossDomainRsls>
+<crossDomainRslEntry autoExtract="true" policyFileUrl="" rslUrl="framework_3.2.0.3958.swz"/>
+<crossDomainRslEntry autoExtract="true" policyFileUrl="" rslUrl="framework_3.2.0.3958.swf"/>
+</crossDomainRsls>
+</libraryPathEntry>
+</modifiedEntries>
+</libraryPathEntry>
+<libraryPathEntry kind="1" linkType="1" path="libs"/>
+<libraryPathEntry kind="3" linkType="1" path="/FlexAutomationLibrary/bin/FlexAutomationLibrary.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/AirMonkeyLibrary/bin/AirMonkeyLibrary.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/AirMonkeyLibrary/libs/Mate_08_8_1.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/air/applicationupdater_ui.swc" useDefaultLinkType="false"/>
+</libraryPath>
+<sourceAttachmentPath/>
+</compiler>
+<applications>
+<application path="AirMonkey.mxml"/>
+</applications>
+<modules/>
+<buildCSSFiles/>
+</actionScriptProperties>

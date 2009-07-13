@@ -1,0 +1,29 @@
+Gorilla Logic Trademark Policy
+We may license certain products to you under an open source license (for example, the GNU General Public License 
+(GPL)).  These open source licenses give you certain rights in our software under copyright law; however, they do not 
+give you rights to use Gorilla Logic's trademarks, even if those trademarks are part of the software program we license to 
+you.   This policy sets forth your rights and obligations with respect to use of Gorilla Logic's trademarks in connection with 
+our software products licensed to you under an open source license. You may not use the Gorilla Logic trademarks for 
+any purpose except as stated in this policy.
+"Gorilla Logic," the "Gorilla Logic" logo and our other product names are trademarks of Gorilla Logic, Inc. and are 
+protected under the laws of the United States and other countries. We use the Gorilla Logic trademarks to identify Gorilla 
+Logic as the source and origin of Gorilla Logic products that Gorilla Logic distributes, including software product 
+that Gorilla Logic distributes under an open source license. Other people are not allowed to distribute their own products 
+under the Gorilla Logic trademarks. even if those products are based on or derived from Gorilla Logic software licensed 
+under an open source license.  We have this policy to protect our trademarks and so that people know that, if a product 
+bears a Gorilla Logic trademark, it came directly from Gorilla Logic.  When a user sees the Gorilla Logic trademarks on the 
+Gorilla Logic software product, the user understands that Gorilla Logic has either created or endorsed that product, and 
+that the product is subject to the quality control standards of Gorilla Logic for that product. 
+If you are distributing an unmodified version of the Gorilla Logic software (meaning there have been no changes to the 
+software as distributed by us) you must retain all Gorilla Logic trademarks which are set forth in the software. 
+However, if you wish to distribute a modified version (a derivative work) of the Gorilla Logic software, you must remove all 
+occurrences of the Gorilla Logic trademarks that are visible to users so that nobody can be confused as to whether Gorilla 
+Logic, Inc. is the source or origin of your modifications or derivative works.   (Where you distribute source code, this also 
+means removing all Gorilla Logic trademarks in the source code as well.)  Unless we expressly give you our permission in 
+writing, you may not use the Gorilla Logic trademarks to advertise or promote your modified version.
+The one exception to the rule against using our name or trademarks in modified versions of our software is as follows:  
+because we still own the copyright in the portions of the software that we created, you must place, in each source file of  
+your modified version and on the "splash" screen (and on the "about this software" panel) (if any), the following copyright 
+notice:
+Portions © Copyright Gorilla Logic, Inc.
+
