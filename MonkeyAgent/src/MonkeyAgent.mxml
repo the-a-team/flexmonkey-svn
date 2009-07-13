@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
+FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
+-->
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	creationComplete="creationCompleteHandler()"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	width="100%"
+	height="100%"
+	>
+<mx:Script>
+	<![CDATA[
+		import flash.display.BitmapData;
+		import com.gorillalogic.flexmonkey.application.utilities.AttributeFinder;
+		import mx.collections.ArrayCollection;
+		import com.gorillalogic.flexmonkey.monkeyCommands.VerifyMonkeyCommand;
+		import com.gorillalogic.flexmonkey.core.MonkeyRunnable;
+		import com.gorillalogic.flexmonkey.core.MonkeyUtils;
+		import mx.managers.SystemManager;
+		import mx.events.FlexEvent;
+		import mx.controls.SWFLoader;
+		import mx.controls.Alert;
+		import com.gorillalogic.flexmonkey.monkeyCommands.UIEventMonkeyCommand;
+		import com.gorillalogic.flexmonkey.core.MonkeyAutomationState;
+		import com.gorillalogic.flexmonkey.application.UI.viewComponents.SnapshotOverlay;
+	
+		import com.gorillalogic.flexmonkey.application.VOs.TargetVO;
+		import com.gorillalogic.flexmonkey.application.VOs.SnapshotVO;	
+		import com.gorillalogic.monkeyAgent.VOs.TXVO;
+		
+		import com.gorillalogic.aqadaptor.AQAdapter;
+		
+		import mx.automation.Automation;
+		import mx.automation.IAutomationObject;
+		import mx.automation.events.AutomationRecordEvent;
+		import mx.core.UIComponent;
+				
+		private var targetSWFURL:String;
+		[Bindable] private var targetSWFWidth:uint = 600;
+		[Bindable] private var targetSWFHeight:uint = 400;
+
+
+// ============================================================================================	
+
+		private var pingTXTimer:Timer;
+		private var pingRXTimer:Timer;
+		private var txConnection:LocalConnection;
+		private var rxConnection:LocalConnection;
+		private var txCount:uint = 1;
+		private var rxCount:uint = 1;
+	
+		private var _connected:Boolean;
+		[Bindable ("connectedChanged")]
+		public function get connected():Boolean{
+			return _connected;
+		}
+		private function setConnected(c:Boolean):void{
+			_connected = c;
+			this.dispatchEvent(new Event("connectedChanged"));			
+			if(_connected){
+				writeConsole("Connected and timing");				
+				pingRXTimer.start();
+				flexMonkeyAlive = true;
+				if(needInit){
+					sendNeedInit();
+				}
+			}else{
+				writeConsole("Disconnected");	
+				pingRXTimer.stop();
+				flexMonkeyAlive = false;
+				try{
+					rxConnection.close();
+				}catch(error:ArgumentError){
+					writeConsole("Error closing rxConnection");					
+				}
+				initializeRXChannel();				
+			}
+		}
+/*		
+		public function connectUp():void{
+			writeConsole("FlexMonkey connected");
+			sendAck();
+			setConnected(true);
+			flexMonkeyAlive = true;
+		}
+*/
+		public function ack(count:uint):void{
+			if(!connected){
+				setConnected(true);
+			}				
+			flexMonkeyAlive = true;	
+			if(txQueue.length>0 && txQueue[0].txCount==count){
+				txQueue.shift();
+				pingCount=0;
+				if(txQueue.length>0){	
+					coreSend(txQueue[0]);
+				}
+			}
+			writeConsole("FlexMonkey ack'd w txQueue.length=" + txQueue.length + " and txCount=" + count);							
+		}	
+		
+		public function disconnect():void{
+			writeConsole("FlexMonkey disconnected");
+			setConnected(false);
+// ??? should reload here?
+			reloadAgent();
+		}
+
+		private var _flexMonkeyAlive:Boolean = false;
+		private function get flexMonkeyAlive():Boolean{
+			return _flexMonkeyAlive;
+		}
+		private function set flexMonkeyAlive(a:Boolean):void{
+			_flexMonkeyAlive = a;
+			if(_flexMonkeyAlive){
+				if(!connected){
+					setConnected(true);
+				}
+			}
+		};
+	
+		public function ping():void{
+			if(!connected){
+				setConnected(true);
+			}		
+			flexMonkeyAlive = true;
+		}
+		
+		public function initializeRXChannel():void{
+			// Channels are named for their listener			
+			rxConnection = new LocalConnection();
+			rxConnection.allowDomain('*')
+			rxConnection.client = this;
+			try{
+				rxConnection.connect("_agent");
+			}catch(error:ArgumentError){
+				writeConsole("Could not connect to RX channel");
+			}			
+		}
+		
+		public function initializeTXChannel():void{
+			txConnection = new LocalConnection();
+			txConnection.addEventListener(StatusEvent.STATUS, txStatusEventHandler);	
+			txConnection.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrorHandler);			
+			txConnection.addEventListener(IOErrorEvent.IO_ERROR,IOErrorHandler);			
+		}
+		
+		private function pingRXHandler(event:TimerEvent):void{
+			if(flexMonkeyAlive){
+				flexMonkeyAlive = false;
+			}else{
+				writeConsole("FlexMonkey disconnected (ping timeout)"); 
+				setConnected(false);
+			}
+		}		
+		
+		private function pingTXHandler(event:TimerEvent=null):void{
+     		send(new TXVO("_flexMonkey", "ping"));
+		}		
+		
+		private function txStatusEventHandler(event:StatusEvent):void{
+			switch(event.level){
+				case "status":
+					break;
+				case "error":
+//					writeConsole("Send failed");
+					if(connected){
+						setConnected(false);
+					}
+					break;
+			}
+		}
+		
+		private function asyncErrorHandler(event:AsyncErrorEvent):void{
+			writeConsole("AsyncErrorEvent");
+		}
+
+		private function IOErrorHandler(event:IOErrorEvent):void{
+			writeConsole("IOErrorEvent");
+		}
+				
+		private var txQueue:Array = [];
+		
+		private var pingCount:uint = 0;		
+		private var resendPingCount:uint = 2;
+				
+		private function send(txVO:TXVO):void{
+			if( txVO.method == "ping" ||
+			    txVO.method == "ack"  ||
+			    txVO.method == "disconnect"){
+				if(txVO.method == "ping" || txVO.method == "disconnect"){
+					txConnection.send(txVO.channel, txVO.method);
+				}else{
+					txConnection.send(txVO.channel, txVO.method, txVO.arguments[0]);
+				}
+				if(txVO.method == "ping"){
+					if(txQueue.length != 0){
+						pingCount++;
+						if(!(pingCount<resendPingCount)){
+							coreSend(txQueue[0]);
+							pingCount=0;	
+						}
+					}else{
+						pingCount = 0;
+					}
+				}
+				return;
+			}
+			txQueue.push(txVO);
+			if(txQueue.length < 2){
+				coreSend(txVO);
+			}
+		}
+		
+		private function coreSend(txVO:TXVO):void{
+			if(connected){
+				if(txVO.txCount == 0){
+					txCount++;
+					txVO.txCount = txCount;	
+				}	
+				try{
+					if(txVO.arguments != null){
+						switch(txVO.arguments.length){
+							case 0:
+								writeConsole("send method received empty arguments");
+							case 1:
+								txConnection.send(txVO.channel, txVO.method, txVO.arguments[0], txVO.txCount);
+								break;
+							case 2:
+								txConnection.send(txVO.channel, txVO.method, txVO.arguments[0], txVO.arguments[1], txVO.txCount);
+								break;
+							default:
+								writeConsole("send method received too many arguments");
+						}					
+					}else{
+						txConnection.send(txVO.channel, txVO.method, txVO.txCount);
+					}
+				}catch(e:Error){
+					writeConsole("Could not send " + txVO.method);	
+					return;											
+				}
+				writeConsole("Sending " + txVO.method + " to " + txVO.channel + " w/TXCount=" + txVO.txCount);			
+			}			
+		}
+		
+//		private function sendConnect():void{
+//			send(new TXVO("_flexMonkey", "connectUp"));
+//		}	
+		
+		private function sendNeedInit():void{
+			send(new TXVO("_flexMonkey", "needInit"));
+		}
+		
+		private function sendDisconnect():void{
+			send(new TXVO("_flexMonkey", "disconnect"));
+		}
+								
+		private function sendAck(count:uint):void{
+			send(new TXVO("_flexMonkey", "ack", [count]));
+		}	
+		
+		private function writeConsole(m:String):void{
+//trace(m);			
+			console.text += "\n" + m;
+			console.validateNow();
+            console.verticalScrollPosition = console.maxVerticalScrollPosition;
+            			
+		}			
+
+		
+// ============================================================================================		
+
+		private var needInit:Boolean;
+
+//private var socket:Socket;		
+
+
+		private function creationCompleteHandler():void{
+			Automation.automationManager.addEventListener(AutomationRecordEvent.RECORD, recordEventHandler, false, 0, true);  
+			
+			// Set up RX Channel and listen
+			initializeRXChannel();
+
+			// set up TX channel and announce
+			initializeTXChannel();
+				
+			pingRXTimer = new Timer(1000,0);
+			pingRXTimer.addEventListener(TimerEvent.TIMER, pingRXHandler, false, 0, true);	
+			
+			pingTXTimer = new Timer(500,0);
+			pingTXTimer.addEventListener(TimerEvent.TIMER, pingTXHandler, false, 0, true);	
+			pingTXTimer.start();
+
+			try{
+				ExternalInterface.addCallback("sendDisconnect", sendDisconnect);
+			}catch(e:Error){
+				writeConsole("Could not add disconnect callback to container");
+			}	
+
+			addChild(snapshotOverlay);
+			MonkeyAutomationState.monkeyAutomationState.graphics = snapshotOverlay.graphics;
+			MonkeyAutomationState.monkeyAutomationState.conversionPlatform = snapshotOverlay;
+			
+			needInit = true;			
+/*
+socket = new Socket();
+configureSocketListeners();	
+socket.connect("localhost",843);			
+*/			
+			
+			
+		}
+/*		
+private function configureSocketListeners():void{
+    socket.addEventListener(Event.CLOSE, socketCloseHandler);
+    socket.addEventListener(Event.CONNECT, socketConnectHandler);
+    socket.addEventListener(IOErrorEvent.IO_ERROR, socketIOErrorHandler);
+    socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, socketSecurityErrorHandler);
+    socket.addEventListener(ProgressEvent.SOCKET_DATA, socketDataHandler);	
+}		
+private function socketCloseHandler(event:Event):void {
+	trace("close");
+}
+
+private function socketConnectHandler(event:Event):void {
+	trace("connect");
+//	socket.writeUTFBytes("THIS IS THE AGENT");
+}
+
+private function socketIOErrorHandler(event:IOErrorEvent):void {
+	trace("ioerror");
+}
+
+private function socketSecurityErrorHandler(event:SecurityErrorEvent):void {
+	trace("yikes");
+}
+
+private function socketDataHandler(event:ProgressEvent):void {
+	trace("data");
+}
+*/
+
+		
+		public function reloadAgent():void{
+			if(ExternalInterface.available){
+				ExternalInterface.call("reloadAgent");
+			}else{
+				writeConsole("ExternalInterface not available on reload");
+			}
+		}		
+
+		//  receive methods ---------------------------------------------------------------------------	
+
+		public function setFlashVar(parmName:String, parmValue:String, txCount:uint):void{
+			sendAck(txCount);
+			Application.application.parameters[parmName] = parmValue;	
+		}
+
+		public function setTargetSWFURL(url:String,txCount:uint):void{
+			sendAck(txCount);
+			if(needInit){
+				needInit = false;
+			}
+			if(url != targetSWFURL){	
+				targetSWFURL = url;
+				loadTargetSWF();
+			}				
+			writeConsole("Received Target SWF URL: " + url);
+		}
+		public function setTargetSWFWidth(w:uint,txCount:uint):void{
+			sendAck(txCount);			
+			writeConsole("Received Target SWF Width: " + w);
+			targetSWFWidth = w;
+		}
+		public function setTargetSWFHeight(h:uint,txCount:uint):void{
+			sendAck(txCount);			
+			writeConsole("Received Target SWF Height: " + h);			
+			targetSWFHeight = h;
+		}		
+
+		private var snapshotOverlay:SnapshotOverlay = new SnapshotOverlay();
+		
+		public function startRecording(txCount:uint):void{
+			sendAck(txCount);			
+			MonkeyAutomationState.monkeyAutomationState.state = MonkeyAutomationState.NORMAL;
+			AQAdapter.aqAdapter.beginRecording();	
+			writeConsole("Start recording");
+		}
+		
+		public function stopRecording(txCount:uint):void{
+			sendAck(txCount);			
+			var recordEnd:Object = AQAdapter.aqAdapter.endRecording();
+			MonkeyAutomationState.monkeyAutomationState.state = MonkeyAutomationState.IDLE;
+			writeConsole("Stop recording");			
+		}
+		
+		public function takeSnapshot(txCount:uint):void{
+			sendAck(txCount);			
+			MonkeyAutomationState.monkeyAutomationState.state = MonkeyAutomationState.SNAPSHOT;						
+			AQAdapter.aqAdapter.beginRecording();			
+		}
+			
+		private var verifyMonkeyCommandByteArray:ByteArray;
+		private var getTargetTXCount:uint=0;
+
+		public function getTarget(ba:ByteArray,status:String,txCount:uint):void{
+			sendAck(txCount);
+			flexMonkeyAlive=true;
+			if(getTargetTXCount == txCount){
+				return
+			}			
+			getTargetTXCount = txCount;
+			switch(status){
+				case "single":
+					writeConsole("getTarget single");
+					returnTarget(ba);
+					break;
+				case "start":
+					writeConsole("getTarget start");				
+					verifyMonkeyCommandByteArray = new ByteArray();
+					ba.readBytes(verifyMonkeyCommandByteArray);
+					break;
+				case "body":
+					writeConsole("getTarget body");								
+					ba.readBytes(verifyMonkeyCommandByteArray,verifyMonkeyCommandByteArray.length);
+					break;
+				case "end":
+					writeConsole("getTarget end");								
+					ba.readBytes(verifyMonkeyCommandByteArray,verifyMonkeyCommandByteArray.length);
+					returnTarget(ba);
+					break;
+			}
+		}
+
+		private var runCommandTXCount:uint=0;
+
+        public function runCommand(commandByteArray:ByteArray,txCount:uint):void{      	
+       	    sendAck(txCount);
+       	    flexMonkeyAlive=true;
+       	    if(runCommandTXCount == txCount){
+       	    	return;
+       	    }     	    
+       	    runCommandTXCount = txCount;
+  			// deserialize the command
+  			try{        	
+        		var command:MonkeyRunnable = commandByteArray.readObject() as MonkeyRunnable;	
+     		}catch(error:Error){
+trace("Now its caught!");     			
+     		}
+        	
+ 			writeConsole("runCommand executed command " 
+ 				+ ((command is UIEventMonkeyCommand)?UIEventMonkeyCommand(command).command:"non-UIEventMonkeyCommand")
+ 				+ " "
+ 				+ ((command is UIEventMonkeyCommand)?UIEventMonkeyCommand(command).value:"")
+ 			);
+        	
+			// run the command: 
+ 			if(command is UIEventMonkeyCommand){
+ 				UIEventMonkeyCommand(command).execute1();
+ 			}else if(command is VerifyMonkeyCommand){
+//				VerifyMonkeyCommand(command).??? 				
+ 			}else{
+ 				writeConsole("runCommand could not execute command");
+ 			}
+ 				
+			// send the completed command back to the monkey here:
+     		var returnCommandByteArray:ByteArray = new ByteArray();
+     		returnCommandByteArray.writeObject(command);
+     		send(new TXVO("_flexMonkey", "agentRunDone", [returnCommandByteArray]));
+     		writeConsole("runCommand sent agentRunDone on " 
+     			+ ((command is UIEventMonkeyCommand)?UIEventMonkeyCommand(command).command:"non-UIEventMonkeyCommand")
+     			+ " "
+ 				+ ((command is UIEventMonkeyCommand)?UIEventMonkeyCommand(command).value:"")
+      		);
+        }	
+					
+		//  send methods ---------------------------------------------------------------------------	
+
+		public function recordEventHandler(event:AutomationRecordEvent):void {
+			var id:String;
+			var idProp:String;
+			var obj:IAutomationObject = event.automationObject;
+			var container:UIComponent = null;	
+
+			if (obj.automationName != null && obj.automationName != "") {
+				idProp = "automationName"
+				id = obj.automationName;
+			} else if (obj is UIComponent && UIComponent(obj).id != null && UIComponent(obj).id != "") {
+				idProp = "id";
+				id = UIComponent(obj).id;
+			} else {
+				idProp = "automationID";
+				id = Automation.automationManager.createID(obj).toString();
+			}
+			var uiEventCommand:UIEventMonkeyCommand = new UIEventMonkeyCommand();
+			var byteArray:ByteArray = new ByteArray();
+			uiEventCommand.value = id;
+			uiEventCommand.prop = idProp;
+			uiEventCommand.command = event.name;
+			uiEventCommand.args = event.args;
+			byteArray.writeObject(uiEventCommand);
+			switch(MonkeyAutomationState.monkeyAutomationState.state){
+				case MonkeyAutomationState.NORMAL:
+					send(new TXVO("_flexMonkey", "newUIEvent", [byteArray]));
+					break;
+				case MonkeyAutomationState.SNAPSHOT:
+					send(new TXVO("_flexMonkey", "newSnapshot", [byteArray]));					
+		  			var snapEnd:Object = AQAdapter.aqAdapter.endRecording();	
+		  			MonkeyAutomationState.monkeyAutomationState.state = MonkeyAutomationState.IDLE;				
+	 				break;
+				default:
+					break;
+			}
+        }  			
+ 	
+		private var attributeFinder:AttributeFinder = new AttributeFinder();        		
+        private function returnTarget(verifyMonkeyCommandByteArray:ByteArray):void{
+		    writeConsole("returnTarget method invoked");
+        	var verifyMonkeyCommand:VerifyMonkeyCommand = verifyMonkeyCommandByteArray.readObject();
+		    var target:UIComponent = null;				
+			var container:UIComponent = null;
+			if (verifyMonkeyCommand.containerValue != null && verifyMonkeyCommand.containerValue != "" && verifyMonkeyCommand.containerValue != "null") {
+				container = MonkeyUtils.findComponentWith(verifyMonkeyCommand.containerValue, verifyMonkeyCommand.containerProp); 
+			}
+			target = MonkeyUtils.findComponentWith(verifyMonkeyCommand.value, verifyMonkeyCommand.prop, container); 
+			var propertyArray:Array;
+			var styleArray:Array;
+			var snapshotVO:SnapshotVO;
+			if(target == null){
+				writeConsole("returnTarget returned null");
+			}else{
+				writeConsole("returnTarget returned valid target");	
+				propertyArray = attributeFinder.getProperties(target).source;
+				styleArray = attributeFinder.getStyles(target).source;			
+				var bitmapData:BitmapData = new BitmapData(target.width,target.height);
+				bitmapData.draw(target);		
+				snapshotVO = new SnapshotVO();	
+				snapshotVO.bitmapData = bitmapData;		
+			}
+			
+			var targetVO:TargetVO = new TargetVO(propertyArray, styleArray, snapshotVO);	
+			
+			var ba:ByteArray = new ByteArray();
+			ba.writeObject(targetVO);
+			writeConsole("TargetVO length: " + ba.length);
+			ba.position = 0;
+			var bufferSize:uint = 40000;
+			
+			if(ba.bytesAvailable < bufferSize){
+				send(new TXVO("_flexMonkey", "newTarget", [ba, "single"]));
+				writeConsole("Sent Single: " + ba.length + " bytes of TargetVO");
+			}else{				
+				var buffer:ByteArray = new ByteArray();
+				ba.readBytes(buffer,0,bufferSize);
+				send(new TXVO("_flexMonkey", "newTarget", [buffer, "start"]));
+				writeConsole("Sent Start: " + buffer.length + " bytes of TargetVO");				
+				while(ba.bytesAvailable >= bufferSize){
+					buffer = new ByteArray();
+					ba.readBytes(buffer,0,bufferSize);
+					send(new TXVO("_flexMonkey", "newTarget", [buffer, "body"]));
+					writeConsole("Sent Body: " + buffer.length + " bytes of TargetVO");
+				}
+				if(ba.bytesAvailable > 0){
+					buffer = new ByteArray();
+					ba.readBytes(buffer);
+					send(new TXVO("_flexMonkey", "newTarget", [buffer, "end"])); 					
+					writeConsole("Sent End: " + buffer.length + " bytes of TargetVO");					
+				}
+			}	
+        }
+        
+
+			
+		private function loadTargetSWF():void{
+			var loaderContext:LoaderContext = new LoaderContext();
+//			loaderContext.applicationDomain = new ApplicationDomain();
+			swfLoader.addEventListener(Event.COMPLETE,swfLoaderCompleteHandler,false,0,true);
+			swfLoader.addEventListener(IOErrorEvent.IO_ERROR,swfLoaderIOErrorHandler,false,0,true);
+			swfLoader.loaderContext = loaderContext;
+//			swfLoader.percentHeight=100;
+//			swfLoader.percentWidth=100;
+			swfLoader.scaleContent = true;
+			swfLoader.load(targetSWFURL);			
+		}
+
+		private function swfLoaderCompleteHandler(event:Event):void{
+			swfLoader.removeEventListener(Event.COMPLETE,swfLoaderCompleteHandler,false);						
+			SystemManager(swfLoader.content).addEventListener(FlexEvent.APPLICATION_COMPLETE, targetSWFApplicationCompleteHandler,false,0,true);
+		}	
+				
+		private function swfLoaderIOErrorHandler(event:IOErrorEvent):void{
+			writeConsole("Failed to load Target SWF: " + event.text);
+		}
+		
+		private function targetSWFApplicationCompleteHandler(event:FlexEvent):void{
+			var loadedApplication:Application = Application(event.target.application);
+			send(new TXVO("_flexMonkey", "targetSWFReady"));
+		}		
+			
+			
+	]]>
+</mx:Script>
+<mx:VDividedBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:SWFLoader id="swfLoader" autoLoad="true" width="{targetSWFWidth}" height="{targetSWFHeight}"/>
+	<mx:TextArea id="console" editable="false" text="MonkeyAgent Console Window" width="100%" height="60" verticalScrollPolicy="on"/>	
+</mx:VDividedBox>
+</mx:Application>
