@@ -34,9 +34,9 @@
 	   <monkey-test-launcher
           timeout="0"
           launcher="${basedir}/bin-debug/MonkeyTestLauncher.html"
-          targetSwf="file:///${basedir}/bin-debug/MonkeyContacts.swf"
-          testModuleSwf="file:///${basedir}/bin-debug/MonkeyContactsCodeGenExampleTestModule.swf"
-	      snapshotDir="${basedir}/snapshots"
+          targetSwf="MonkeyContacts.swf"
+          testModuleSwf="MonkeyContactsCodeGenExampleTestModule.swf"
+	      snapshotDir="../snapshots"
           toDir="${report.dir}" 
           haltonfailure="false" />
 				
