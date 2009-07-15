@@ -13,8 +13,8 @@ import com.gorillalogic.flexmonkey.application.events.UserEvent;
 import com.gorillalogic.flexmonkey.core.MonkeyAutomationState;
 import com.gorillalogic.flexmonkey.core.MonkeyRunnable;
 import com.gorillalogic.flexmonkey.monkeyCommands.VerifyMonkeyCommand;
-//import com.gorillalogic.flexmonkey.registration.MonkeyRegistrationWindow;
-//import com.gorillalogic.flexmonkey.registration.MonkeyRegistrationStore;
+import com.gorillalogic.flexmonkey.registration.MonkeyRegistrationWindow;
+import com.gorillalogic.flexmonkey.registration.MonkeyRegistrationStore;
 
 import flash.desktop.NativeApplication;
 import flash.events.EventDispatcher;
@@ -89,10 +89,10 @@ import mx.core.IFlexDisplayObject;
 //MonkeyAutomationState.monkeyAutomationState.state = MonkeyAutomationState.IDLE;
 		}
 		
-//		private var regWindow:MonkeyRegistrationWindow;
+		private var regWindow:MonkeyRegistrationWindow;
 		public function displayRegistration():void{
 			//check if registration key is valid, if invalid display registration popup
-/*			if (!MonkeyRegistrationStore.checkValidKey()) {
+			if (!MonkeyRegistrationStore.checkValidKey()) {
 			    regWindow = new MonkeyRegistrationWindow();
 			    regWindow.onCompleteCallback = displayRegistration;
 			    
@@ -104,17 +104,16 @@ import mx.core.IFlexDisplayObject;
 					displayIntro(introWindow);
 				}
 			}
-*/			
 		}
 		
 		private var introWindow:Object;
 		public function displayIntro(introWindow:Object):void{
 			this.introWindow = introWindow;
-//			if(MonkeyRegistrationStore.checkValidKey()){
+			if(MonkeyRegistrationStore.checkValidKey()){
 				alertWindowStack.push(introWindow);
 				airMonkeyWindow.orderToFront();
 				PopUpManager.addPopUp(IFlexDisplayObject(introWindow),airMonkeyWindow,true);
-//			}						
+			}						
 		}
 		
 		public function openSnapshotWindow(verifyCommand:VerifyMonkeyCommand = null):void{
