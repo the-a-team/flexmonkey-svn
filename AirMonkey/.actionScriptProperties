@@ -18,6 +18,7 @@
 <libraryPathEntry kind="3" linkType="1" path="/AirMonkeyLibrary/bin/AirMonkeyLibrary.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/AirMonkeyLibrary/libs/Mate_08_8_1.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/air/applicationupdater_ui.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/MonkeyRegistrationLibrary/bin/MonkeyRegistrationLibrary.swc" useDefaultLinkType="false"/>
 </libraryPath>
 <sourceAttachmentPath/>
 </compiler>

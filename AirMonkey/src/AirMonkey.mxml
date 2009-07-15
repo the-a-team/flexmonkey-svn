@@ -28,7 +28,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		
 import flash.net.navigateToURL;		
  
- //           import com.gorillalogic.flexmonkey.registration.MonkeyRegistrationStore;
+            import com.gorillalogic.flexmonkey.registration.MonkeyRegistrationStore;
 		
 			import com.gorillalogic.flexmonkey.monkeyCommands.UIEventMonkeyCommand;
 			import mx.controls.Alert;
@@ -79,9 +79,9 @@ import flash.net.navigateToURL;
 				updater.addEventListener(UpdateEvent.INITIALIZED,updaterInitialized);
 				updater.initialize();		
 				
-//				if (!MonkeyRegistrationStore.checkValidKey()) {
-//					dispatchEvent(new UserEvent(UserEvent.REGISTRATION_PROMPT));
-//              }				
+				if (!MonkeyRegistrationStore.checkValidKey()) {
+					dispatchEvent(new UserEvent(UserEvent.REGISTRATION_PROMPT));
+              }				
 										
 			}
 // ------------------------------------------------------------------------------------------			
