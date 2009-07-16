@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<flexLibProperties version="1">
-<includeClasses>
-<classEntry path="com.gorillalogic.flexmonkey.registration.MonkeyRegistrationStore"/>
-<classEntry path="com.gorillalogic.flexmonkey.registration.MonkeyRegistrationWindow"/>
-</includeClasses>
-<includeResources/>
-<namespaceManifests/>
-</flexLibProperties>
