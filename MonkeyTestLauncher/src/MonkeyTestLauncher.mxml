@@ -43,7 +43,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		public var port : uint = 1024;
 		
 		[Inspectable]
-		public var server : String = "127.0.0.1";
+		public var server : String = "localhost";
 		
 		[Bindable]
 		public var status : String = "";
