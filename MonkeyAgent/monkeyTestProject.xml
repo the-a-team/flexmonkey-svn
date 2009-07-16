@@ -1,5 +1,0 @@
-<project>
-  <targetSWF url="file:///Users/grroggy/Documents/FlexMonkeyGoogleCode/MonkeyContactsIntroExample/bin-debug/MonkeyContacts.swf" width="800" height="600" useBrowser="true" useFlashVars="false"/>
-  <flashVars/>
-  <generatedCode url="" suitesPackageName="testSuites"/>
-</project>
