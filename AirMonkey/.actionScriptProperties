@@ -26,5 +26,7 @@
 <application path="AirMonkey.mxml"/>
 </applications>
 <modules/>
-<buildCSSFiles/>
+<buildCSSFiles>
+<buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/airmonkey.css"/>
+</buildCSSFiles>
 </actionScriptProperties>

@@ -108,150 +108,166 @@ ToolTip {
 .IntroDialog{
 	GIF:Embed("assets/m177.gif", mimeType="application/octet-stream");
 }
-/*
+
+CommandGridCommandItemRenderer{
+	MouseGridIcon:Embed(source="../../Assets/icons/mouse_16/mouse.png");
+	KeyboardGridIcon:Embed(source="../../Assets/icons/keyboard_16/keyboard.png");
+	LightningGridIcon:Embed(source="../../Assets/icons/lightning_16/lightning.png");
+	VerifyGridIcon:Embed(source="../../Assets/icons/photocamera_16/photocamera_16.png");
+	PauseGridIcon:Embed(source="../../Assets/icons/sandclock_16/sandclock_16.png");
+}
+
+CommandGridResultItemRenderer{
+	passGridIcon:Embed(source="../../Assets/icons/ok_16/ok_16.png");
+	failGridIcon:Embed(source='../../Assets/icons/close_b_16/close_b_16.png');
+	notRunGridIcon:Embed(source='../../Assets/icons/asterisk_orange_16/asterisk_orange.png');
+	warningGridIcon:Embed(source="../../Assets/icons/warning_16/warning.png");
+	errorGridIcon:Embed(source="../../Assets/icons/error_16/error_16.png");
+}	
+
 .CommandGrid{
 	defaultLeafIcon:ClassReference(null);	
-  	testSuiteOpenIcon:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_16/folder_open_S_16.png');
-	testSuiteClosedIcon:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_16/folder_closed_S_16.png');    		
-  	testCaseOpenIcon:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_16/folder_open_C_16.png');
-	testCaseClosedIcon:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_16/folder_closed_C_16.png');  
-  	testOpenIcon:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_16/folder_open_T_16.png');
-	testClosedIcon:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_16/folder_closed_T_16.png'); 
-  	defaultOpenIcon:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_16/folder_open_16.png');
-	defaultClosedIcon:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_16/folder_closed_16.png');  	 	
+  	testSuiteOpenIcon:Embed(source='../../Assets/icons/folder_16/folder_open_S_16.png');
+	testSuiteClosedIcon:Embed(source='../../Assets/icons/folder_16/folder_closed_S_16.png');    		
+  	testCaseOpenIcon:Embed(source='../../Assets/icons/folder_16/folder_open_C_16.png');
+	testCaseClosedIcon:Embed(source='../../Assets/icons/folder_16/folder_closed_C_16.png');  
+  	testOpenIcon:Embed(source='../../Assets/icons/folder_16/folder_open_T_16.png');
+	testClosedIcon:Embed(source='../../Assets/icons/folder_16/folder_closed_T_16.png'); 
+  	defaultOpenIcon:Embed(source='../../Assets/icons/folder_16/folder_open_16.png');
+	defaultClosedIcon:Embed(source='../../Assets/icons/folder_16/folder_closed_16.png');  	 	
 }
 
 .RecordButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/record_32/record_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/record_32/record_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/record_32/record_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/record_32/record_disabled_32.png');    		
-   	selectedUpSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/record_32/record_normal_selected_32.png');
-	selectedOverSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/record_32/record_normal_selected_hover_32.png');
-	selectedDownSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/record_32/record_hot_selected_hover_32.png');     	
+   	upSkin:Embed(source='../../Assets/icons/record_32/record_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/record_32/record_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/record_32/record_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/record_32/record_disabled_32.png');    		
+   	selectedUpSkin:Embed(source='../../Assets/icons/record_32/record_normal_selected_32.png');
+	selectedOverSkin:Embed(source='../../Assets/icons/record_32/record_normal_selected_hover_32.png');
+	selectedDownSkin:Embed(source='../../Assets/icons/record_32/record_hot_selected_hover_32.png');     	
 }
  
 .PlayButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/play_32/play_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/play_32/play_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/play_32/play_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/play_32/play_disabled_32.png');    		
-   	selectedUpSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/play_32/play_normal_selected_32.png');
-	selectedOverSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/play_32/play_normal_selected_hover_32.png');
-	selectedDownSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/play_32/play_hot_selected_hover_32.png');
+   	upSkin:Embed(source='../../Assets/icons/play_32/play_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/play_32/play_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/play_32/play_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/play_32/play_disabled_32.png');    		
+   	selectedUpSkin:Embed(source='../../Assets/icons/play_32/play_normal_selected_32.png');
+	selectedOverSkin:Embed(source='../../Assets/icons/play_32/play_normal_selected_hover_32.png');
+	selectedDownSkin:Embed(source='../../Assets/icons/play_32/play_hot_selected_hover_32.png');
 }    	
  
 .PauseButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/pause_32/pause_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/pause_32/pause_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/pause_32/pause_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/pause_32/pause_disabled_32.png');  
-   	selectedUpSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/pause_32/pause_normal_selected_32.png');
-	selectedOverSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/pause_32/pause_normal_selected_hover_32.png');
-	selectedDownSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/pause_32/pause_hot_selected_hover_32.png');      		  		
+   	upSkin:Embed(source='../../Assets/icons/pause_32/pause_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/pause_32/pause_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/pause_32/pause_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/pause_32/pause_disabled_32.png');  
+   	selectedUpSkin:Embed(source='../../Assets/icons/pause_32/pause_normal_selected_32.png');
+	selectedOverSkin:Embed(source='../../Assets/icons/pause_32/pause_normal_selected_hover_32.png');
+	selectedDownSkin:Embed(source='../../Assets/icons/pause_32/pause_hot_selected_hover_32.png');      		  		
 }   	
 
 .AddTestSuiteButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_normal_S_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_normal_hover_S_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_hot_hover_S_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_disabled_S_32.png');   		
+   	upSkin:Embed(source='../../Assets/icons/folder_32/folder_normal_S_32.png');
+	overSkin:Embed(source='../../Assets/icons/folder_32/folder_normal_hover_S_32.png');
+	downSkin:Embed(source='../../Assets/icons/folder_32/folder_hot_hover_S_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/folder_32/folder_disabled_S_32.png');   		
 }    
 
 .AddTestCaseButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_normal_C_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_normal_hover_C_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_hot_hover_C_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_disabled_C_32.png');   		
+   	upSkin:Embed(source='../../Assets/icons/folder_32/folder_normal_C_32.png');
+	overSkin:Embed(source='../../Assets/icons/folder_32/folder_normal_hover_C_32.png');
+	downSkin:Embed(source='../../Assets/icons/folder_32/folder_hot_hover_C_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/folder_32/folder_disabled_C_32.png');   		
 }    
 
 .AddTestButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_normal_T_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_normal_hover_T_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_hot_hover_T_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/folder_32/folder_disabled_T_32.png');   		
+   	upSkin:Embed(source='../../Assets/icons/folder_32/folder_normal_T_32.png');
+	overSkin:Embed(source='../../Assets/icons/folder_32/folder_normal_hover_T_32.png');
+	downSkin:Embed(source='../../Assets/icons/folder_32/folder_hot_hover_T_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/folder_32/folder_disabled_T_32.png');   		
 }    	
  
 .AddVerifyButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/ok_32/ok_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/ok_32/ok_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/ok_32/ok_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/ok_32/ok_disabled_32.png');  	
+   	upSkin:Embed(source='../../Assets/icons/ok_32/ok_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/ok_32/ok_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/ok_32/ok_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/ok_32/ok_disabled_32.png');  	
 }    	
 
 .AddPauseButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sandclock_32/sandclock_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sandclock_32/sandclock_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sandclock_32/sandclock_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sandclock_32/sandclock_disabled_32.png');  		
+   	upSkin:Embed(source='../../Assets/icons/sandclock_32/sandclock_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/sandclock_32/sandclock_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/sandclock_32/sandclock_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/sandclock_32/sandclock_disabled_32.png');  		
 } 
  
 .UndoButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/back_32/back_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/back_32/back_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/back_32/back_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/back_32/back_disabled_32.png');   	    		
+   	upSkin:Embed(source='../../Assets/icons/back_32/back_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/back_32/back_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/back_32/back_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/back_32/back_disabled_32.png');   	    		
 } 
  
 .RedoButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/next_32/next_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/next_32/next_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/next_32/next_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/next_32/next_disabled_32.png');   	    		
+   	upSkin:Embed(source='../../Assets/icons/next_32/next_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/next_32/next_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/next_32/next_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/next_32/next_disabled_32.png');   	    		
 }
 
 .DeleteButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/delete_32/delete_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/delete_32/delete_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/delete_32/delete_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/delete_32/delete_disabled_32.png');   	    		
+   	upSkin:Embed(source='../../Assets/icons/delete_32/delete_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/delete_32/delete_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/delete_32/delete_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/delete_32/delete_disabled_32.png');   	    		
 }
     	    	    	
 .SaveButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/diskette_32/diskette_normal_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/diskette_32/diskette_normal_hover_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/diskette_32/diskette_hot_hover_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/diskette_32/diskette_disabled_32.png');   
+   	upSkin:Embed(source='../../Assets/icons/diskette_32/diskette_normal_32.png');
+	overSkin:Embed(source='../../Assets/icons/diskette_32/diskette_normal_hover_32.png');
+	downSkin:Embed(source='../../Assets/icons/diskette_32/diskette_hot_hover_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/diskette_32/diskette_disabled_32.png');   
 } 
 
 .BrowserConnectionIndicator{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sphere_32/sphere_normal_yellow_32.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sphere_32/sphere_normal_yellow_32.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sphere_32/sphere_normal_yellow_32.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sphere_32/sphere_disabled_32.png');  
-   	selectedUpSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sphere_32/sphere_normal_green_32.png');
-	selectedOverSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sphere_32/sphere_normal_green_32.png');
-	selectedDownSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/sphere_32/sphere_normal_green_32.png');      		  		
+   	upSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_yellow_32.png');
+	overSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_yellow_32.png');
+	downSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_yellow_32.png');
+	disabledSkin:Embed(source='../../Assets/icons/sphere_32/sphere_disabled_32.png');  
+   	selectedUpSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_green_32.png');
+	selectedOverSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_green_32.png');
+	selectedDownSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_green_32.png');      		  		
 } 
 
 .TakeExpectedSnapshotButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/photocamera_48/photocamera_normal_48.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/photocamera_48/photocamera_normal_hover_48.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/photocamera_48/photocamera_hot_hover_48.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/photocamera_48/photocamera_disabled_48.png');   
+   	upSkin:Embed(source='../../Assets/icons/photocamera_48/photocamera_normal_48.png');
+	overSkin:Embed(source='../../Assets/icons/photocamera_48/photocamera_normal_hover_48.png');
+	downSkin:Embed(source='../../Assets/icons/photocamera_48/photocamera_hot_hover_48.png');
+	disabledSkin:Embed(source='../../Assets/icons/photocamera_48/photocamera_disabled_48.png');   
 } 
 
 .RetakeExpectedSnapshotButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/photocamera_reload_48/photocamera_reload_normal_48.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/photocamera_reload_48/photocamera_reload_normal_hover_48.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/photocamera_reload_48/photocamera_reload_hot_hover_48.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/photocamera_reload_48/photocamera_reload_disabled_48.png');   
+   	upSkin:Embed(source='../../Assets/icons/photocamera_reload_48/photocamera_reload_normal_48.png');
+	overSkin:Embed(source='../../Assets/icons/photocamera_reload_48/photocamera_reload_normal_hover_48.png');
+	downSkin:Embed(source='../../Assets/icons/photocamera_reload_48/photocamera_reload_hot_hover_48.png');
+	disabledSkin:Embed(source='../../Assets/icons/photocamera_reload_48/photocamera_reload_disabled_48.png');   
 }
 
 .ShowSnapshotWindowButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/window_48/window_normal_48.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/window_48/window_normal_hover_48.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/window_48/window_hot_hover_48.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/window_48/window_disabled_48.png');   	
+   	upSkin:Embed(source='../../Assets/icons/window_48/window_normal_48.png');
+	overSkin:Embed(source='../../Assets/icons/window_48/window_normal_hover_48.png');
+	downSkin:Embed(source='../../Assets/icons/window_48/window_hot_hover_48.png');
+	disabledSkin:Embed(source='../../Assets/icons/window_48/window_disabled_48.png');   	
 }
 
 .ShowSpyWindowButton{
-   	upSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/zoom_48/zoom_normal_48.png');
-	overSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/zoom_48/zoom_normal_48.png');
-	downSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/zoom_48/zoom_hot_48.png');
-	disabledSkin:Embed(source='../../AirMonkeyLibrary/src/assets/icons/zoom_48/zoom_disabled_48.png'); 	
+   	upSkin:Embed(source='../../Assets/icons/zoom_48/zoom_normal_48.png');
+	overSkin:Embed(source='../../Assets/icons/zoom_48/zoom_normal_48.png');
+	downSkin:Embed(source='../../Assets/icons/zoom_48/zoom_hot_48.png');
+	disabledSkin:Embed(source='../../Assets/icons/zoom_48/zoom_disabled_48.png'); 	
 }
-*/
+
 .commandDetailErrorMessageText{
 	fontSize: 10;   
 	color: #DD0000;
