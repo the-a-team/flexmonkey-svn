@@ -117,7 +117,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		   sendResults();
 		}
 				
-		private function writeConsole(m:String):void{
+		public function writeConsole(m:String):void{
 			console.text += "\n" + m;
 			console.validateNow();
             console.verticalScrollPosition = console.maxVerticalScrollPosition;			
