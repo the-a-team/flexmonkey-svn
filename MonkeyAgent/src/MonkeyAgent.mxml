@@ -584,7 +584,22 @@ trace("Now its caught!");
 //			loaderContext.securityDomain=SecurityDomain.currentDomain;
 //			loaderContext.applicationDomain = new ApplicationDomain(ApplicationDomain.currentDomain);
 			swfLoader.addEventListener(Event.COMPLETE,swfLoaderCompleteHandler,false,0,true);
-			swfLoader.trustContent = true;
+			if(ExternalInterface.available){
+				var protocol:String = ExternalInterface.call("windowProtocol");
+			}else{
+				writeConsole("ExternalInterface not available for call to windowProtocol()");
+			}
+			writeConsole("Window protocol is " + protocol);
+			switch(protocol){
+				case "http:":
+				case "https:":
+					swfLoader.trustContent = true;
+					break;
+				default:
+					swfLoader.trustContent = false;
+			}
+				
+
 			swfLoader.addEventListener(IOErrorEvent.IO_ERROR,swfLoaderIOErrorHandler,false,0,true);
 //			swfLoader.loaderContext = loaderContext;
 //			swfLoader.percentHeight=100;
