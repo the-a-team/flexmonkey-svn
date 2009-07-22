@@ -282,6 +282,8 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 
 
 		private function creationCompleteHandler():void{
+//			Security.allowDomain("*");
+			
 			Automation.automationManager.addEventListener(AutomationRecordEvent.RECORD, recordEventHandler, false, 0, true);  
 			
 			// Set up RX Channel and listen
@@ -578,11 +580,28 @@ trace("Now its caught!");
 
 			
 		private function loadTargetSWF():void{
-			var loaderContext:LoaderContext = new LoaderContext();
-//			loaderContext.applicationDomain = new ApplicationDomain();
+//			var loaderContext:LoaderContext = new LoaderContext();
+//			loaderContext.securityDomain=SecurityDomain.currentDomain;
+//			loaderContext.applicationDomain = new ApplicationDomain(ApplicationDomain.currentDomain);
 			swfLoader.addEventListener(Event.COMPLETE,swfLoaderCompleteHandler,false,0,true);
+			if(ExternalInterface.available){
+				var protocol:String = ExternalInterface.call("windowProtocol");
+			}else{
+				writeConsole("ExternalInterface not available for call to windowProtocol()");
+			}
+			writeConsole("Window protocol is " + protocol);
+			switch(protocol){
+				case "http:":
+				case "https:":
+					swfLoader.trustContent = true;
+					break;
+				default:
+					swfLoader.trustContent = false;
+			}
+				
+
 			swfLoader.addEventListener(IOErrorEvent.IO_ERROR,swfLoaderIOErrorHandler,false,0,true);
-			swfLoader.loaderContext = loaderContext;
+//			swfLoader.loaderContext = loaderContext;
 //			swfLoader.percentHeight=100;
 //			swfLoader.percentWidth=100;
 			swfLoader.scaleContent = true;

@@ -40,7 +40,22 @@ var requiredMinorVersion = ${version_minor};
 var requiredRevision = ${version_revision};
 // -----------------------------------------------------------------------------
 // -->
+
+window.onbeforeunload = sendDisconnect;
+function sendDisconnect(){
+	MonkeyAgent.sendDisconnect();
+}
+function reloadAgent(){
+	window.location.reload();
+}
+function windowProtocol(){
+	return window.location.protocol;
+}
+
 </script>
+
+
+
 </head>
 
 <body scroll="no">
