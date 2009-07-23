@@ -29,7 +29,7 @@ package com.gorillalogic.flexmonkey.application.VOs
 		public function AttributeVO(name:String=null, ns:String=null, type:String=null, expectedValue:String=null, actualValue:String=null, result:String="NOT_RUN")
 		{
 			this.name = name;
-			this.namespaceURI = namespaceURI;
+			this.namespaceURI = ns;
 			this.type = type;
 			this.expectedValue = expectedValue;
 			this.actualValue = actualValue;
