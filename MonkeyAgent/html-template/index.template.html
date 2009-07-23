@@ -13,8 +13,10 @@ Learn more about Flex at http://flex.org
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
 <title>${title}</title>
 <script src="AC_OETags.js" language="javascript"></script>
+
 <style>
 body { margin: 0px; overflow:hidden }
 </style>
@@ -30,7 +32,22 @@ var requiredMinorVersion = ${version_minor};
 var requiredRevision = ${version_revision};
 // -----------------------------------------------------------------------------
 // -->
+
+window.onbeforeunload = sendDisconnect;
+function sendDisconnect(){
+	MonkeyAgent.sendDisconnect();
+}
+function reloadAgent(){
+	window.location.reload();
+}
+function windowProtocol(){
+	return window.location.protocol;
+}
+
 </script>
+
+
+
 </head>
 
 <body scroll="no">
@@ -42,11 +59,7 @@ var hasProductInstall = DetectFlashVer(6, 0, 65);
 // Version check based upon the values defined in globals
 var hasRequestedVersion = DetectFlashVer(requiredMajorVersion, requiredMinorVersion, requiredRevision);
 
-
-// Check to see if a player with Flash Product Install is available and the version does not meet the requirements for playback
 if ( hasProductInstall && !hasRequestedVersion ) {
-	// MMdoctitle is the stored document.title value used by the installation process to close the window that started the process
-	// This is necessary in order to close browser windows that are still utilizing the older version of the player after installation has completed
 	// DO NOT MODIFY THE FOLLOWING FOUR LINES
 	// Location visited after installation is complete if installation is required
 	var MMPlayerType = (isIE == true) ? "ActiveX" : "PlugIn";
