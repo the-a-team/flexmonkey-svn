@@ -8,7 +8,7 @@ package com.gorillalogic.flexmonkey.monkeyCommands
 	import com.gorillalogic.flexmonkey.application.VOs.SnapshotVO;
 	import com.gorillalogic.flexmonkey.application.VOs.TargetVO;
 	import com.gorillalogic.flexmonkey.application.events.MonkeyFileEvent;
-	import com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager;
+	import com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager2;
 	import com.gorillalogic.flexmonkey.application.utilities.AttributeFinder;
 	import com.gorillalogic.flexmonkey.core.MonkeyRunnable;
 	import com.gorillalogic.flexmonkey.core.MonkeyTest;
@@ -257,9 +257,9 @@ package com.gorillalogic.flexmonkey.monkeyCommands
 		
 		private var attributeFinder:AttributeFinder = new AttributeFinder();
 		public function getTarget(callBack:Function):void{
-		    if(BrowserConnectionManager.browserConnection != null && BrowserConnectionManager.browserConnection.useBrowser){ 
-		       	if(BrowserConnectionManager.browserConnection.connected){
-		       		BrowserConnectionManager.browserConnection.getTarget(this,callBack);
+		    if(BrowserConnectionManager2.browserConnection != null && BrowserConnectionManager2.browserConnection.useBrowser){ 
+		       	if(BrowserConnectionManager2.browserConnection.connected){
+		       		BrowserConnectionManager2.browserConnection.getTarget(this,callBack);
 		       	}
 		    }else{
 			    var target:UIComponent = null;				

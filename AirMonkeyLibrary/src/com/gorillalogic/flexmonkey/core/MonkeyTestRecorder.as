@@ -6,7 +6,7 @@ package com.gorillalogic.flexmonkey.core
 {
 	import com.gorillalogic.aqadaptor.AQAdapter;
 	import com.gorillalogic.flexmonkey.application.events.RecorderEvent;
-	import com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager;
+	import com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager2;
 	import com.gorillalogic.flexmonkey.monkeyCommands.UIEventMonkeyCommand;
 	import com.gorillalogic.flexmonkey.monkeyCommands.VerifyMonkeyCommand;
 	
@@ -22,7 +22,7 @@ package com.gorillalogic.flexmonkey.core
 	{
 		public var mateDispatcher:IEventDispatcher;
 		
-		public var browserConnection:BrowserConnectionManager;
+		public var browserConnection:BrowserConnectionManager2;
 						
 		public function MonkeyTestRecorder()
 		{

@@ -5,7 +5,7 @@
 package com.gorillalogic.flexmonkey.monkeyCommands
 {
 	import com.gorillalogic.flexmonkey.application.events.AlertEvent;
-	import com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager;
+	import com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager2;
 	import com.gorillalogic.flexmonkey.core.MonkeyNode;
 	import com.gorillalogic.flexmonkey.core.MonkeyRunnable;
 	import com.gorillalogic.flexmonkey.events.MonkeyCommandRunnerEvent;
@@ -49,7 +49,7 @@ package com.gorillalogic.flexmonkey.monkeyCommands
 		public var mateDispatcher:IEventDispatcher = IEventDispatcher(this);
 
 
-		public var browserConnection:BrowserConnectionManager;
+		public var browserConnection:BrowserConnectionManager2;
 
 
 		private var _isPlaying:Boolean = false;

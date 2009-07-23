@@ -26,7 +26,7 @@ package com.gorillalogic.flexmonkey.application.managers
 	public class ApplicationManager extends EventDispatcher
 	{
 		public var mateDispatcher : IEventDispatcher;		
-		public var browserConnection: BrowserConnectionManager;
+		public var browserConnection: BrowserConnectionManager2;
 		
 		public var monkeyTestFileDirty:Boolean = false;		
 
