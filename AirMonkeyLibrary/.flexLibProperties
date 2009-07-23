@@ -11,7 +11,7 @@
 <classEntry path="com.gorillalogic.flexmonkey.core.MonkeyUtils"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.managers.ApplicationManager"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.UI.views.SnapshotWindowView"/>
-<classEntry path="com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager2"/>
+<classEntry path="com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.managers.WindowManager"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.utilities.AS3FileCollector"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.managers.ProjectManager"/>

@@ -42,7 +42,7 @@ package com.gorillalogic.flexmonkey.application.managers
 	public class ProjectManager extends EventDispatcher
 	{
 		public var mateDispatcher : IEventDispatcher;
-		public var browserConnection:BrowserConnectionManager2;
+		public var browserConnection:BrowserConnectionManager;
 		
 		private var newProjectURL:String;		
 		private var projectFileURL:String;
