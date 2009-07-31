@@ -11,11 +11,11 @@
 <classEntry path="com.gorillalogic.flexmonkey.core.MonkeyUtils"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.managers.ApplicationManager"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.UI.views.SnapshotWindowView"/>
-<classEntry path="com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.managers.WindowManager"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.utilities.AS3FileCollector"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.managers.ProjectManager"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.VOs.SnapshotVO"/>
+<classEntry path="com.gorillalogic.flexmonkey.application.managers.BrowserConnectionManager"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.UI.renderers.AttributeMoveArrowItemRenderer"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.commands.AddCommand"/>
 <classEntry path="com.gorillalogic.flexmonkey.application.UI.views.CommandDetailView"/>

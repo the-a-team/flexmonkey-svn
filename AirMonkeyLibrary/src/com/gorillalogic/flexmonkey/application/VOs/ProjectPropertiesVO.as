@@ -14,7 +14,9 @@ package com.gorillalogic.flexmonkey.application.VOs
 		public var targetSWFURL:String;
 		public var targetSWFWidth:uint;
 		public var targetSWFHeight:uint;
-		public var useBrowser:Boolean;
+		public var useTargetSWFWindow:Boolean;
+		public var useMonkeyAgent:Boolean;
+		public var useMonkeyLink:Boolean;		
 		public var useFlashVars:Boolean;
 		public var flashVars:ArrayCollection;
 		public var generatedCodeSourceDirectory:String;

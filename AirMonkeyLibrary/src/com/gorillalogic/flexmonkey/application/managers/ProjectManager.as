@@ -206,11 +206,21 @@ package com.gorillalogic.flexmonkey.application.managers
 				flashVars.addItem(flashVar);
 			}				
 			setFlashVars(flashVars);
-			if(projectXML.targetSWF.@useBrowser == "true"){
-				setUseBrowser(true);
+			if(projectXML.targetSWF.@useTargetSWFWindow == "true"){
+				setUseTargetSWFWindow(true);
 			}else{
-				setUseBrowser(false);				
+				setUseTargetSWFWindow(false);				
 			}			
+			if(projectXML.targetSWF.@useMonkeyAgent == "true"){
+				setUseMonkeyAgent(true);
+			}else{
+				setUseMonkeyAgent(false);				
+			}	
+			if(projectXML.targetSWF.@useMonkeyLink == "true"){
+				setUseMonkeyLink(true);
+			}else{
+				setUseMonkeyLink(false);				
+			}	
 			setTargetSWFURL(projectXML.targetSWF.@url);							
 			setGeneratedCodeURL(projectXML.generatedCode.@url);
 			setGeneratedCodeSuitesPackageName(projectXML.generatedCode.@suitesPackageName);
@@ -357,7 +367,9 @@ package com.gorillalogic.flexmonkey.application.managers
 			setTargetSWFWidth(640); 
 			setUseFlashVars(false);
 			setFlashVars(new ArrayCollection());
-			setUseBrowser(false);
+			setUseTargetSWFWindow(true);
+			setUseMonkeyAgent(false);
+			setUseMonkeyLink(false);
 			setTargetSWFURL("");
 			setGeneratedCodeSuitesPackageName("testSuites");
 			setGeneratedCodeURL("");				
@@ -372,7 +384,9 @@ package com.gorillalogic.flexmonkey.application.managers
 			setTargetSWFWidth(properties.targetSWFWidth);
 			setUseFlashVars(properties.useFlashVars);			
 			setFlashVars(properties.flashVars);
-			setUseBrowser(properties.useBrowser);
+			setUseTargetSWFWindow(properties.useTargetSWFWindow);
+			setUseMonkeyAgent(properties.useMonkeyAgent);
+			setUseMonkeyLink(properties.useMonkeyLink);
 			setTargetSWFURL(properties.targetSWFURL);			
 			setGeneratedCodeSuitesPackageName(properties.generatedCodeSuitesPackageName);
 			setGeneratedCodeURL(properties.generatedCodeSourceDirectory);
@@ -382,7 +396,7 @@ package com.gorillalogic.flexmonkey.application.managers
 		
 		private function getProjectXML():XML{
 			var xml:XML = <project/>;
-			var targetSWFXML:XML = <targetSWF url={targetSWFURL} width={targetSWFWidth} height={targetSWFHeight} useBrowser={useBrowser} useFlashVars={useFlashVars}/>
+			var targetSWFXML:XML = <targetSWF url={targetSWFURL} width={targetSWFWidth} height={targetSWFHeight} useTargetSWFWindow={useTargetSWFWindow} useMonkeyAgent={useMonkeyAgent} useMonkeyLink={useMonkeyLink} useFlashVars={useFlashVars}/>
 			var generatedCodeXML:XML = <generatedCode url={generatedCodeURL} suitesPackageName={generatedCodeSuitesPackageName}/>
 			var flashVarsXML:XML=<flashVars/>;
 			for(var i:uint=0;i<flashVars.length;i++){
@@ -424,18 +438,38 @@ package com.gorillalogic.flexmonkey.application.managers
 		}			
 	
 		// Target SWF ------------------------------------------------------------------
-		private var _useBrowser:Boolean = true;
-		[Bindable ("useBrowserChanged")]
-		public function get useBrowser():Boolean{
-			return _useBrowser;	
+		private var _useTargetSWFWindow:Boolean = false;
+		[Bindable ("useTargetSWFWindowChanged")]
+		public function get useTargetSWFWindow():Boolean{
+			return _useTargetSWFWindow;	
 		}
-		private function setUseBrowser(b:Boolean):void{
-			_useBrowser = b;
-			dispatchEvent(new Event("useBrowserChanged"));
-			if(!b){
+		private function setUseTargetSWFWindow(b:Boolean):void{
+			_useTargetSWFWindow = b;
+			dispatchEvent(new Event("useTargetSWFWindowChanged"));
+			if(b){
 				browserConnection.sendDisconnect();
 			}				
 		}
+
+		private var _useMonkeyAgent:Boolean = false;
+		[Bindable ("useMonkeyAgentChanged")]
+		public function get useMonkeyAgent():Boolean{
+			return _useMonkeyAgent;	
+		}
+		private function setUseMonkeyAgent(b:Boolean):void{
+			_useMonkeyAgent = b;
+			dispatchEvent(new Event("useMonkeyAgentChanged"));			
+		}
+		
+		private var _useMonkeyLink:Boolean = false;
+		[Bindable ("useMonkeyLinkChanged")]
+		public function get useMonkeyLink():Boolean{
+			return _useMonkeyLink;	
+		}
+		private function setUseMonkeyLink(b:Boolean):void{
+			_useMonkeyLink = b;
+			dispatchEvent(new Event("useMonkeyLinkChanged"));			
+		}		
 		
 		private var _browserConnected:Boolean = false;
 		public function get browserConnected():Boolean{
@@ -480,7 +514,7 @@ package com.gorillalogic.flexmonkey.application.managers
 				dispatchEvent(new Event("targetSWFURLChanged"));			
 				setTargetSWF(null);
 				if(targetSWFURL != null && targetSWFURL != ""){
-					if(!useBrowser){
+					if(useTargetSWFWindow){
 						var urlRequest:URLRequest = new URLRequest(url);
 						var urlLoader:URLLoader = new URLLoader();
 						urlLoader.dataFormat = URLLoaderDataFormat.BINARY;

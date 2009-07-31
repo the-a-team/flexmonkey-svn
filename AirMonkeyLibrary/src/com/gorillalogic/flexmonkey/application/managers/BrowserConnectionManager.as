@@ -1,16 +1,17 @@
 package com.gorillalogic.flexmonkey.application.managers
 {
-	import com.gorillalogic.flexmonkey.application.utilities.MonkeyConnection;
-	import flash.events.IEventDispatcher;
-
 	import com.gorillalogic.flexmonkey.application.VOs.FlashVarVO;
 	import com.gorillalogic.flexmonkey.application.events.RecorderEvent;
+	import com.gorillalogic.flexmonkey.application.utilities.MonkeyConnection;
 	import com.gorillalogic.flexmonkey.core.MonkeyRunnable;
 	import com.gorillalogic.flexmonkey.monkeyCommands.MonkeyRunnerEngine;
 	import com.gorillalogic.flexmonkey.monkeyCommands.UIEventMonkeyCommand;
 	import com.gorillalogic.flexmonkey.monkeyCommands.VerifyMonkeyCommand;
 	import com.gorillalogic.monkeyAgent.VOs.TXVO;
+	
+	import flash.events.IEventDispatcher;
 	import flash.utils.ByteArray;
+	
 	import mx.collections.ArrayCollection;	
 	
 	public class BrowserConnectionManager extends MonkeyConnection
@@ -29,18 +30,27 @@ package com.gorillalogic.flexmonkey.application.managers
 			BrowserConnectionManager.setClassReference(this);
 		}
 
-		private var _useBrowser:Boolean = false;
-		public function get useBrowser():Boolean{
-			return _useBrowser;
+		private var _useTargetSWFWindow:Boolean = false;
+		public function get useTargetSWFWindow():Boolean{
+			return _useTargetSWFWindow;
 		}
-		public function set useBrowser(u:Boolean):void{
-			_useBrowser = u;
-			if(u && targetSWFURL != "" && targetSWFURL != null){
+		public function set useTargetSWFWindow(u:Boolean):void{
+			_useTargetSWFWindow = u;
+			setUseBrowser(!u);
+			if((!u) && targetSWFURL != "" && targetSWFURL != null){
 				pingTXTimer.start();
 			}else{
 				setConnected(false);
 				pingTXTimer.stop();				
 			}	
+		}
+		
+		private var _useBrowser:Boolean=false;
+		public function get useBrowser():Boolean{
+			return _useBrowser;
+		}
+		private function setUseBrowser(u:Boolean):void{
+			_useBrowser = u;
 		}
 		
 		public function needInit(txCount:uint):void{
@@ -60,12 +70,14 @@ package com.gorillalogic.flexmonkey.application.managers
 		
 		public function BrowserConnectionManager()
 		{
-			super();
-			transmitToName = "_agent";
+			txChannelName = "_agent";
+			rxChannelName = "_flexMonkey";
 			writeConsole = function(message:String):void{
 				trace(message);
 			}
 			agentInitialized = false;
+			super();			
+			super.startConnection();
 		}
 
 		//  receive methods ---------------------------------------------------------------------------	

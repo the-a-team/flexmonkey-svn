@@ -10,8 +10,9 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 	windowActivate="windowActivateHandler()"
 	closing="closingHandler(event)"
 	initialize="initializeHandler()"
+	verticalScrollPolicy="off"
 	backgroundColor="0xE0E0E0"
-	width="750" height="410"	
+	width="750" height="480"	
 	>
 	<mx:Script>
 		<![CDATA[
@@ -27,11 +28,59 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			public var mateDispatcher:IEventDispatcher;
 			
 			public var projectURL:String;
+
+			public static const LOAD:String = "load";
+			public static const LINK:String = "link";
 		
 			[Bindable] public var targetSWFURL:String;
 			[Bindable] public var targetSWFWidth:uint;
 			[Bindable] public var targetSWFHeight:uint;
-			[Bindable] public var useBrowser:Boolean;
+
+
+			private var _useTargetSWFWindow:Boolean;
+			[Bindable] 
+			public function get useTargetSWFWindow():Boolean{
+				return _useTargetSWFWindow;
+			}
+			public function set useTargetSWFWindow(b:Boolean):void{
+				_useTargetSWFWindow = b;
+				setState();
+			}
+
+			private var _useMonkeyAgent:Boolean;
+			[Bindable] 
+			public function get useMonkeyAgent():Boolean{
+				return _useMonkeyAgent;
+			}
+			public function set useMonkeyAgent(b:Boolean):void{
+				_useMonkeyAgent = b;
+				setState();
+			}			
+
+			private var _useMonkeyLink:Boolean;
+			[Bindable] 
+			public function get useMonkeyLink():Boolean{
+				return _useMonkeyLink;
+			}
+			public function set useMonkeyLink(b:Boolean):void{
+				_useMonkeyLink = b;
+				setState();
+			}
+
+			[Bindable] private var showLoadForm:Boolean = false;
+			private function setState():void{
+				switch(_useMonkeyLink){
+					case true:
+						currentState = LINK;
+						showLoadForm = false;
+						break;
+					case false:
+						currentState = "";
+						showLoadForm = true;
+						break;					
+				}				
+			}
+
 			[Bindable] public var useFlashVars:Boolean;
 			[Bindable] public var flashVars:ArrayCollection;
 			[Bindable] public var generatedCodeSourceDirectory:String;
@@ -61,7 +110,9 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 				projectProperties.targetSWFHeight = uint(targetSWFHeightFormItem.text);
 				projectProperties.targetSWFWidth = uint(targetSWFWidthFormItem.text);
 				projectProperties.targetSWFURL = targetSWFURLFormItem.text;
-				projectProperties.useBrowser = useBrowserCheckBox.selected;				
+				projectProperties.useTargetSWFWindow = targetSWFWindowRadioButton.selected;	
+				projectProperties.useMonkeyAgent = monkeyAgentRadioButton.selected;
+				projectProperties.useMonkeyLink = monkeyLinkRadioButton.selected;			
 				projectProperties.useFlashVars = useFlashVarsCheckBox.selected;
 				projectProperties.flashVars = flashVars;
    				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROJECT_PROPERTIES_UPDATE,projectProperties)); 				
@@ -79,7 +130,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
    			private var targetSWFFile:File;
 			private function browseForTargetSWFURLClickHandler(event:MouseEvent):void{
 				targetSWFFile = new File(projectURL);
-				var filter:FileFilter = new FileFilter("SWF","*.swf");
+				var filter:FileFilter = new FileFilter("SWF", "*.swf");
 				targetSWFFile.browseForOpen("Select Test Target SWF", [filter]);
 				targetSWFFile.addEventListener(Event.SELECT,targetSWFFileSelectHandler,false,0,true);		
 			}
@@ -106,8 +157,15 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			}
 		]]>
 	</mx:Script>
-	<mx:Binding source="useBrowser" destination="useBrowserCheckBox.selected"/>	
-	<mx:Binding destination="useBrowser" source="useBrowserCheckBox.selected"/>
+	<mx:Binding source="useTargetSWFWindow" destination="targetSWFWindowRadioButton.selected"/>	
+	<mx:Binding destination="useTargetSWFWindow" source="targetSWFWindowRadioButton.selected"/>
+
+	<mx:Binding source="useMonkeyAgent" destination="monkeyAgentRadioButton.selected"/>	
+	<mx:Binding destination="useMonkeyAgent" source="monkeyAgentRadioButton.selected"/>
+
+	<mx:Binding source="useMonkeyLink" destination="monkeyLinkRadioButton.selected"/>	
+	<mx:Binding destination="useMonkeyLink" source="monkeyLinkRadioButton.selected"/>
+
 	<mx:Binding source="targetSWFURL" destination="targetSWFURLFormItem.text"/>
 	<mx:Binding source="targetSWFWidth.toString()" destination="targetSWFWidthFormItem.text"/>
 	<mx:Binding source="targetSWFHeight.toString()" destination="targetSWFHeightFormItem.text"/>
@@ -120,6 +178,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 	<mx:VBox 
 		width="100%"
 		height="100%"
+		verticalScrollPolicy="off"
 		paddingTop="5"
 		paddingRight="5"
 		paddingBottom="2"
@@ -127,52 +186,14 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		verticalGap="0"	>	
 		<mx:Form id="projectPropertiesForm" verticalGap="2" width="100%" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0">
 			<mx:Label text="Test Target SWF" fontSize="12"/>
-			<mx:FormItem label="Use Browser" width="100%">
-				<mx:CheckBox id="useBrowserCheckBox"/>									
+			<mx:FormItem id="modeRadioGroup" label="Mode" width="100%">
+				<mx:RadioButtonGroup id="modeGroup"/>
+				<mx:RadioButton groupName="modeGroup" id="targetSWFWindowRadioButton" label="Target SWF Window"/>
+				<mx:RadioButton groupName="modeGroup" id="monkeyAgentRadioButton" label="MonkeyAgent"/>
+				<mx:RadioButton groupName="modeGroup" id="monkeyLinkRadioButton" label="MonkeyLink"/>
 			</mx:FormItem>
-			<mx:FormItem label="URL" width="100%" >
-				<mx:HBox
-					width="100%"
-					paddingTop="0"
-					paddingRight="0"
-					paddingBottom="0"
-					paddingLeft="0"
-					horizontalGap="4"
-					horizontalAlign="center">
-					<mx:TextInput id="targetSWFURLFormItem" width="100%"/>
-					<mx:Button id="browseForTargetSWFURLButton" label="Browse" enabled="{!useBrowser}" click="browseForTargetSWFURLClickHandler(event)"/>				
-				</mx:HBox>					
-			</mx:FormItem>					
-			<mx:FormItem label="Width" width="100%">
-				<mx:TextInput id="targetSWFWidthFormItem" width="50"/>
-			</mx:FormItem>	
-			<mx:FormItem label="Height" width="100%">
-				<mx:TextInput id="targetSWFHeightFormItem" width="50"/>
-			</mx:FormItem>	
-			<mx:FormItem label="Use FlashVars" width="100%">
-				<mx:CheckBox id="useFlashVarsCheckBox"/>									
-			</mx:FormItem>
-			<mx:FormItem label="FlashVars" width="100%">
-				<mx:DataGrid 
-					id="flashVarsGrid"
-				 	width="100%" 
-				 	height="100"
-				 	editable="true"
-				 	doubleClickEnabled="true"
-					>
-					<mx:columns>
-						<mx:DataGridColumn id="nameColumn" editable="true" dataField="name" headerText="Name"/>
-						<mx:DataGridColumn id="valueColumn" editable="true" dataField="value" headerText="Value"/>							
-					</mx:columns>
-				</mx:DataGrid>
-			</mx:FormItem>
-			<mx:FormItem>
-				<mx:HBox paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" horizontalGap="1">
-					<mx:Button id="addFlashVarButton" label="+" width="20" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" toolTip="Add FlashVar" click="addFlashVarClickHandler(event)"/>
-					<mx:Button id="deleteFlashVarButton" label="-" width="20" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" toolTip="Delete FlashVar" click="deleteFlashVarClickHandler(event)"/>
-				</mx:HBox>				
-			</mx:FormItem>
-			<mx:VBox		
+			<mx:VBox	
+				id="modeRadioGroupRule"	
 				width="100%"
 				height="10"
 				paddingTop="0"
@@ -183,8 +204,66 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 				verticalAlign="middle">
 				<mx:HRule width="100%"/>
 			</mx:VBox>
-			<mx:Label text="Generated AS3" fontSize="12"/>
-			<mx:FormItem label="Source Directory URL" width="100%">
+
+				<mx:FormItem label="URL" width="100%" id="urlFormItem">
+					<mx:HBox
+						width="100%"
+						paddingTop="0"
+						paddingRight="0"
+						paddingBottom="0"
+						paddingLeft="0"
+						horizontalGap="4"
+						horizontalAlign="center">
+						<mx:TextInput id="targetSWFURLFormItem" width="100%"/>
+						<mx:Button id="browseForTargetSWFURLButton" label="Browse" click="browseForTargetSWFURLClickHandler(event)"/>				
+					</mx:HBox>					
+				</mx:FormItem>					
+				<mx:FormItem label="Width" width="100%" id="widthFormItem">
+					<mx:TextInput id="targetSWFWidthFormItem" width="50"/>
+				</mx:FormItem>	
+				<mx:FormItem label="Height" width="100%" id="heightFormItem">
+					<mx:TextInput id="targetSWFHeightFormItem" width="50"/>
+				</mx:FormItem>	
+				<mx:FormItem label="Use FlashVars" width="100%" id="checkBoxFormItem">
+					<mx:CheckBox id="useFlashVarsCheckBox"/>									
+				</mx:FormItem>
+				<mx:FormItem label="FlashVars" width="100%" id="flashVarsFormItem">
+					<mx:DataGrid 
+						id="flashVarsGrid"
+					 	width="100%" 
+					 	height="100"
+					 	editable="true"
+					 	doubleClickEnabled="true"
+						>
+						<mx:columns>
+							<mx:DataGridColumn id="nameColumn" editable="true" dataField="name" headerText="Name"/>
+							<mx:DataGridColumn id="valueColumn" editable="true" dataField="value" headerText="Value"/>							
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:FormItem>
+				<mx:FormItem id="flashVarsButtonFormItem">
+					<mx:HBox paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" horizontalGap="1">
+						<mx:Button id="addFlashVarButton" label="+" width="20" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" toolTip="Add FlashVar" click="addFlashVarClickHandler(event)"/>
+						<mx:Button id="deleteFlashVarButton" label="-" width="20" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" toolTip="Delete FlashVar" click="deleteFlashVarClickHandler(event)"/>
+					</mx:HBox>				
+				</mx:FormItem>
+				<mx:VBox 
+					id="ruleFormItem"	
+					width="100%"
+					height="10"
+					paddingTop="0"
+					paddingRight="0"
+					paddingBottom="0"
+					paddingLeft="0"
+					verticalGap="0"
+					verticalAlign="middle">
+					<mx:HRule width="100%"/>
+				</mx:VBox>	
+				
+								
+				
+			<mx:Label text="Generated AS3" fontSize="12" />
+			<mx:FormItem label="Source Directory URL" width="100%" >
 				<mx:HBox
 					width="100%"
 					paddingTop="0"
@@ -197,10 +276,10 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 					<mx:Button id="browseForGeneratedCodeSourceDirectoryButton" label="Browse" click="browseForGeneratedCodeSourceDirectoryClickHandler(event)"/>				
 				</mx:HBox>
 			</mx:FormItem>					
-			<mx:FormItem label="Suites Package Name" width="100%">
+			<mx:FormItem label="Suites Package Name" width="100%" >
 				<mx:TextInput id="generatedCodeSuitesPackageNameFormItem" width="250"/>
 			</mx:FormItem>
-			<mx:VBox		
+			<mx:VBox  		
 				width="100%"
 				height="10"
 				paddingTop="0"
@@ -213,13 +292,36 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			</mx:VBox>	
 		</mx:Form>					
 		<mx:HBox 
+			
 			width="100%" 
 			paddingBottom="4" paddingLeft="0" paddingRight="0" paddingTop="0"
 			horizontalAlign="right"
 			>
-			<mx:Button label="Apply" id="applyButton" click="applyClickHandler(event)"/>
-			<mx:Button label="Cancel" id="cancelButton" click="cancelClickHandler(event)"/>
-			<mx:Button label="OK" id="okButton" click="okClickHandler(event)"/>			
+			<mx:Button label="Apply" id="applyButton" click="applyClickHandler(event)" />
+			<mx:Button label="Cancel" id="cancelButton" click="cancelClickHandler(event)" />
+			<mx:Button label="OK" id="okButton" click="okClickHandler(event)" />			
 		</mx:HBox>
-	</mx:VBox>			
+	</mx:VBox>	
+	<mx:Move id="theMove" duration="1000"/>
+	<mx:transitions>
+		<mx:Transition id="toLink" fromState="*" toState="{LINK}">
+<!--			<mx:Resize target="{this}" duration="1000" id="expand" heightBy="-230"/> -->
+		</mx:Transition>	
+		<mx:Transition id="toLoad" fromState="{LINK}" toState="*">
+			<mx:Parallel>
+<!--			<mx:Resize target="{this}" duration="1000" id="contract" heightBy="230"/> -->
+			</mx:Parallel>
+		</mx:Transition>		
+	</mx:transitions>	
+	<mx:states>
+		<mx:State name="{LINK}">
+			<mx:RemoveChild target="{urlFormItem}"/>			
+			<mx:RemoveChild target="{widthFormItem}"/>
+			<mx:RemoveChild target="{heightFormItem}"/>
+			<mx:RemoveChild target="{checkBoxFormItem}"/>
+			<mx:RemoveChild target="{flashVarsFormItem}"/>
+			<mx:RemoveChild target="{flashVarsButtonFormItem}"/>
+			<mx:RemoveChild target="{ruleFormItem}"/>																		
+		</mx:State>
+	</mx:states>
 </mx:Window>

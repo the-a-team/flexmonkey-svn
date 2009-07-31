@@ -42,6 +42,15 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			
 [Bindable] private var menuBarItemRenderer:IFactory = new ClassFactory(IconMenuBarItem);		
 
+			private var _browserConnectionIndicatorDisabled:Boolean = false;
+			public function get browserConnectionIndicatorDisabled():Boolean{
+				return _browserConnectionIndicatorDisabled;
+			}
+			public function set browserConnectionIndicatorDisabled(c:Boolean):void{
+				_browserConnectionIndicatorDisabled = c;
+				browserConnectionIndicatorEnabled = !c;				
+			}
+
 			private var _browserConnectionIndicatorEnabled:Boolean = false;
 			[Bindable] 
 			public function get browserConnectionIndicatorEnabled():Boolean{
@@ -58,7 +67,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 				return _browserConnectionIndicatorSelected;
 			}
 			public function set browserConnectionIndicatorSelected(c:Boolean):void{
-				if(_browserConnectionIndicatorSelected == true && c == false){
+				if(_browserConnectionIndicatorSelected == true && c == false){  // if we are turning it OFF
 					_browserConnectionIndicatorSelected = c;
 					recordButton.selected = false;
 					pauseButton.selected = false;					
@@ -251,8 +260,6 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		[Bindable] public var saveButtonEnabled:Boolean = false;
 		[Bindable] public var undoButtonEnabled:Boolean = false;
 		[Bindable] public var redoButtonEnabled:Boolean = false;
-
-
 			
 		]]>
 	</mx:Script>

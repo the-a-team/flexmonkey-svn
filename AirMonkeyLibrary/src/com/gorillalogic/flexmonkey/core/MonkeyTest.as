@@ -69,6 +69,19 @@ package com.gorillalogic.flexmonkey.core
 			_name = n;
 		}
 
+		private var _description:String;
+		/**
+		 * The description of this MonkeyTest.
+		 * 
+		 * 
+		 */ 		
+		public function get description():String{
+			return _description;
+		}
+		public function set description(n:String):void{
+			_description = n;
+		}
+
 		private var _defaultThinkTime:uint;
 		public function get defaultThinkTime():int {
 			return _defaultThinkTime;
@@ -114,7 +127,7 @@ not run at the beginning of the run...
 		 */
 		override public function get xml():XML{
 			var xml:XML = 
-			<Test name={name} defaultThinkTime={defaultThinkTime}/>	
+			<Test name={name} description={description} defaultThinkTime={defaultThinkTime}/>	
 			for(var k:int=0;k<children.length;k++){
 				xml.appendChild(children[k].xml);
 			}			
@@ -170,6 +183,7 @@ not run at the beginning of the run...
 			}else{
 				if(
 					(item.name == this.name) &&
+					(item.description == this.description) &&
 					(item.result == this.result) &&
 					(item.defaultThinkTime == this.defaultThinkTime)		
 				){
@@ -191,6 +205,7 @@ not run at the beginning of the run...
 			copy.parent = this.parent;
 			copy.children = this.children;
 			copy.name = this.name;
+			copy.description = this.description;
 			copy.result = this.result;
 			copy.defaultThinkTime = this.defaultThinkTime;
 			copy.assertionCount = assertionCount;

@@ -269,6 +269,8 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 	<mx:Binding source="monkeyTestSuite.errorCount.toString()" destination="testSuiteErrorCountFormItem.text"/>
 	<mx:Binding source="monkeyTestSuite.notRunAssertionCount.toString()" destination="testSuiteNotRunAssertionCountFormItem.text"/>
 	<mx:Binding source="monkeyTestSuite.assertionCount.toString()" destination="testSuiteAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTestSuite.description" destination="testSuiteDescriptionTextArea.text"/>
+	<mx:Binding source="testSuiteDescriptionTextArea.text" destination="monkeyTestSuite.description"/>
 	
 	<mx:Binding source="testCaseNameFormItem.text" destination="monkeyTestCase.name"/>
 	<mx:Binding source="monkeyTestCase.name" destination="testCaseNameFormItem.text"/>
@@ -277,6 +279,8 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 	<mx:Binding source="monkeyTestCase.errorCount.toString()" destination="testCaseErrorCountFormItem.text"/>
 	<mx:Binding source="monkeyTestCase.notRunAssertionCount.toString()" destination="testCaseNotRunAssertionCountFormItem.text"/>
 	<mx:Binding source="monkeyTestCase.assertionCount.toString()" destination="testCaseAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTestCase.description" destination="testCaseDescriptionTextArea.text"/>
+	<mx:Binding source="testCaseDescriptionTextArea.text" destination="monkeyTestCase.description"/>
 
 	<mx:Binding source="testNameFormItem.text" destination="monkeyTest.name"/>
 	<mx:Binding source="monkeyTest.name" destination="testNameFormItem.text"/>
@@ -287,6 +291,8 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 	<mx:Binding source="monkeyTest.errorCount.toString()" destination="testErrorCountFormItem.text"/>
 	<mx:Binding source="monkeyTest.notRunAssertionCount.toString()" destination="testNotRunAssertionCountFormItem.text"/>
 	<mx:Binding source="monkeyTest.assertionCount.toString()" destination="testAssertionCountFormItem.text"/>
+	<mx:Binding source="monkeyTest.description" destination="testDescriptionTextArea.text"/>
+	<mx:Binding source="testDescriptionTextArea.text" destination="monkeyTest.description"/>
 
 	<mx:Binding source="uiEventCommandFormItem.text" destination="uiEventMonkeyCommand.command"/>
 	<mx:Binding source="uiEventMonkeyCommand.command" destination="uiEventCommandFormItem.text"/>
@@ -408,6 +414,32 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 				</mx:Form>
 			</mx:target>				
 			</mx:AddChild>		
+
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:VBox id="testSuiteDescriptionBox" width="100%" height="100" verticalGap="0"
+					     paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testSuiteDescriptionBox}" position="firstChild">
+			<mx:target>
+				<mx:Label text="Description"
+					paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>	
+			
+			<mx:AddChild relativeTo="{testSuiteDescriptionBox}" position="lastChild">
+			<mx:target>
+				<mx:TextArea id="testSuiteDescriptionTextArea" editable="true" width="100%" height="100%" 
+					paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>				
+			
+			
+			
+			
 		</mx:State>
 		
 		<mx:State name="{TEST_CASE}">
@@ -475,6 +507,29 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 				</mx:Form>
 			</mx:target>				
 			</mx:AddChild>		
+			
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:VBox id="testCaseDescriptionBox" width="100%" height="100" verticalGap="0"
+					     paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testCaseDescriptionBox}" position="firstChild">
+			<mx:target>
+				<mx:Label text="Description"
+					paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>	
+			
+			<mx:AddChild relativeTo="{testCaseDescriptionBox}" position="lastChild">
+			<mx:target>
+				<mx:TextArea id="testCaseDescriptionTextArea" editable="true" width="100%" height="100%" 
+					paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>	
+			
 		</mx:State>
 		
 		<mx:State name="{TEST}">
@@ -545,6 +600,27 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			</mx:target>				
 			</mx:AddChild>
 			
+			<mx:AddChild relativeTo="{this}" position="lastChild">
+			<mx:target>
+				<mx:VBox id="testDescriptionBox" width="100%" height="100" verticalGap="0"
+					     paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" 
+					     horizontalAlign="left" verticalAlign="middle" verticalScrollPolicy="off"/>
+			</mx:target>
+			</mx:AddChild>
+			
+			<mx:AddChild relativeTo="{testDescriptionBox}" position="firstChild">
+			<mx:target>
+				<mx:Label text="Description"
+					paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>	
+			
+			<mx:AddChild relativeTo="{testDescriptionBox}" position="lastChild">
+			<mx:target>
+				<mx:TextArea id="testDescriptionTextArea" editable="true" width="100%" height="100%" 
+					paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="0"/>
+			</mx:target>
+			</mx:AddChild>		
 		
 		</mx:State>
 		
@@ -725,13 +801,13 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			
 			<mx:AddChild>
 			<mx:target>
-				<mx:DataGrid id="attributeGrid" width="100%" height="100%" paddingRight="0" editable="false" itemClick="itemClickHandler(event)">
+				<mx:DataGrid id="attributeGrid" width="100%" height="100%" paddingRight="0" editable="true" itemClick="itemClickHandler(event)">
 					<mx:columns>
-						<mx:DataGridColumn id="nameColumn" dataField="name" headerText="Name"/>
-						<mx:DataGridColumn dataField="expectedValue" headerText="Expected"/>
-						<mx:DataGridColumn id="arrowColumn" headerText="" width="24"/>
-						<mx:DataGridColumn dataField="actualValue" headerText="Actual"/>
-						<mx:DataGridColumn id="resultColumn" dataField="result" headerText="Result"/>
+						<mx:DataGridColumn id="nameColumn" editable="false" dataField="name" headerText="Name"/>
+						<mx:DataGridColumn id="expectedValueColumn" editable="true" dataField="expectedValue" headerText="Expected"/>
+						<mx:DataGridColumn id="arrowColumn" editable="false" headerText="" width="24"/>
+						<mx:DataGridColumn id="actualValueColumn" editable="false" dataField="actualValue" headerText="Actual"/>
+						<mx:DataGridColumn id="resultColumn" editable="false" dataField="result" headerText="Result"/>
 					</mx:columns>
 				</mx:DataGrid>
 			</mx:target>

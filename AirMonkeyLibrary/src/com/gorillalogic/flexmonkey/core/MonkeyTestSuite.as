@@ -56,6 +56,7 @@ package com.gorillalogic.flexmonkey.core
 			}else{
 				if(
 					(item.name == this.name) &&
+					(item.description == this.description) &&
 					(item.result == this.result) 		
 				){
 					return true;
@@ -104,7 +105,7 @@ package com.gorillalogic.flexmonkey.core
 		 */
 		override public function get xml():XML{
 			var xml:XML = 
-			<TestSuite name={name}/>	
+			<TestSuite name={name} description={description}/>	
 			for(var k:int=0;k<children.length;k++){
 				xml.appendChild(children[k].xml);
 			}			
@@ -172,6 +173,20 @@ package com.gorillalogic.flexmonkey.core
 			_name = n;
 		}
 		
+		private var _description:String;
+		/**
+		 * The description of this MonkeyTestSuite.
+		 * 
+		 * 
+		 */ 		
+		public function get description():String{
+			return _description;
+		}
+		public function set description(n:String):void{
+			_description = n;
+		}		
+		
+		
 		/**
 		 * Returns a copy of this MonkeyTestSuite.
 		 * 
@@ -187,6 +202,7 @@ package com.gorillalogic.flexmonkey.core
 			}	
 			copy.children = this.children;
 			copy.name = this.name;
+			copy.description = this.description;			
 			copy.result = this.result;
 			copy.assertionCount = assertionCount;
 			copy.passedAssertionCount = passedAssertionCount;

@@ -41,9 +41,11 @@ package com.gorillalogic.flexmonkey.application.utilities
 				switch(x.localName()){
 					case "TestSuite":
 						var testSuiteName:String = x.@name;
+						var testSuiteDescription:String = x.@description;
 						var newTestSuite:MonkeyTestSuite = new MonkeyTestSuite();
 						newTestSuite.mateDispatcher = this.mateDispatcher;
 						newTestSuite.name = testSuiteName;
+						newTestSuite.description = testSuiteDescription;
 						if(testContainer != null){
 							newTestSuite.parent = testContainer;
 						}else{
@@ -58,9 +60,11 @@ package com.gorillalogic.flexmonkey.application.utilities
 						break;					
 					case "TestCase":
 						var testCaseName:String = x.@name;
+						var testCaseDescription:String = x.@description;
 						var newTestCase:MonkeyTestCase = new MonkeyTestCase();
 						newTestCase.mateDispatcher = this.mateDispatcher;
 						newTestCase.name = testCaseName;
+						newTestCase.description = testCaseDescription;
 						newTestCase.parent = testContainer;
 						newTestCase.children = new ArrayCollection();			
 						var newTestCaseNodes:XMLList = x.elements();
@@ -69,9 +73,11 @@ package com.gorillalogic.flexmonkey.application.utilities
 						break;					
 					case "Test":
 						var testName:String = x.@name;
+						var testDescription:String = x.@description;
 						var newTest:MonkeyTest = new MonkeyTest();
 						newTest.mateDispatcher = this.mateDispatcher;
 						newTest.name = testName;
+						newTest.description = testDescription;
 						// This XML may have been generated internally via new project creation code.
 						// In this case make sure default defaultThinkTime from MonkeyTest class gets used.
 						var rawDefaultThinkTime:String = x.@defaultThinkTime;

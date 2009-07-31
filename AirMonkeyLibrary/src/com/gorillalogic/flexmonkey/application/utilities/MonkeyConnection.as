@@ -2,6 +2,7 @@ package com.gorillalogic.flexmonkey.application.utilities
 {
 	import com.gorillalogic.monkeyAgent.VOs.TXVO;
 	
+	import flash.display.DisplayObject;
 	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -11,14 +12,15 @@ package com.gorillalogic.flexmonkey.application.utilities
 	import flash.events.TimerEvent;
 	import flash.net.LocalConnection;
 	import flash.utils.Timer;
-		
+	
 	public class MonkeyConnection extends EventDispatcher
 	{
-		
-		
 		public function MonkeyConnection(target:IEventDispatcher=null)
 		{
 			super(target);
+		}
+		
+		protected function startConnection():void{
 			// set up RX Channel listen 
 			initializeRXChannel();
 			// set up TX channel and announce
@@ -31,15 +33,16 @@ package com.gorillalogic.flexmonkey.application.utilities
 			pingTXTimer.addEventListener(TimerEvent.TIMER, pingTXHandler, false, 0, true);			
 		}
 
-		protected var transmitToName:String;
+		protected var txChannelName:String;
+		protected var rxChannelName:String;
 		protected var writeConsole:Function;		
 
 		protected var pingTXTimer:Timer;
-		private var txConnection:LocalConnection;
+		protected var txConnection:LocalConnection;
 		private var txCount:uint = 1;
 
-		private var pingRXTimer:Timer;
-		private var rxConnection:LocalConnection;
+		protected var pingRXTimer:Timer;
+		protected var rxConnection:LocalConnection;
 		private var rxCount:uint = 1;
 		
 		private var _connected:Boolean = false;
@@ -79,11 +82,11 @@ package com.gorillalogic.flexmonkey.application.utilities
 					coreSend(txQueue[0]);
 				}	
 			}		
-			writeConsole(transmitToName + " ack'd w txQueue.length=" + txQueue.length + " and txCount=" + count);			
+			writeConsole(txChannelName + " ack'd w txQueue.length=" + txQueue.length + " and txCount=" + count);			
 		}	
 				
 		public function disconnect():void{
-			writeConsole(transmitToName + ":Disconnected"); 
+			writeConsole(txChannelName + ":Disconnected"); 
 			txQueue = [];			
 			setConnected(false);
 		}
@@ -109,15 +112,22 @@ package com.gorillalogic.flexmonkey.application.utilities
 			}	
 		}
 		public function initializeRXChannel():void{
+			initializeRXChannel0();
+			initializeRXChannel1();
+		}
+		
+		protected function initializeRXChannel0():void{
 			// Channels are named for their listener			
 			rxConnection = new LocalConnection();
 			rxConnection.allowDomain('*')
-			rxConnection.client = this;
+			rxConnection.client = this;			
+		}
+		protected function initializeRXChannel1():void{
 			try{
-				rxConnection.connect("_FlexMonkey");
+				rxConnection.connect(rxChannelName);
 			}catch(error:ArgumentError){
-				writeConsole("BrowserConnection: could not connect to RX channel");
-			}			
+				writeConsole("Could not connect to RX channel");
+			}				
 		}
 		
 		public function initializeTXChannel():void{
@@ -127,17 +137,17 @@ package com.gorillalogic.flexmonkey.application.utilities
 			txConnection.addEventListener(IOErrorEvent.IO_ERROR,IOErrorHandler);								
 		}
 		
-		private function pingRXHandler(event:TimerEvent):void{
+		protected function pingRXHandler(event:TimerEvent):void{
 			if(rxAlive){
 				rxAlive = false;
 			}else{
-				writeConsole("BrowserConnection: RX Disconnected (ping timeout)"); 
+				writeConsole("RX Disconnected (ping timeout)"); 
 				setConnected(false);
 			}
 		}
 
-		private function pingTXHandler(event:TimerEvent):void{
-     		send(new TXVO(transmitToName, "ping"));
+		protected function pingTXHandler(event:TimerEvent):void{
+     		send(new TXVO(txChannelName, "ping"));
 		}
 
 		private function txStatusEventHandler(event:StatusEvent):void{
@@ -225,11 +235,14 @@ package com.gorillalogic.flexmonkey.application.utilities
 		}				
 		
 		public function sendDisconnect():void{
-			send(new TXVO(transmitToName, "disconnect"));	
+			send(new TXVO(txChannelName, "disconnect"));	
 			txQueue = [];						
 		}						
 		protected function sendAck(count:uint):void{
-			send(new TXVO(transmitToName, "ack", [count]));
-		}	
+			send(new TXVO(txChannelName, "ack", [count]));
+		}
+		
+		
+			
 	}
 }
