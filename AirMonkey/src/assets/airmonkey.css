@@ -235,6 +235,7 @@ CommandGridResultItemRenderer{
 	overSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_yellow_32.png');
 	downSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_yellow_32.png');
 	disabledSkin:Embed(source='../../Assets/icons/sphere_32/sphere_disabled_32.png');  
+	selectedDisabledSkin:Embed(source='../../Assets/icons/sphere_32/sphere_disabled_32.png');
    	selectedUpSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_green_32.png');
 	selectedOverSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_green_32.png');
 	selectedDownSkin:Embed(source='../../Assets/icons/sphere_32/sphere_normal_green_32.png');      		  		

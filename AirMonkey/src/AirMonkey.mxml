@@ -39,16 +39,18 @@ import flash.net.navigateToURL;
 			import air.update.events.UpdateEvent;
 			import air.update.ApplicationUpdaterUI;
 			
-			private var _useBrowser:Boolean;
-			[Bindable ("useBrowserChanged")] 
-			public function get useBrowser():Boolean{
-				return _useBrowser;
+			
+			
+			private var _useTargetSWFWindow:Boolean;
+			[Bindable ("useTargetSWFWindowChanged")] 
+			public function get useTargetSWFWindow():Boolean{
+				return _useTargetSWFWindow;
 			}
-			public function set useBrowser(u:Boolean):void{
-				_useBrowser = u;
+			public function set useTargetSWFWindow(u:Boolean):void{
+				_useTargetSWFWindow = u;
 				
 				// This is a workaround for what seems to be a Windows bug.
-				// If the useBrowserChanged event is dispatched immediately here, the target SWF window ends up invisible because
+				// If the useTargetSWFWindowChanged event is dispatched immediately here, the target SWF window ends up invisible because
 				// the system changes it after the binding runs.
 				var timer:Timer = new Timer(1, 1);
 				timer.addEventListener(TimerEvent.TIMER_COMPLETE, timerCompleteHandler, false, 0, true);
@@ -57,7 +59,7 @@ import flash.net.navigateToURL;
 			}
 			
 			private function timerCompleteHandler(event:TimerEvent=null):void{
-				dispatchEvent(new Event("useBrowserChanged"));
+				dispatchEvent(new Event("useTargetSWFWindowChanged"));
 			}
 			
 			private var updater:ApplicationUpdaterUI = new ApplicationUpdaterUI();
@@ -121,7 +123,7 @@ import flash.net.navigateToURL;
 			
 		]]>
 	</mx:Script>
-	<mx:Binding source="{!useBrowser}" destination="this.visible"/>
+	<mx:Binding source="{useTargetSWFWindow}" destination="this.visible"/>
 	<maps:ApplicationEventMap/>
 	<views:MainView/>		
 </mx:WindowedApplication>
