@@ -1,5 +1,5 @@
 <project>
-  <targetSWF url="file:///Users/grroggy/Documents/FlexMonkeyGoogleCode/MonkeyContactsCodeGenExample/bin-debug/MonkeyContacts.swf" width="800" height="630" useBrowser="false" useFlashVars="false"/>
+  <targetSWF url="file:///Users/grroggy/Documents/FlexMonkeyGoogleCodeTest/MonkeyContactsCodeGenExample/bin-debug/MonkeyContacts.swf" width="800" height="630" commMode="monkeyAgent" useFlashVars="false"/>
   <flashVars/>
-  <generatedCode url="file:///Users/grroggy/Documents/FlexMonkeyGoogleCode/MonkeyContactsCodeGenExample/src" suitesPackageName="testSuites"/>
+  <generatedCode url="file:///Users/grroggy/Documents/FlexMonkeyGoogleCodeTest/MonkeyContactsCodeGenExample/src" suitesPackageName="testSuites"/>
 </project>
