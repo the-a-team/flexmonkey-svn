@@ -1,0 +1,50 @@
+<TopNode>
+  <TestSuite name="NewTestSuite" description="">
+    <TestCase name="NewTestCase" description="">
+      <Test name="NewTest" description="" defaultThinkTime="500">
+        <UIEvent command="SelectText" value="inName" prop="automationName">
+          <arg value="0"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Input" value="inName" prop="automationName">
+          <arg value="Newman"/>
+        </UIEvent>
+        <UIEvent command="ChangeFocus" value="inName" prop="automationName">
+          <arg value="false"/>
+          <arg value="TAB"/>
+        </UIEvent>
+        <UIEvent command="Open" value="inType" prop="automationName">
+          <arg value="null"/>
+        </UIEvent>
+        <UIEvent command="Select" value="inType" prop="automationName">
+          <arg value="Work"/>
+          <arg value="1"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="SelectText" value="inPhone" prop="automationName">
+          <arg value="0"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Input" value="inPhone" prop="automationName">
+          <arg value="212-333-9898"/>
+        </UIEvent>
+        <UIEvent command="ChangeFocus" value="inPhone" prop="automationName">
+          <arg value="false"/>
+          <arg value="TAB"/>
+        </UIEvent>
+        <UIEvent command="Open" value="inDate" prop="automationName">
+          <arg value="null"/>
+        </UIEvent>
+        <UIEvent command="Change" value="inDate" prop="automationName">
+          <arg value="Mon Aug 24 2009"/>
+        </UIEvent>
+        <UIEvent command="Click" value="Add" prop="automationName">
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Click" value="Delete" prop="automationName">
+          <arg value="0"/>
+        </UIEvent>
+      </Test>
+    </TestCase>
+  </TestSuite>
+</TopNode>
