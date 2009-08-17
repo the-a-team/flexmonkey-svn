@@ -144,9 +144,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			}
 			public function column2LabelFunction(item:Object, column:AdvancedDataGridColumn):String{
 				if(item is UIEventMonkeyCommand){
-					return UIEventMonkeyCommand(item).value;					
-				}else if(item is PauseMonkeyCommand){
-					return PauseMonkeyCommand(item).duration.toString();					
+					return UIEventMonkeyCommand(item).value;										
 				}else if(item is VerifyMonkeyCommand){
 					return VerifyMonkeyCommand(item).value;					
 				}else{
@@ -155,8 +153,10 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			}
 			public function column3LabelFunction(item:Object, column:AdvancedDataGridColumn):String{
 				if(item is UIEventMonkeyCommand){
-					return UIEventMonkeyCommand(item).args.toString();					
-				}else{
+					return UIEventMonkeyCommand(item).args.toString();	
+				}else if(item is PauseMonkeyCommand){
+					return PauseMonkeyCommand(item).duration.toString();									
+				}else {
 					return null;
 				} 		
 			}	

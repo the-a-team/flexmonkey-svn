@@ -36,6 +36,15 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			[Bindable] public var targetSWFWidth:uint;
 			[Bindable] public var targetSWFHeight:uint;
 
+			private var _commMode:String;
+			[Bindable]
+			public function get commMode():String{
+				return _commMode;
+			}
+			public function set commMode(m:String):void{
+				_commMode = m;
+				setState();
+			}
 
 			private var _useTargetSWFWindow:Boolean;
 			[Bindable] 
@@ -44,7 +53,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			}
 			public function set useTargetSWFWindow(b:Boolean):void{
 				_useTargetSWFWindow = b;
-				setState();
+				commMode = ProjectPropertiesVO.TARGET_SWF_WINDOW;
 			}
 
 			private var _useMonkeyAgent:Boolean;
@@ -54,7 +63,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			}
 			public function set useMonkeyAgent(b:Boolean):void{
 				_useMonkeyAgent = b;
-				setState();
+				commMode = ProjectPropertiesVO.MONKEYAGENT;				
 			}			
 
 			private var _useMonkeyLink:Boolean;
@@ -64,19 +73,27 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			}
 			public function set useMonkeyLink(b:Boolean):void{
 				_useMonkeyLink = b;
-				setState();
+				commMode = ProjectPropertiesVO.MONKEYLINK;					
 			}
 
 			[Bindable] private var showLoadForm:Boolean = false;
+
 			private function setState():void{
-				switch(_useMonkeyLink){
-					case true:
+				switch(commMode){
+					case ProjectPropertiesVO.MONKEYLINK:						
 						currentState = LINK;
 						showLoadForm = false;
+						monkeyLinkRadioButton.selected = true;
 						break;
-					case false:
+					case ProjectPropertiesVO.MONKEYAGENT:
 						currentState = "";
 						showLoadForm = true;
+						monkeyAgentRadioButton.selected = true;
+						break;					
+					case ProjectPropertiesVO.TARGET_SWF_WINDOW:
+						currentState = "";
+						showLoadForm = true;
+						targetSWFWindowRadioButton.selected = true;
 						break;					
 				}				
 			}
@@ -109,10 +126,14 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 				projectProperties.generatedCodeSuitesPackageName = generatedCodeSuitesPackageNameFormItem.text;
 				projectProperties.targetSWFHeight = uint(targetSWFHeightFormItem.text);
 				projectProperties.targetSWFWidth = uint(targetSWFWidthFormItem.text);
-				projectProperties.targetSWFURL = targetSWFURLFormItem.text;
-				projectProperties.useTargetSWFWindow = targetSWFWindowRadioButton.selected;	
-				projectProperties.useMonkeyAgent = monkeyAgentRadioButton.selected;
-				projectProperties.useMonkeyLink = monkeyLinkRadioButton.selected;			
+				projectProperties.targetSWFURL = targetSWFURLFormItem.text;				
+				if(targetSWFWindowRadioButton.selected){
+					projectProperties.commMode = ProjectPropertiesVO.TARGET_SWF_WINDOW;	
+				}else if(monkeyAgentRadioButton.selected){
+					projectProperties.commMode = ProjectPropertiesVO.MONKEYAGENT;
+				}else{
+					projectProperties.commMode = ProjectPropertiesVO.MONKEYLINK;
+				}		
 				projectProperties.useFlashVars = useFlashVarsCheckBox.selected;
 				projectProperties.flashVars = flashVars;
    				mateDispatcher.dispatchEvent(new UserEvent(UserEvent.PROJECT_PROPERTIES_UPDATE,projectProperties)); 				

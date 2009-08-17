@@ -5,18 +5,20 @@
 package com.gorillalogic.flexmonkey.application.VOs
 {
 	import mx.collections.ArrayCollection;
-	
+
 	public class ProjectPropertiesVO
 	{
+		public static const MONKEYAGENT:String = "monkeyAgent";
+		public static const TARGET_SWF_WINDOW:String = "targetSWFWindow";
+		public static const MONKEYLINK:String = "monkeyLink";		
+		
 		public function ProjectPropertiesVO()
 		{
 		}
 		public var targetSWFURL:String;
 		public var targetSWFWidth:uint;
 		public var targetSWFHeight:uint;
-		public var useTargetSWFWindow:Boolean;
-		public var useMonkeyAgent:Boolean;
-		public var useMonkeyLink:Boolean;		
+		public var commMode:String;	
 		public var useFlashVars:Boolean;
 		public var flashVars:ArrayCollection;
 		public var generatedCodeSourceDirectory:String;

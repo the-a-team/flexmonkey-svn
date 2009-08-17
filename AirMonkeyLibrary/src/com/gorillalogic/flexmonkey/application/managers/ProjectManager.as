@@ -30,7 +30,6 @@ package com.gorillalogic.flexmonkey.application.managers
 	import flash.system.LoaderContext;
 	
 	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.controls.SWFLoader;
 	import mx.core.Application;
 	import mx.events.FlexEvent;
@@ -206,6 +205,8 @@ package com.gorillalogic.flexmonkey.application.managers
 				flashVars.addItem(flashVar);
 			}				
 			setFlashVars(flashVars);
+			setCommMode(projectXML.targetSWF.@commMode);
+/*			
 			if(projectXML.targetSWF.@useTargetSWFWindow == "true"){
 				setUseTargetSWFWindow(true);
 			}else{
@@ -220,7 +221,9 @@ package com.gorillalogic.flexmonkey.application.managers
 				setUseMonkeyLink(true);
 			}else{
 				setUseMonkeyLink(false);				
-			}	
+			}
+*/			
+				
 			setTargetSWFURL(projectXML.targetSWF.@url);							
 			setGeneratedCodeURL(projectXML.generatedCode.@url);
 			setGeneratedCodeSuitesPackageName(projectXML.generatedCode.@suitesPackageName);
@@ -367,9 +370,12 @@ package com.gorillalogic.flexmonkey.application.managers
 			setTargetSWFWidth(640); 
 			setUseFlashVars(false);
 			setFlashVars(new ArrayCollection());
+			setCommMode(ProjectPropertiesVO.TARGET_SWF_WINDOW);
+/*			
 			setUseTargetSWFWindow(true);
 			setUseMonkeyAgent(false);
 			setUseMonkeyLink(false);
+*/			
 			setTargetSWFURL("");
 			setGeneratedCodeSuitesPackageName("testSuites");
 			setGeneratedCodeURL("");				
@@ -384,9 +390,12 @@ package com.gorillalogic.flexmonkey.application.managers
 			setTargetSWFWidth(properties.targetSWFWidth);
 			setUseFlashVars(properties.useFlashVars);			
 			setFlashVars(properties.flashVars);
+			setCommMode(properties.commMode);
+/*			
 			setUseTargetSWFWindow(properties.useTargetSWFWindow);
 			setUseMonkeyAgent(properties.useMonkeyAgent);
 			setUseMonkeyLink(properties.useMonkeyLink);
+*/			
 			setTargetSWFURL(properties.targetSWFURL);			
 			setGeneratedCodeSuitesPackageName(properties.generatedCodeSuitesPackageName);
 			setGeneratedCodeURL(properties.generatedCodeSourceDirectory);
@@ -396,7 +405,7 @@ package com.gorillalogic.flexmonkey.application.managers
 		
 		private function getProjectXML():XML{
 			var xml:XML = <project/>;
-			var targetSWFXML:XML = <targetSWF url={targetSWFURL} width={targetSWFWidth} height={targetSWFHeight} useTargetSWFWindow={useTargetSWFWindow} useMonkeyAgent={useMonkeyAgent} useMonkeyLink={useMonkeyLink} useFlashVars={useFlashVars}/>
+			var targetSWFXML:XML = <targetSWF url={targetSWFURL} width={targetSWFWidth} height={targetSWFHeight} commMode={commMode} useFlashVars={useFlashVars}/>
 			var generatedCodeXML:XML = <generatedCode url={generatedCodeURL} suitesPackageName={generatedCodeSuitesPackageName}/>
 			var flashVarsXML:XML=<flashVars/>;
 			for(var i:uint=0;i<flashVars.length;i++){
@@ -438,6 +447,20 @@ package com.gorillalogic.flexmonkey.application.managers
 		}			
 	
 		// Target SWF ------------------------------------------------------------------
+		private var _commMode:String;
+		[Bindable ("commModeChanged")]
+		public function get commMode():String{
+			return _commMode;
+		}
+		private function setCommMode(m:String):void{
+			_commMode = m;
+			dispatchEvent(new Event("commModeChanged"));
+			if(_commMode == ProjectPropertiesVO.TARGET_SWF_WINDOW){
+				browserConnection.sendDisconnect();	
+			}
+		}
+		
+/*		
 		private var _useTargetSWFWindow:Boolean = false;
 		[Bindable ("useTargetSWFWindowChanged")]
 		public function get useTargetSWFWindow():Boolean{
@@ -446,9 +469,12 @@ package com.gorillalogic.flexmonkey.application.managers
 		private function setUseTargetSWFWindow(b:Boolean):void{
 			_useTargetSWFWindow = b;
 			dispatchEvent(new Event("useTargetSWFWindowChanged"));
+
 			if(b){
 				browserConnection.sendDisconnect();
 			}				
+
+
 		}
 
 		private var _useMonkeyAgent:Boolean = false;
@@ -470,7 +496,7 @@ package com.gorillalogic.flexmonkey.application.managers
 			_useMonkeyLink = b;
 			dispatchEvent(new Event("useMonkeyLinkChanged"));			
 		}		
-		
+*/		
 		private var _browserConnected:Boolean = false;
 		public function get browserConnected():Boolean{
 			return _browserConnected; 
@@ -514,7 +540,7 @@ package com.gorillalogic.flexmonkey.application.managers
 				dispatchEvent(new Event("targetSWFURLChanged"));			
 				setTargetSWF(null);
 				if(targetSWFURL != null && targetSWFURL != ""){
-					if(useTargetSWFWindow){
+					if(commMode == ProjectPropertiesVO.TARGET_SWF_WINDOW){
 						var urlRequest:URLRequest = new URLRequest(url);
 						var urlLoader:URLLoader = new URLLoader();
 						urlLoader.dataFormat = URLLoaderDataFormat.BINARY;

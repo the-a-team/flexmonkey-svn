@@ -1,6 +1,7 @@
 package com.gorillalogic.flexmonkey.application.managers
 {
 	import com.gorillalogic.flexmonkey.application.VOs.FlashVarVO;
+	import com.gorillalogic.flexmonkey.application.VOs.ProjectPropertiesVO;
 	import com.gorillalogic.flexmonkey.application.events.RecorderEvent;
 	import com.gorillalogic.flexmonkey.application.utilities.MonkeyConnection;
 	import com.gorillalogic.flexmonkey.core.MonkeyRunnable;
@@ -30,6 +31,33 @@ package com.gorillalogic.flexmonkey.application.managers
 			BrowserConnectionManager.setClassReference(this);
 		}
 
+		private var _commMode:String;
+		public function get commMode():String{
+			return _commMode;
+		}
+		public function set commMode(m:String):void{
+			_commMode = m;
+			switch(m){	
+				case ProjectPropertiesVO.TARGET_SWF_WINDOW:
+					setUseBrowser(false);
+					break;
+				case ProjectPropertiesVO.MONKEYAGENT:
+					setUseBrowser(true);
+					if(targetSWFURL != "" && targetSWFURL != null){
+						pingTXTimer.start();
+					}else{
+						setConnected(false);
+						pingTXTimer.stop();				
+					}					
+					break;
+				case ProjectPropertiesVO.MONKEYLINK:
+					setUseBrowser(true);
+					pingTXTimer.start();
+					break;
+			}
+		}
+
+/*
 		private var _useTargetSWFWindow:Boolean = false;
 		public function get useTargetSWFWindow():Boolean{
 			return _useTargetSWFWindow;
@@ -44,6 +72,7 @@ package com.gorillalogic.flexmonkey.application.managers
 				pingTXTimer.stop();				
 			}	
 		}
+*/
 		
 		private var _useBrowser:Boolean=false;
 		public function get useBrowser():Boolean{

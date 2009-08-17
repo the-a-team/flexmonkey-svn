@@ -19,6 +19,8 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 >
 	<mx:Script>
 		<![CDATA[
+			import mx.events.DataGridEventReason;
+			import mx.events.DataGridEvent;
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import com.gorillalogic.flexmonkey.core.MonkeyTestSuite;
@@ -220,6 +222,13 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			private function creationCompleteHandler():void{
 				this.addEventListener(FocusEvent.FOCUS_OUT,fieldFocusOutHandler);
 				this.addEventListener(KeyboardEvent.KEY_UP,escKeyHandler);
+				attributeGrid.addEventListener(DataGridEvent.ITEM_EDIT_END,attributeEditEndHandler);
+			}
+
+			private function attributeEditEndHandler(event:DataGridEvent):void{
+				if(event.reason != DataGridEventReason.CANCELLED){
+					updateHandler();
+				}
 			}
 
 			private function fieldFocusOutHandler(event:FocusEvent):void{
@@ -831,7 +840,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			
 			<mx:AddChild relativeTo="{verifyCommandErrorBox}" position="lastChild">
 			<mx:target>
-				<mx:TextArea id="verifyCommandErrorTextArea" width="100%" height="100%" styleName="commandDetailErrorMessageText"
+				<mx:TextArea id="verifyCommandErrorTextArea" editable="false" width="100%" height="100%" styleName="commandDetailErrorMessageText"
 					paddingLeft="0" paddingRight="4" paddingTop="0" paddingBottom="2"/>
 			</mx:target>
 			</mx:AddChild>	

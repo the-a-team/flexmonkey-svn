@@ -18,6 +18,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 >
 	<mx:Script>
 		<![CDATA[
+			import com.gorillalogic.flexmonkey.application.VOs.ProjectPropertiesVO;
 			import mx.controls.Menu;
 			import mx.events.MenuEvent;
 			import mx.events.FlexEvent;
@@ -42,6 +43,24 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 			
 [Bindable] private var menuBarItemRenderer:IFactory = new ClassFactory(IconMenuBarItem);		
 
+			private var _commMode:String;
+			public function get commMode():String{
+				return _commMode;
+			}
+			public function set commMode(m:String):void{
+				_commMode = m;
+				switch(m){
+					case ProjectPropertiesVO.TARGET_SWF_WINDOW:
+						browserConnectionIndicatorEnabled = false;
+						break;
+					case ProjectPropertiesVO.MONKEYAGENT:
+					case ProjectPropertiesVO.MONKEYLINK:
+						browserConnectionIndicatorEnabled = true;
+						break;
+				}
+			}
+
+/*
 			private var _browserConnectionIndicatorDisabled:Boolean = false;
 			public function get browserConnectionIndicatorDisabled():Boolean{
 				return _browserConnectionIndicatorDisabled;
@@ -50,7 +69,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 				_browserConnectionIndicatorDisabled = c;
 				browserConnectionIndicatorEnabled = !c;				
 			}
-
+*/
 			private var _browserConnectionIndicatorEnabled:Boolean = false;
 			[Bindable] 
 			public function get browserConnectionIndicatorEnabled():Boolean{
@@ -313,7 +332,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		<mx:Button id="saveButton" toolTip="Save" styleName="SaveButton" width="32" height="32"
 			click="saveButtonHandler(event)" toolTipShow="toolTipShowHandler(event)"/>
 	 	<mx:VRule height="90%"/>
-	 	<mx:Button id="browserConnectionIndicator" toolTip="Browser Connection" styleName="BrowserConnectionIndicator" width="32" height="32"
+	 	<mx:Button id="browserConnectionIndicator" toolTip="Monkey Connection" styleName="BrowserConnectionIndicator" width="32" height="32"
 	 		toolTipShow="toolTipShowHandler(event)"/>	 	 	
 	</mx:HBox> 
 	<mx:HRule width="100%"/>		
