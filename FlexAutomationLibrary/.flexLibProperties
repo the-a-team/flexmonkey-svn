@@ -2,8 +2,8 @@
 <flexLibProperties version="1">
 <includeClasses>
 <classEntry path="mx.automation.delegates.controls.DataGridAutomationImpl"/>
-<classEntry path="mx.automation.delegates.core.UIComponentAutomationImpl"/>
 <classEntry path="mx.automation.delegates.core.UITextFieldAutomationImpl"/>
+<classEntry path="mx.automation.delegates.core.UIComponentAutomationImpl"/>
 </includeClasses>
 <includeResources/>
 <namespaceManifests/>
