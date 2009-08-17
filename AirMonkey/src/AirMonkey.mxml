@@ -24,6 +24,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 >
 	<mx:Script>
 		<![CDATA[
+			import com.gorillalogic.flexmonkey.application.VOs.ProjectPropertiesVO;
 			import com.gorillalogic.flexmonkey.application.events.AlertEvent;
 		
 import flash.net.navigateToURL;		
@@ -39,14 +40,29 @@ import flash.net.navigateToURL;
 			import air.update.events.UpdateEvent;
 			import air.update.ApplicationUpdaterUI;
 			
-			
+			private var _commMode:String;
+			public function get commMode():String{
+				return _commMode;
+			}
+			public function set commMode(m:String):void{
+				_commMode = m;
+				switch(m){
+					case ProjectPropertiesVO.TARGET_SWF_WINDOW:
+						useTargetSWFWindow = true;
+						break;
+					case ProjectPropertiesVO.MONKEYAGENT:
+					case ProjectPropertiesVO.MONKEYLINK:
+						useTargetSWFWindow = false;
+						break
+				}
+			}
 			
 			private var _useTargetSWFWindow:Boolean;
 			[Bindable ("useTargetSWFWindowChanged")] 
-			public function get useTargetSWFWindow():Boolean{
+			private function get useTargetSWFWindow():Boolean{
 				return _useTargetSWFWindow;
 			}
-			public function set useTargetSWFWindow(u:Boolean):void{
+			private function set useTargetSWFWindow(u:Boolean):void{
 				_useTargetSWFWindow = u;
 				
 				// This is a workaround for what seems to be a Windows bug.

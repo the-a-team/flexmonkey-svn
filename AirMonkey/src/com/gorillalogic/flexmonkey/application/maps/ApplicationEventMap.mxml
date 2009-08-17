@@ -507,7 +507,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 	</Injectors>
 
 	<Injectors target="{BrowserConnectionManager}" debug="true">
-		<PropertyInjector targetKey="useTargetSWFWindow" source="{ProjectManager}" sourceKey="useTargetSWFWindow"/>	
+		<PropertyInjector targetKey="commMode" source="{ProjectManager}" sourceKey="commMode"/>
 		<PropertyInjector targetKey="targetSWFURL" source="{ProjectManager}" sourceKey="targetSWFURL"/>		
 		<PropertyInjector targetKey="targetSWFWidth" source="{ProjectManager}" sourceKey="targetSWFWidth"/>	
 		<PropertyInjector targetKey="targetSWFHeight" source="{ProjectManager}" sourceKey="targetSWFHeight"/>	
@@ -547,7 +547,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 	
 	<Injectors target="{AirMonkey}" debug="true">
 		<PropertyInjector targetKey="targetSWFURL" source="{ProjectManager}" sourceKey="targetSWFURL"/>
-		<PropertyInjector targetKey="useTargetSWFWindow" source="{ProjectManager}" sourceKey="useTargetSWFWindow"/>
+		<PropertyInjector targetKey="commMode" source="{ProjectManager}" sourceKey="commMode"/>
 	</Injectors>
 	
 	<Injectors target="{AirMonkeyWindowView}" debug="true">
@@ -569,7 +569,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		<PropertyInjector targetKey="saveButtonEnabled" source="{UndoManager}" sourceKey="dataDirty"/>
 		<PropertyInjector targetKey="redoButtonEnabled" source="{UndoManager}" sourceKey="redoPossible"/>		
 		<PropertyInjector targetKey="takingSnapshot" source="{MonkeyTestRecorder}" sourceKey="takingSnapshot"/>
-		<PropertyInjector targetKey="browserConnectionIndicatorDisabled" source="{ProjectManager}" sourceKey="useTargetSWFWindow"/>
+		<PropertyInjector targetKey="commMode" source="{ProjectManager}" sourceKey="commMode"/>
 		<PropertyInjector targetKey="browserConnectionIndicatorSelected" source="{BrowserConnectionManager}" sourceKey="connected"/>
 	</Injectors>	
 		
@@ -640,9 +640,7 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		<PropertyInjector targetKey="targetSWFURL" source="{ProjectManager}" sourceKey="targetSWFURL"/>
 		<PropertyInjector targetKey="targetSWFWidth" source="{ProjectManager}" sourceKey="targetSWFWidth"/>
 		<PropertyInjector targetKey="targetSWFHeight" source="{ProjectManager}" sourceKey="targetSWFHeight"/>
-		<PropertyInjector targetKey="useTargetSWFWindow" source="{ProjectManager}" sourceKey="useTargetSWFWindow"/>
-		<PropertyInjector targetKey="useMonkeyAgent" source="{ProjectManager}" sourceKey="useMonkeyAgent"/>
-		<PropertyInjector targetKey="useMonkeyLink" source="{ProjectManager}" sourceKey="useMonkeyLink"/>
+		<PropertyInjector targetKey="commMode" source="{ProjectManager}" sourceKey="commMode"/>
 		<PropertyInjector targetKey="useFlashVars" source="{ProjectManager}" sourceKey="useFlashVars"/>
 		<PropertyInjector targetKey="flashVars" source="{ProjectManager}" sourceKey="flashVars"/>
 		<PropertyInjector targetKey="generatedCodeSourceDirectory" source="{ProjectManager}" sourceKey="generatedCodeURL"/>
