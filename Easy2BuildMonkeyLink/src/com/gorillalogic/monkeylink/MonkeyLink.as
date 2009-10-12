@@ -82,7 +82,9 @@ package com.gorillalogic.monkeylink
 				writeConsole("Could not add disconnect callback to container");
 			}	
 
-			Application(SystemManager(MonkeyLink.root).application).addChild(snapshotOverlay);
+//			Application(SystemManager(MonkeyLink.root).application).addChild(snapshotOverlay);
+			SystemManager(MonkeyLink.root).addChildToSandboxRoot("toolTipChildren",snapshotOverlay);
+
 			MonkeyAutomationState.monkeyAutomationState.graphics = snapshotOverlay.graphics;
 			MonkeyAutomationState.monkeyAutomationState.conversionPlatform = snapshotOverlay;
 //trace("go link");			
