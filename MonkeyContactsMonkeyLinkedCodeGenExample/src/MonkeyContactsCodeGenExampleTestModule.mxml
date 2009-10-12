@@ -4,7 +4,7 @@
    <![CDATA[
 		import testSuites.NewTestSuite.NewTestSuite;
  		public function getTestSuites() : Array 
-		{
+		{ 
 			var suiteArray : Array = new Array();
 			suiteArray.push(new NewTestSuite());
 			return suiteArray;
