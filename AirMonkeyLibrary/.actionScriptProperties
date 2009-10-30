@@ -8,6 +8,9 @@
 <libraryPathEntry kind="3" linkType="1" path="/aqadaptor/bin/aqadaptor.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="/MonkeyGIF/bin/MonkeyGIF.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="/MonkeyRegistrationLibrary/bin/MonkeyRegistrationLibrary.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/FlexSpy/bin/FlexSpy.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/GIFAnima/bin/GIFAnima.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/Mate/bin/Mate.swc" useDefaultLinkType="false"/>
 </libraryPath>
 <sourceAttachmentPath/>
 </compiler>
