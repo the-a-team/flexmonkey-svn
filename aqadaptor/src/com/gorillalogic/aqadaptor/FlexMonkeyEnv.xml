@@ -276,6 +276,15 @@
         </Properties>
     </ClassInfo>
 
+    <ClassInfo Name="FlexLinkButton" Extends="FlexButton">
+                        <Implementation Class="mx.controls::LinkButton"/>
+        <Events>
+        </Events>
+        <Properties>
+        </Properties>
+    </ClassInfo>
+
+
     <ClassInfo Name="FlexPopUpButton" Extends="FlexButton">
                         <Implementation Class="mx.controls::PopUpButton"/>
         <Events>
@@ -442,7 +451,7 @@
 <!-- the ListBaseAutomationImpl looks for this property to be defined in order to use the ListItemSelectEvent.SELECT_INDEX -->
 <!-- event instead of the ListItemSelectEvent.SELECT event; note that the SelectIndex event needs to be defined in this -->
 <!-- file as just above -->     
-<!-- <Property Name="enableIndexBasedSelection" ForVerification="true"><PropertyType Type="Boolean"/></Property>   -->
+<!-- <Property Name="enableIndexBasedSelection" ForVerification="true"><PropertyType Type="Boolean"/></Property> -->
         
             <Property Name="columnCount" ForVerification="true"><PropertyType Type="int"/></Property>
             <Property Name="columnWidth" ForVerification="true"><PropertyType Type="Number"/></Property>
@@ -1779,6 +1788,7 @@
         <Implementation Class="mx.controls.treeClasses::TreeItemRenderer" />
         <Implementation Class="mx.controls.listClasses::ListItemRenderer" />
         <Implementation Class="mx.controls.dataGridClasses::DataGridItemRenderer" />
+        <Implementation Class="mx.controls.advancedDataGridClasses::AdvancedDataGridItemRenderer" />
         <Implementation Class="mx.controls.listClasses::TileListItemRenderer" />
         <Properties>
             <Property Name="automationValue" ForDefaultVerification="true" ForVerification="true"><PropertyType Type="String"/></Property>
@@ -2076,7 +2086,7 @@
               <PropertyType Codec="scrollDetail" ListOfValuesName="FlexScrollDetailValues" VariantType="Enumeration"/>
             </Property>
           </Event>
-          
+          <!--
           <Event ExposureLevel="CommonUsed" Name="Select" PropertyType="Method">
             <Implementation Class="mx.automation.events::ListItemSelectEvent" Type="select"/>
             <Property IsMandatory="true" Name="itemRenderer">
@@ -2089,7 +2099,7 @@
               <PropertyType Codec="keyModifier" ListOfValuesName="FlexKeyModifierValues" VariantType="Enumeration"/>
             </Property>
           </Event>
-          
+          -->
           <Event Name="SelectIndex">
             <Implementation Class="mx.automation.events::ListItemSelectEvent" Type="selectIndex"/>
             <Property IsMandatory="true" Name="itemIndex">

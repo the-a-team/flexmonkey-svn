@@ -11,9 +11,11 @@ package com.gorillalogic.aqadaptor.codec
 {
 import com.gorillalogic.aqadaptor.IAQPropertyDescriptor;
 
+import mx.automation.Automation;
 import mx.automation.AutomationIDPart;
 import mx.automation.IAutomationManager;
 import mx.automation.IAutomationObject;
+import mx.automation.IAutomationObjectHelper;
 
 /**
  * Translates between internal Flex component and automation-friendly version
@@ -51,8 +53,8 @@ public class AutomationObjectPropertyCodec extends DefaultPropertyCodec
 		var delegate:IAutomationObject = val as IAutomationObject;
         if (delegate)
         {
-            //only use automationName
-            val = automationManager.createIDPart(delegate).automationName;
+            //only use automationName            
+            val = automationManager.createIDPart(delegate).automationName;           	
         }
 
         if (!val && !(val is int))

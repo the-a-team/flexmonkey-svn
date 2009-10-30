@@ -17,6 +17,7 @@ import flash.events.MouseEvent;
 
 import mx.automation.IAutomationManager;
 import mx.automation.IAutomationObject;
+import mx.events.FlexEvent;
 
 /**
  * Translates between internal Flex triggerEvent property and automation-friendly version
@@ -36,7 +37,8 @@ public class TriggerEventPropertyCodec extends DefaultPropertyCodec
       var val:Object = getMemberFromObject(automationManager, obj, propertyDescriptor);
 
        return (val is MouseEvent ? 1 :
-                val is KeyboardEvent ? 2 : null); 
+       			val is FlexEvent ? 1 :
+                  val is KeyboardEvent ? 2 : null); 
     }
 
     override public function decode(automationManager:IAutomationManager,
