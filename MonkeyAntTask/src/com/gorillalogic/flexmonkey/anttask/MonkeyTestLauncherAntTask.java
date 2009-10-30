@@ -123,7 +123,7 @@ public class MonkeyTestLauncherAntTask extends Task
    /**
     * The test module SWF.
     * 
-    * @param swf
+    * @param dir
     *           the name of the SWF.
     */
    public void setSnapshotDir( final String dir )
@@ -227,7 +227,7 @@ public class MonkeyTestLauncherAntTask extends Task
       }
       catch ( Exception e )
       {
-         throw new BuildException( "Error launching the test runner.", e );
+//         throw new BuildException( "Error launching the test runner.", e );
       }
    }
 
@@ -327,6 +327,7 @@ public class MonkeyTestLauncherAntTask extends Task
                   else if ( data.equals( END_OF_TEST_RUN ) )
                   {
                      sendAcknowledgement();
+                     ProcessHolder.getInstance().process.destroy();
                   }
                }
                else

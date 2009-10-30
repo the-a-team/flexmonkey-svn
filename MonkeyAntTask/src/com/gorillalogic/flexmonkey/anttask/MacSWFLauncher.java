@@ -17,11 +17,15 @@ public class MacSWFLauncher implements SWFLauncher
       try
       {
          System.out.println( "Launching SWF: " + swf );
-         process = Runtime.getRuntime().exec( "open " + swf );
+         process = Runtime.getRuntime().exec( swf );
       }
       catch ( Exception e )
       {
          throw e;
+      }
+      finally
+      {
+    	  ProcessHolder.getInstance().process = process;
       }
 
       String error = readStream( process.getErrorStream() );

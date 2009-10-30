@@ -25,7 +25,7 @@
 	
 	<target name="compile" depends="init">
 		<!-- Generate class files -->
-		<javac srcdir="${src.main.loc}" destdir="${bin.main.loc}" failonerror="true">
+		<javac srcdir="${src.main.loc}" destdir="${bin.main.loc}" failonerror="true" debug="true">
 			<classpath>
 				<fileset dir="${lib.loc}">
 					<include name="**/*.jar" />
