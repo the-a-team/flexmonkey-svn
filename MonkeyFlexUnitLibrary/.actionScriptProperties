@@ -4,8 +4,8 @@
 <compilerSourcePath/>
 <libraryPath defaultLinkType="1">
 <libraryPathEntry kind="4" path=""/>
-<libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/MonkeyFluintAirTestRunner/libs/fluint.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="/AirMonkeyLibrary/bin/AirMonkeyLibrary.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/fluint/bin/fluint.swc" useDefaultLinkType="false"/>
 </libraryPath>
 <sourceAttachmentPath/>
 </compiler>
