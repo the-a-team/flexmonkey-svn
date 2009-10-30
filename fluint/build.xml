@@ -1,0 +1,85 @@
+<project name="fluintLibrary" basedir="." default="package">
+	
+	<!-- User defined properties -->
+	<property name="flex.home" location=""/>
+	<property name="fluint.testrunner" location=""/>
+
+	<!-- Folders -->
+	<property name="src.loc" location="${basedir}/src" />
+	<property name="src.main.loc" location="${src.loc}/main/flex" />
+	<property name="src.main.manifest" location="${src.main.loc}/fluint-manifest.xml" />
+	<property name="src.test.loc" location="${src.loc}/test/flex" />
+	<property name="bin.loc" location="${basedir}/target" />
+	<property name="bin.main.loc" location="${bin.loc}/classes" />
+	<property name="bin.main.name" value="fluint.swc" />
+	<property name="bin.main.namespace" value="http://www.digitalprimates.net/2008/fluint" />
+	<property name="bin.test.loc" location="${bin.loc}/test-classes" />
+	<property name="bin.test.name" value="FluintDefaultAirRunner.swf" />
+	<property name="report.loc" location="${bin.loc}/report" />
+	<property name="package.loc" location="${bin.loc}" />
+	<property name="package.artifact.name" value="${bin.main.name}" />
+	<property name="doc.loc" location="${bin.loc}/doc" />
+	
+	<target name="clean">
+        <delete dir="${bin.loc}" />
+    </target>
+	
+	<target name="init">
+		<mkdir dir="${bin.loc}" />
+		<mkdir dir="${bin.main.loc}" />
+		<mkdir dir="${bin.test.loc}" />
+		<mkdir dir="${report.loc}" />
+		<mkdir dir="${doc.loc}" />
+	</target>
+	
+	<target name="build" depends="init">
+		<!-- Compile source SWC -->
+		<java jar="${flex.home}/lib/compc.jar" fork="true" failonerror="true">
+			<arg line="+flexlib '${flex.home}/frameworks'" />
+			<arg line="-external-library-path+='${flex.home}/frameworks/libs/flex.swc','${flex.home}/frameworks/libs/framework.swc','${flex.home}/frameworks/libs/rpc.swc','${flex.home}/frameworks/libs/utilities.swc'" /> 
+			<arg line="-keep-as3-metadata+=Test" />
+			<arg line="-namespace ${bin.main.namespace} '${src.main.manifest}'" />
+			<arg line="-include-namespaces ${bin.main.namespace}" />
+			<arg line="-output '${bin.main.loc}/${bin.main.name}'" />
+			<arg line="-source-path+='${src.main.loc}'" />
+			<arg line="-source-path+='${src.test.loc}'" />
+			<arg line="-include-sources+='${src.test.loc}'" />
+			<arg line="-include-classes net.digitalprimates.fluint.async.TestResponder" />
+		</java>
+    </target>
+	
+	<target name="package" depends="build">
+		<!-- Generate ASDocs -->
+		<java jar="${flex.home}/lib/asdoc.jar" fork="true" failonerror="true">
+			<arg line="+flexlib '${flex.home}/frameworks'" />
+			<arg line="-namespace ${bin.main.namespace} '${src.main.manifest}'" />
+			<arg line="-doc-sources '${src.main.loc}'" />
+			<arg line="-source-path+='${src.main.loc}'" />
+			<arg line="-output '${doc.loc}'" />
+		</java>
+		
+		<copy file="${bin.main.loc}/${bin.main.name}" tofile="${package.loc}/${package.artifact.name}" />
+	</target>
+	
+	<!-- Optional target -->
+	<target name="test">
+		<!-- Imported tasks -->
+		<taskdef name="fluint" classname="net.digitalprimates.ant.tasks.fluint.Fluint" />
+		
+		<!-- Compile test SWF -->
+		<java jar="${flex.home}/lib/mxmlc.jar" fork="true" failonerror="true">
+			<arg line="+flexlib '${flex.home}/frameworks'" />
+			<arg line="-output '${bin.test.loc}/${bin.test.name}'" />
+			<arg line="-keep-generated-actionscript=false" />
+			<arg line="-library-path+='${bin.main.loc}'" />
+			<arg line="'${src.test.loc}/FluintDefaultAIRRunner.mxml'" />
+		</java>
+		
+		<!-- Execute tests -->
+		<fluint headless="true" testRunner="${fluint.testrunner}" outputDir="${report.loc}" workingDir="${bin.test.loc}" failonerror="false">
+			<fileset dir="${bin.test.loc}">
+		    	<include name="**/${bin.test.name}" />
+			</fileset>
+		</fluint>
+	</target>
+</project>

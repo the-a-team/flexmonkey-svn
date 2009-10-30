@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- http://www.digitalprimates.net/2008/fluint -->
+<componentPackage>
+  <component id="TestCase" class="net.digitalprimates.fluint.tests.TestCase"/>
+  <component id="TestEnvironment" class="net.digitalprimates.fluint.ui.TestEnvironment"/>
+  <component id="TestResultDisplay" class="net.digitalprimates.fluint.ui.TestResultDisplay"/>
+  <component id="TestRunner" class="net.digitalprimates.fluint.ui.TestRunner"/>
+  <component id="TestSuite" class="net.digitalprimates.fluint.tests.TestSuite"/>
+  <component id="TestProgressBar" class="net.digitalprimates.fluint.ui.TestProgressBar"/>
+  <component id="TestResultStatusBar" class="net.digitalprimates.fluint.ui.TestResultStatusBar"/>
+</componentPackage>

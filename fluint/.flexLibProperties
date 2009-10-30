@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties version="1">
+<includeClasses>
+<classEntry path="net.digitalprimates.fluint.assertion.AssertionFailedError"/>
+<classEntry path="net.digitalprimates.fluint.async.AsyncHandler"/>
+<classEntry path="net.digitalprimates.fluint.async.AsyncTestResponder"/>
+<classEntry path="net.digitalprimates.fluint.async.ITestResponder"/>
+<classEntry path="net.digitalprimates.fluint.async.TestResponder"/>
+<classEntry path="net.digitalprimates.fluint.events.AsyncEvent"/>
+<classEntry path="net.digitalprimates.fluint.events.AsyncResponseEvent"/>
+<classEntry path="net.digitalprimates.fluint.events.ChooseTestMethodResultEvent"/>
+<classEntry path="net.digitalprimates.fluint.modules.ITestSuiteModule"/>
+<classEntry path="net.digitalprimates.fluint.monitor.ITestResult"/>
+<classEntry path="net.digitalprimates.fluint.monitor.ITestResultContainer"/>
+<classEntry path="net.digitalprimates.fluint.monitor.TestCaseResult"/>
+<classEntry path="net.digitalprimates.fluint.monitor.TestMethodResult"/>
+<classEntry path="net.digitalprimates.fluint.monitor.TestMonitor"/>
+<classEntry path="net.digitalprimates.fluint.monitor.TestResultReport"/>
+<classEntry path="net.digitalprimates.fluint.monitor.TestSuiteResult"/>
+<classEntry path="net.digitalprimates.fluint.sequence.ISequenceAction"/>
+<classEntry path="net.digitalprimates.fluint.sequence.ISequencePend"/>
+<classEntry path="net.digitalprimates.fluint.sequence.ISequenceStep"/>
+<classEntry path="net.digitalprimates.fluint.sequence.SequenceBindingWaiter"/>
+<classEntry path="net.digitalprimates.fluint.sequence.SequenceCaller"/>
+<classEntry path="net.digitalprimates.fluint.sequence.SequenceEventDispatcher"/>
+<classEntry path="net.digitalprimates.fluint.sequence.SequenceRunner"/>
+<classEntry path="net.digitalprimates.fluint.sequence.SequenceSetter"/>
+<classEntry path="net.digitalprimates.fluint.sequence.SequenceWaiter"/>
+<classEntry path="net.digitalprimates.fluint.tests.TestCase"/>
+<classEntry path="net.digitalprimates.fluint.tests.TestMethod"/>
+<classEntry path="net.digitalprimates.fluint.tests.TestSuite"/>
+<classEntry path="net.digitalprimates.fluint.ui.ErrorTreeItemRenderer"/>
+<classEntry path="net.digitalprimates.fluint.ui.TestEnvironment"/>
+<classEntry path="net.digitalprimates.fluint.ui.TestProgressBar"/>
+<classEntry path="net.digitalprimates.fluint.ui.TestResultDisplay"/>
+<classEntry path="net.digitalprimates.fluint.ui.TestResultStatusBar"/>
+<classEntry path="net.digitalprimates.fluint.ui.TestRunner"/>
+<classEntry path="net.digitalprimates.fluint.ui.TestStatusIcon"/>
+<classEntry path="net.digitalprimates.fluint.utils.ClassSortUtils"/>
+<classEntry path="net.digitalprimates.fluint.utils.ResultDisplayUtils"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.FrameworkSuite"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.TestASComponentUse"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.TestAssert"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.TestAsynchronous"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.TestAsynchronousSetUpTearDown"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.TestBindingUse"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.TestEmptyCase"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.TestMXMLComponentUse"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.TestSynchronousSetUpTearDown"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.mxml.SimpleMXMLLoginComponent"/>
+<classEntry path="net.digitalprimates.fluint.unitTests.frameworkSuite.testCases.valueObject.Person"/>
+</includeClasses>
+<includeResources/>
+<namespaceManifests>
+<namespaceManifestEntry manifest="fluint-manifest.xml" namespace="http://www.digitalprimates.net/2008/fluint"/>
+</namespaceManifests>
+</flexLibProperties>
