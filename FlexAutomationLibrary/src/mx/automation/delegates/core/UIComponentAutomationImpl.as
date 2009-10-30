@@ -432,6 +432,7 @@ private function monkeyMousePropagationHandler(event:MouseEvent):void{
 }  
 
 private function monkeyMouseOverHandler(event:MouseEvent):void{
+	
 	if(MonkeyAutomationState.monkeyAutomationState.state == MonkeyAutomationState.SNAPSHOT){	
 		var pointSource:DisplayObject = DisplayObject(uiComponent);
 		var helper:IAutomationObjectHelper = Automation.automationObjectHelper;
