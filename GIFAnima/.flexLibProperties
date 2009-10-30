@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties version="1">
+<includeClasses>
+<classEntry path="org.gif.decoder.GIFDecoder"/>
+<classEntry path="org.gif.encoder.GIFEncoder"/>
+<classEntry path="org.gif.encoder.LZWEncoder"/>
+<classEntry path="org.gif.encoder.NeuQuant"/>
+<classEntry path="org.gif.errors.FileTypeError"/>
+<classEntry path="org.gif.events.FileTypeEvent"/>
+<classEntry path="org.gif.events.FrameEvent"/>
+<classEntry path="org.gif.events.GIFPlayerEvent"/>
+<classEntry path="org.gif.events.TimeoutEvent"/>
+<classEntry path="org.gif.frames.GIFFrame"/>
+<classEntry path="org.gif.player.GIFPlayer"/>
+</includeClasses>
+<includeResources/>
+<namespaceManifests/>
+</flexLibProperties>
