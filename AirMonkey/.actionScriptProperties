@@ -16,15 +16,19 @@
 <libraryPathEntry kind="1" linkType="1" path="libs"/>
 <libraryPathEntry kind="3" linkType="1" path="/FlexAutomationLibrary/bin/FlexAutomationLibrary.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="/AirMonkeyLibrary/bin/AirMonkeyLibrary.swc" useDefaultLinkType="false"/>
-<libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/AirMonkeyLibrary/libs/Mate_08_8_1.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/air/applicationupdater_ui.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="/MonkeyRegistrationLibrary/bin/MonkeyRegistrationLibrary.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/Mate/bin/Mate.swc" useDefaultLinkType="false"/>
 </libraryPath>
-<sourceAttachmentPath/>
+<sourceAttachmentPath>
+<sourceAttachmentPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/datavisualization.swc" sourcepath="${PROJECT_FRAMEWORKS}/projects/datavisualisation/src" useDefaultLinkType="false"/>
+</sourceAttachmentPath>
 </compiler>
 <applications>
 <application path="AirMonkey.mxml"/>
 </applications>
 <modules/>
-<buildCSSFiles/>
+<buildCSSFiles>
+<buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/airmonkey.css"/>
+</buildCSSFiles>
 </actionScriptProperties>

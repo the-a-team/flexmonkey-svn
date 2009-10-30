@@ -4,7 +4,7 @@ FlexMonkey 1.0, Copyright 2008, 2009 by Gorilla Logic, Inc.
 FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 -->
 <mx:WindowedApplication
-	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"    
 	xmlns:maps="com.gorillalogic.flexmonkey.application.maps.*"
 	xmlns:views="com.gorillalogic.flexmonkey.application.UI.views.*"
 	width="100%"
@@ -26,8 +26,10 @@ FlexMonkey 1.0 is distributed under the GNU General Public License, v2.
 		<![CDATA[
 			import com.gorillalogic.flexmonkey.application.VOs.ProjectPropertiesVO;
 			import com.gorillalogic.flexmonkey.application.events.AlertEvent;
-		
+														
 import flash.net.navigateToURL;		
+
+			import mx.automation.delegates.controls.ButtonAutomationImpl;
  
             import com.gorillalogic.flexmonkey.registration.MonkeyRegistrationStore;
 		

@@ -268,7 +268,7 @@ CommandGridResultItemRenderer{
 	downSkin:Embed(source='../../Assets/icons/zoom_48/zoom_hot_48.png');
 	disabledSkin:Embed(source='../../Assets/icons/zoom_48/zoom_disabled_48.png'); 	
 }
-
+ 
 .commandDetailErrorMessageText{
 	fontSize: 10;   
 	color: #DD0000;
