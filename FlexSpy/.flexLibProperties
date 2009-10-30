@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties version="1">
+<includeClasses>
+<classEntry path="com.flexspy.FlexSpy"/>
+<classEntry path="com.flexspy.KeySequence"/>
+<classEntry path="com.flexspy.imp.ComponentIcons"/>
+<classEntry path="com.flexspy.imp.ComponentProperties"/>
+<classEntry path="com.flexspy.imp.ComponentPropertiesEditor"/>
+<classEntry path="com.flexspy.imp.ComponentStyles"/>
+<classEntry path="com.flexspy.imp.ComponentStylesEditor"/>
+<classEntry path="com.flexspy.imp.ComponentTreeChrome"/>
+<classEntry path="com.flexspy.imp.ComponentTreeItem"/>
+<classEntry path="com.flexspy.imp.ComponentTreeWnd"/>
+<classEntry path="com.flexspy.imp.DataGridNameRenderer"/>
+<classEntry path="com.flexspy.imp.DataGridValueBooleanEditor"/>
+<classEntry path="com.flexspy.imp.DataGridValueEditor"/>
+<classEntry path="com.flexspy.imp.DataGridValueEnumEditor"/>
+<classEntry path="com.flexspy.imp.EditableDataGrid"/>
+<classEntry path="com.flexspy.imp.EditorClassFactory"/>
+<classEntry path="com.flexspy.imp.FindWnd"/>
+<classEntry path="com.flexspy.imp.HighlightRectangle"/>
+<classEntry path="com.flexspy.imp.IComponentTreeItem"/>
+<classEntry path="com.flexspy.imp.IPropertyEditor"/>
+<classEntry path="com.flexspy.imp.Icons"/>
+<classEntry path="com.flexspy.imp.PropertyDataGridValueRenderer"/>
+<classEntry path="com.flexspy.imp.PropertyEditorItem"/>
+<classEntry path="com.flexspy.imp.ResizableTitleWindow"/>
+<classEntry path="com.flexspy.imp.StyleDataGridValueColorEditor"/>
+<classEntry path="com.flexspy.imp.StyleDataGridValueRenderer"/>
+<classEntry path="com.flexspy.imp.StyleEditorItem"/>
+<classEntry path="com.flexspy.imp.Utils"/>
+<classEntry path="com.flexspy.imp.metadata.FrameworkMetadata"/>
+<classEntry path="com.flexspy.imp.metadata.StyleMetadata"/>
+</includeClasses>
+<includeResources/>
+<namespaceManifests/>
+</flexLibProperties>
