@@ -62,7 +62,8 @@ package com.gorillalogic.monkeylink
 		override public function initializeRXChannel():void{
 			initializeRXChannel0();
 // This next line will need to change with each new release version...			
-			rxConnection.allowInsecureDomain("app#com.gorillalogic.FlexMonkey.FAF8CB444E71DE51EAFD06DD0331CF35731C3B7D.1"); 			
+//			rxConnection.allowInsecureDomain("app#com.gorillalogic.FlexMonkey.FAF8CB444E71DE51EAFD06DD0331CF35731C3B7D.1"); 
+			rxConnection.allowInsecureDomain('*'); 			
 			initializeRXChannel1();
 		}
 // ============================================================================================		
