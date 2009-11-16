@@ -173,12 +173,16 @@ package com.gorillalogic.flexmonkey.application.managers
 			}
 		}
 		 
+		private var lastTxCount:int; 
 		public function agentRunDone(ba:ByteArray, txCount:uint):void{
 			rxAlive = true;
-			sendAck(txCount);			
-			writeConsole("BrowserConnection: Agent Done");			
-			var monkeyRunnable:MonkeyRunnable = ba.readObject();
-			currentRunnerEngine.agentRunDone(monkeyRunnable);
+			sendAck(txCount);	
+			if(lastTxCount != txCount){
+				lastTxCount = txCount;
+				writeConsole("BrowserConnection: Agent Done");			
+				var monkeyRunnable:MonkeyRunnable = ba.readObject();
+				currentRunnerEngine.agentRunDone(monkeyRunnable);
+			}
 		}		
 			
 		// send methods ---------------------------------------------------------------------------	

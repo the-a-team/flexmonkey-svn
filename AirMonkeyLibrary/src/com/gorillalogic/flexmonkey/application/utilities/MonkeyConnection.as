@@ -26,7 +26,7 @@ package com.gorillalogic.flexmonkey.application.utilities
 			// set up TX channel and announce
 			initializeTXChannel();
 
-			pingRXTimer = new Timer(1000,0);
+			pingRXTimer = new Timer(2000,0);
 			pingRXTimer.addEventListener(TimerEvent.TIMER, pingRXHandler, false, 0, true);	
 			
 			pingTXTimer = new Timer(500,0);
