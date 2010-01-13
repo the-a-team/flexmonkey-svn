@@ -33,6 +33,7 @@ package com.gorillalogic.flexmonkey.core
 		}
 		public function set state(s:String):void{
 			_state = s;
+//trace("SETTING MONKEY AUTOMATION STATE = " + s);			
 		}
 		
 		private var _graphics:Graphics;
