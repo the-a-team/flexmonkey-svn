@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actionScriptProperties mainApplicationPath="AirMonkey.mxml" version="3">
-<compiler additionalCompilerArguments="-locale en_US -includes mx.messaging.channels.AMFChannel  -includes mx.messaging.channels.SecureAMFChannel -includes mx.messaging.channels.SecureHTTPChannel  -include-libraries &quot;../../FlexAutomationLibrary/bin/FlexAutomationLibrary.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation.swc&quot;    -include-libraries &quot;${flexlib}/libs/automation_agent.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation_dmv.swc&quot;" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="true" verifyDigests="true" warn="true">
+<compiler additionalCompilerArguments="-locale en_US -includes mx.messaging.channels.AMFChannel  -includes mx.messaging.channels.SecureAMFChannel -includes mx.messaging.channels.SecureHTTPChannel  -include-libraries &quot;../../FlexAutomationLibrary3_4_1/bin/FlexAutomationLibrary3_4_1.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation.swc&quot;    -include-libraries &quot;${flexlib}/libs/automation_agent.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation_dmv.swc&quot;" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="true" verifyDigests="true" warn="true">
 <compilerSourcePath/>
 <libraryPath defaultLinkType="1">
 <libraryPathEntry kind="4" path="">
@@ -14,15 +14,12 @@
 </modifiedEntries>
 </libraryPathEntry>
 <libraryPathEntry kind="1" linkType="1" path="libs"/>
-<libraryPathEntry kind="3" linkType="1" path="/FlexAutomationLibrary/bin/FlexAutomationLibrary.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="/AirMonkeyLibrary/bin/AirMonkeyLibrary.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/air/applicationupdater_ui.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="/MonkeyRegistrationLibrary/bin/MonkeyRegistrationLibrary.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="3" linkType="1" path="/Mate/bin/Mate.swc" useDefaultLinkType="false"/>
 </libraryPath>
-<sourceAttachmentPath>
-<sourceAttachmentPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/datavisualization.swc" sourcepath="${PROJECT_FRAMEWORKS}/projects/datavisualisation/src" useDefaultLinkType="false"/>
-</sourceAttachmentPath>
+<sourceAttachmentPath/>
 </compiler>
 <applications>
 <application path="AirMonkey.mxml"/>
