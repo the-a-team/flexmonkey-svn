@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<testsuite name="testSuites.NewTestSuite.tests.NewTestCase" errors="0" failures="0" tests="1" time="5.631"> 
-  <properties/>  
-  <testcase name="NewTest" time="5.631" className="testSuites.NewTestSuite.tests.NewTestCase"/> 
-</testsuite>
