@@ -1,0 +1,58 @@
+<TopNode>
+  <TestSuite name="NewTestSuite" description="">
+    <TestCase name="NewTestCase" description="">
+      <Test name="NewTest" description="null" defaultThinkTime="500">
+        <UIEvent command="SelectText" value="inName" prop="automationName">
+          <arg value="0"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Input" value="inName" prop="automationName">
+          <arg value="Fricasee"/>
+        </UIEvent>
+        <UIEvent command="Open" value="inType" prop="automationName">
+          <arg value="1"/>
+        </UIEvent>
+        <UIEvent command="Select" value="inType" prop="automationName">
+          <arg value="Mobile"/>
+          <arg value="1"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="SelectText" value="inPhone" prop="automationName">
+          <arg value="0"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Input" value="inPhone" prop="automationName">
+          <arg value="212-555-1212"/>
+        </UIEvent>
+        <UIEvent command="Open" value="inDate" prop="automationName">
+          <arg value="1"/>
+        </UIEvent>
+        <UIEvent command="Change" value="inDate" prop="automationName">
+          <arg value="Thu Jan 14 2010"/>
+        </UIEvent>
+        <UIEvent command="Click" value="Add" prop="automationName">
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Select" value="grid" prop="automationName">
+          <arg value="  | *Fricasee* | Mobile | 212-555-1212 | Thu Jan 14 00:00:00 GMT-0700 2010"/>
+          <arg value="1"/>
+          <arg value="0"/>
+        </UIEvent>
+        <UIEvent command="Select" value="grid" prop="automationName">
+          <arg value="  | *Fricasee* | Mobile | 212-555-1212 | Thu Jan 14 00:00:00 GMT-0700 2010"/>
+          <arg value="1"/>
+          <arg value="0"/>
+        </UIEvent>
+        <Verify description="New Verify" snapshotURL="80DB0D4B-D726-D255-A4ED-1F2E052F4B90.snp" value="label{ string}id{MonkeyContacts string}automationIndex{index:-1 string}automationName{MonkeyContacts string}automationClassName{FlexApplication string}className{MonkeyContacts string}|id{null object}automationIndex{index:0 string}automationClassName{FlexTitleWindow string}className{mx.containers.TitleWindow string}label{ string}automationName{index:0 string}|id{null object}automationIndex{index:0 string}automationClassName{FlexDividedBox string}className{mx.containers.VDividedBox string}label{ string}automationName{index:0 string}|id{grid string}automationIndex{index:6 string}automationName{grid string}automationClassName{FlexDataGrid string}className{mx.controls.DataGrid string}|id{null object}automationClassName{FlexTextArea string}className{mx.controls.TextInput string}automationName{%20%20%7C%20Fricasee%20%7C%20Mobile%20%7C%20212-555-1212%20%7C%20Thu%20Jan%2014%2000:00:00%20GMT-0700%202010 string}automationIndex{name:0 string}editable{true boolean}displayAsPassword{false boolean}" prop="automationID" verifyBitmap="false">
+          <Attribute name="text" expectedValue="Fricasee" actualValue="Fricasee" type="property"/>
+        </Verify>
+        <UIEvent command="Click" value="Delete" prop="automationName">
+          <arg value="0"/>
+        </UIEvent>
+        <Verify description="New Verify" snapshotURL="17C1CCA3-F4FF-5DA3-2797-1F2E966FB7B2.snp" value="Delete" prop="automationName" verifyBitmap="false">
+          <Attribute name="enabled" expectedValue="true" actualValue="false" type="property"/>
+        </Verify>
+      </Test>
+    </TestCase>
+  </TestSuite>
+</TopNode>
