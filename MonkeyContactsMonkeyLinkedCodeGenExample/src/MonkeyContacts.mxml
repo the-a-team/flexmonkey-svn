@@ -79,6 +79,7 @@
 							<mx:DataGridColumn headerText="Birthday" dataField="birthday"/>						
 						</mx:columns>
 				</mx:DataGrid>
+				<mx:Label text="MonkeyContactsMonkeyLinkedCodeGenExample"/>				
 		</mx:VDividedBox>
 	</mx:TitleWindow>
 </mx:Application>

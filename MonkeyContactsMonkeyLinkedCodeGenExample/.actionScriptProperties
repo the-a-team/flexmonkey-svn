@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actionScriptProperties mainApplicationPath="MonkeyContacts.mxml" version="3">
-<compiler additionalCompilerArguments="-locale en_US -includes mx.messaging.channels.AMFChannel  -includes com.gorillalogic.monkeylink.MonkeyLinkTestLauncher  -include-libraries &quot;../../FlexAutomationLibrary/bin/FlexAutomationLibrary.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation.swc&quot;    -include-libraries &quot;${flexlib}/libs/automation_agent.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation_dmv.swc&quot;" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderLocation="/Users/grroggy/Sites/serverB" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
+<compiler additionalCompilerArguments="-locale en_US -includes com.gorillalogic.monkeylink.MonkeyLink -include-libraries &quot;../../FlexAutomationLibrary3_4_1/bin/FlexAutomationLibrary3_4_1.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation.swc&quot;       -include-libraries &quot;${flexlib}/libs/automation_agent.swc&quot;  -include-libraries &quot;${flexlib}/libs/automation_dmv.swc&quot;" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderLocation="/Users/grroggy/Sites/serverB" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
 <compilerSourcePath/>
 <libraryPath defaultLinkType="1">
 <libraryPathEntry kind="4" path=""/>
 <libraryPathEntry kind="1" linkType="1" path="libs"/>
+<libraryPathEntry kind="3" linkType="1" path="/AirMonkeyLibrary/bin/AirMonkeyLibrary.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/fluint/bin/fluint.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/MonkeyFlexUnitLibrary/bin/MonkeyFlexUnitLibrary.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/MonkeyLink/bin/MonkeyLink.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/MonkeyLinkTestLauncherLibrary/bin/MonkeyLinkTestLauncherLibrary.swc" useDefaultLinkType="false"/>
 </libraryPath>
 <sourceAttachmentPath/>
 </compiler>
